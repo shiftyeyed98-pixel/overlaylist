@@ -267,29 +267,6 @@
 
   <script>
 
-    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbyM4OuD0zOSXmJbV4cC99LqOmoY-nDU0WR8nG3IXv0uDrSvN4_MMMGQRo56o3dNNsaB/exec';
-
-    function getStreamerNoFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      return (params.get('streamerNo') || '').trim();
-    }
-
-    async function fetchOverlayData(streamerNo) {
-      if (!streamerNo) {
-        throw new Error('streamerNo is required');
-      }
-
-      const url = `${API_BASE_URL}?streamerNo=${encodeURIComponent(streamerNo)}`;
-      const res = await fetch(url);
-      const json = await res.json();
-
-      if (!json.ok) {
-        throw new Error(json.error || 'API error');
-      }
-
-      return json.data;
-    }
-
     const PAGE_1 = [
       ["10","OVERDRIVE","",""],
       ["44","입술사이","","warning"],
@@ -654,22 +631,6 @@
     updateLoopHeight();
     window.addEventListener('load', updateLoopHeight);
     window.addEventListener('resize', updateLoopHeight);
-
-    window.addEventListener('load', async () => {
-      const streamerNo = getStreamerNoFromUrl();
-
-      if (!streamerNo) {
-        console.warn('streamerNo 없음');
-        return;
-      }
-
-      try {
-        const data = await fetchOverlayData(streamerNo);
-        console.log('API DATA:', data);
-      } catch (err) {
-        console.error('API ERROR:', err);
-      }
-    });
 
   </script>
 </body>
