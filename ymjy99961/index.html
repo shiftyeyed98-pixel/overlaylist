@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=330, height=1080, initial-scale=1.0" />
+  <title>OBS 오버레이 - 리액션 리스트</title>
+  <style>
+
+    @font-face {
+        font-family: 'YeogiOttaeJalnan';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+        font-weight: normal;
+        font-display: swap;
+    }
+
+    :root {
+      --w: 330px;
+      --h: 1080px;
+      --row-gap: 4px;
+      --num-col: 72px;
+      --svg-h: 30px;
+      --page-gap: 10px;     /*페이지사이공백*/
+      --loop-seconds: 50s;  /*속도*/
+      --sequence-height: 1000px;
+      --outline: 5;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'YeogiOttaeJalnan', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 4px 4px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: 10px;
+      flex: 0 0 10px;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num {
+      text-align: center;
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    .label-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      width: auto;
+    }
+
+    .num-svg,
+    .label-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    .label-icon {
+      width: 26px;
+      height: 26px;
+      flex: 0 0 26px;
+      object-fit: contain;
+      display: block;
+      margin-left: -2px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+    }    
+
+    .label-text {
+      flex: 0 0 auto;
+      min-width: auto;
+    }
+
+    @keyframes riseLoop {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(calc(-1 * var(--sequence-height)));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_1 = [
+      ["10","으으응"],
+      ["12","?"],
+      ["15","한화 아웃송"],
+      ["35","귀여워서 미안해"],
+      ["44","바람피면 디지는거야"],
+      ["50","삐삐"],
+      ["52","나니가스키"],
+      ["60","니코니코니"],
+      ["70","삐끼삐끼"],
+      ["74","캐치캐치","new"],
+      ["87","미니언즈"],
+      ["88","이머전시"],
+      ["89","업"],
+      ["93","나니모시모시"],
+      ["94","Back it up"],
+      ["96","슈퍼그럼요"],
+      ["100","제로투"],
+      ["101","봄그리고너","best"],
+      ["102","센세"],
+      ["103","솜사탕"],
+      ["104","팬서비스"],
+      ["105","오빠바이러스"],
+      ["107","스마트"],
+      ["108","See바레스고"],
+      ["109","왜요왜요"],
+      ["110","오늘만 I love you"],
+      ["111","오빠달려붕붕"],
+      ["113","홀드업"],
+      ["115","WTF"],
+      ["116","나랑사귈래"],
+      ["117","이퓨럽미"],
+      ["118","패스트카"],
+      ["119","오빠하앙"],
+      ["121","라라리라라"],
+      ["122","우유"],
+      ["123","아원츄"],
+      ["124","벌룬인럽"],
+      ["125","고민중독"],
+      ["126","뽁뽁이"],
+      ["128","이루리"],
+      ["131","나나나"],
+      ["134","겐또"],
+      ["135","매니악"],
+      ["137","키딩"],
+      ["140","핫해"],
+      ["143","무아"],
+      ["144","야옹(MEOW)"],
+      ["145","모에모에꿍"],
+      ["148","이게사랑이지뭐야"],
+      ["160","마티니"],
+      ["163","테디베어"],
+      ["169","영차"],
+      ["170","핑크레이디"],
+      ["171","그래비티","best"],
+      ["174","no batidão  ","new"],
+      ["182","마녀배달부키키"],
+      ["186","L.O.V.E"],
+      ["192","터미널"],
+      ["200","러브쉐이크","best"],
+      ["201","빛을따라서"],
+      ["202","이꾸욧"],
+      ["203","누나야"],
+      ["208","코카인"],
+      ["209","계엄령"],
+      ["214","L.S.D"],
+      ["218","앙카"],
+      ["219","오빠나해도돼"],
+      ["220","간바레"],
+      ["221","엉큰녀"],
+      ["232","바우치"],
+      ["333","드라군"],
+      ["404","모또하야쿠"],
+      ["574","신호탄"],
+      ["1474","포카치노(기본방셀)"],
+      ["2874","지플단(섹시방셀)"]
+    ];
+   const PAGE_2 = [      
+      ["20","스쿼트1회"],
+      ["91","광어"],
+      ["92","역도"],
+      ["97","스키"],
+      ["150","니코2배"]
+    ];
+
+    const FONT = 'YeogiOttaeJalnan, Arial, sans-serif';
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+
+    const ICON_NEW = 'https://i.imgur.com/a5s2iUL.png';
+    const ICON_BEST = 'https://i.imgur.com/1Z3VEON.png';
+    const ICON_Rullet = 'https://i.imgur.com/BfBWx6n.png';
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    function makeShadowFilter(id) {
+      return `
+        <defs>
+          <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="0.0" flood-color="#ffffff" flood-opacity="0"/>
+          </filter>
+        </defs>`;
+    }
+
+    /* 단가 */
+    function makeNumberSVG(num, variant = 'pink') {
+      const width = numWidth(num.length);
+      const cx = width / 2;
+      const t = esc(num);
+      const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      const fillColor = variant === 'blue' ? '#8fd0ff' : '#ff5fa2';
+
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(1.0 1)">
+          <text x="${cx}" y="25"
+            text-anchor="middle"
+            font-family="${FONT}"
+            font-size="28"
+            font-weight="700"
+            stroke="#000000"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            filter="url(#${filterId})"
+            fill="${fillColor}">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 텍스트 */
+    function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 500) {
+      const canvas = measureTextWidth.canvas || (measureTextWidth.canvas = document.createElement('canvas'));
+      const ctx = canvas.getContext('2d');
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      return Math.ceil(ctx.measureText(text).width);
+    }
+
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      const measured = measureTextWidth(label, 28, FONT, 500);
+      const w = Math.max(40, measured + 10); // 여백 10 정도
+      const filterId = `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      return `
+        <svg class="label-svg" viewBox="0 0 ${w} 34"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(0.9 1)">
+            <text x="4" y="25"
+              text-anchor="start"
+              font-family="${FONT}"
+              font-size="28"
+              font-weight="500"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="#ffffff">${t}</text>
+          </g>
+        </svg>`;
+    }
+    function makeLabelIcon(type) {
+      let src = '';
+      let alt = '';
+
+      if (type === 'new') {
+        src = ICON_NEW;
+        alt = 'NEW';
+      } else if (type === 'best') {
+        src = ICON_BEST;
+        alt = 'BEST';
+      } else if (type === 'rullet') {
+        src = ICON_Rullet;
+        alt = 'RULLET';
+      } else {
+        return '';
+      }
+
+      return `<img class="label-icon" src="${src}" alt="${alt}">`;
+    }
+
+    /* 테이블 */
+    function makeTable(rows, numberVariant = 'pink') {
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col />
+          </colgroup>
+          <tbody>
+            ${rows.map(([num, label, iconType = '']) => `
+              <tr>
+                <td class="num">${makeNumberSVG(num, numberVariant)}</td>
+                <td class="label">
+                  <div class="label-wrap">
+                    <div class="label-text">${makeLabelSVG(label)}</div>
+                    ${makeLabelIcon(iconType)}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function makePage(title, titleClass, rows, variant, pageClass) {
+      return `
+        <div class="page ${pageClass}">
+          <div class="page-title ${titleClass}">${title}</div>
+          ${makeTable(rows, variant)}
+        </div>`;
+    }
+
+    function makeSequenceHTML() { /*페이지 정리*/
+      return `
+        <div class="page page-1">${makeTable(PAGE_1, 'pink')}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+        <div class="page page-2">${makeTable(PAGE_2, 'blue')}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
