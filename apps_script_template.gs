@@ -167,17 +167,8 @@ function doGet(e) {
   
   const response = buildOverlayResponse(streamerNo);
   
-  const output = ContentService.createTextOutput(JSON.stringify(response))
+  return ContentService.createTextOutput(JSON.stringify(response))
     .setMimeType(ContentService.MimeType.JSON);
-  
-  // CORS 헤더 추가
-  output.setHeaders({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
-  });
-  
-  return output;
 }
 
 // ====================
