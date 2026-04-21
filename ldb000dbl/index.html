@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=300, height=1080, initial-scale=1.0" />
+  <title>OBS 오버레이 - 리액션 리스트 2페이지 무한상승 Rev3</title>
+  <style>
+    @font-face {
+      font-family: 'GmarketSansBold';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --w: 300px;
+      --h: 1080px;
+      --row-gap: 6px;
+      --num-col: 92px;
+      --emoji-col: 28px;
+      --svg-h: 30px;
+      --page-gap: 36px;
+      --loop-seconds: 24s;
+      --emoji-color: #ff3d73;
+      --sequence-height: 1000px;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'GmarketSansBold', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 10px 8px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--page-gap);
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+    col.emoji-col { width: var(--emoji-col); }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num,
+    td.emoji {
+      text-align: center;
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    .num-svg,
+    .label-svg {
+      display: block;
+      width: 100%;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    .emoji {
+      font-size: 24px;
+      color: var(--emoji-color);
+      font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    }
+
+    @keyframes riseLoop {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(calc(-1 * var(--sequence-height)));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_1 = [
+      ["15","⭕","얼음15초"],
+      ["22","⭕","스쿼트1회"],
+      ["30","⭕","오벽"],
+      ["82","⭕","스키"],
+      ["92","⭕","역도"],
+      ["110","⭕","노래 1절"],
+      ["115","⭕","가야금"],
+      ["198","⭕","괴짜가족"],
+      ["777","⭕","의첸"],
+      ["1414","⭕","식사"],
+      ["1415","⭕","식사싫오"],
+      ["1462","⭕","방셀"]
+    ];
+    const PAGE_2 = [
+      ["25","⭕","귀요미송"],
+      ["33","⭕","만두송"],
+      ["50","⭕","숫자송"],
+      ["55","⭕","외모체크"],
+      ["65","⭕","사쿠란보"],
+      ["94","⭕","삐끼삐끼"],
+      ["96","⭕","바니바니"],
+      ["101","⭕","나랑사귈래"],
+      ["103","⭕","탕후루"],
+      ["105","⭕","솜사탕"],
+      ["108","⭕","우마우마"],
+      ["113","⭕","이꾸욧"],
+      ["135","⭕","자기야화풀어"],
+      ["150","⭕","제로투"],
+      ["155","⭕","버터컵"],
+      ["200","⭕","터미널"],
+      ["222","⭕","킹받쥬"],
+      ["250","⭕","베모"]
+    ];
+
+    const FONT = 'GmarketSansBold, Arial, sans-serif';
+    const STROKE = 5;
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    function makeNumberSVG(num) {
+      const width = numWidth(num.length);
+      const cx = width / 2;
+      const t = esc(num);
+      const gid = `grad-${t}-${Math.random().toString(36).slice(2, 9)}`;
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          <defs>
+            <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#cdb7ff"/>
+              <stop offset="28%" stop-color="#b18cff"/>
+              <stop offset="48%" stop-color="#a770ff"/>
+              <stop offset="72%" stop-color="#d96dbe"/>
+              <stop offset="100%" stop-color="#ff7aa8"/>
+            </linearGradient>
+          </defs>
+          <text x="${cx}" y="25"
+            text-anchor="middle"
+            font-family="${FONT}"
+            font-size="25"
+            font-weight="700"
+            stroke="#ffffff"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            fill="url(#${gid})">${t}</text>
+        </svg>`;
+    }
+
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      return `
+        <svg class="label-svg" viewBox="0 0 172 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img" preserveAspectRatio="xMinYMid meet">
+          <text x="4" y="25"
+            text-anchor="start"
+            font-family="${FONT}"
+            font-size="24"
+            font-weight="700"
+            stroke="#ffffff"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            fill="#000000">${t}</text>
+        </svg>`;
+    }
+
+    function makeTable(rows) {
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col class="emoji-col" />
+            <col />
+          </colgroup>
+          <tbody>
+            ${rows.map(([num, emoji, label]) => `
+              <tr>
+                <td class="num">${makeNumberSVG(num)}</td>
+                <td class="emoji">${emoji}</td>
+                <td class="label">${makeLabelSVG(label)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function makeSequenceHTML() {
+      return `
+        <div class="page page-1">${makeTable(PAGE_1)}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+        <div class="page page-2">${makeTable(PAGE_2)}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
