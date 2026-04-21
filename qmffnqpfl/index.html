@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=230, height=1080, initial-scale=1.0" />
+  <title>플렉스 비비윤 리액션 리스트</title>
+  <style>
+
+    @font-face {
+        font-family: 'KotraHope';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2110@1.0/KOTRAHOPE.woff2') format('woff2');
+        font-weight: normal;
+        font-display: swap;
+    }
+
+    :root {
+      --w: 230px;
+      --h: 1080px;
+      --row-gap: 4px;
+      --num-col: 72px;
+      --svg-h: 30px;
+      --page-gap: 10px;     /*페이지사이공백*/
+      --loop-seconds: 40s;  /*속도*/
+      --sequence-height: 1000px;
+      --outline: 5;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'KotraHope', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 4px 4px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: 10px;
+      flex: 0 0 32px;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: normal;  /* nowrap에서 normal로 변경하여 줄바꿈 허용 */
+      line-height: 1;
+      word-wrap: break-word;  /* 긴 텍스트 강제 줄바꿈 */
+      overflow-wrap: break-word;  /* 최신 브라우저 호환성 */
+    }
+
+    td.num {
+      text-align: left;
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    .page-title {
+      width: 200px;
+      height: 30px;
+      line-height: 30px;
+      margin: 0 0 6px 0;
+      text-align: center;
+      font-family: 'KotraHope', Arial, sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      border-radius: 40px;
+      box-sizing: border-box;
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+    }
+
+    .title-pink {
+      background: #FF8B37;
+    }
+
+    .title-blue {
+      background: #038EFF;
+    }
+
+    .title-yellow {
+      background: #FFFB04;
+    }
+
+    .label-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .label-icon {
+      width: 26px;
+      height: 26px;
+      flex: 0 0 26px;
+      object-fit: contain;
+      display: block;
+      margin-left: -2px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+    }
+
+    .label-text {
+      flex: 0 0 auto;
+      min-width: auto;
+    }
+
+    .num-svg,
+    .label-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    @keyframes riseLoop {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(calc(-1 * var(--sequence-height)));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_1 = [
+      ["30","벙어리"],
+      ["35","팔벌뛰"],
+      ["40","손들기"],
+      ["45","스쿼트"],
+      ["77","연장","rullet"],
+      ["78","단축","rullet"],
+      ["92","역도"],
+      ["99","닭비트"],
+      ["112","스키"],
+      ["250","광어"],
+      ["301","앙카"],
+      ["444","드라군"],
+      ["770","슈퍼연장","rullet"],
+      ["780","슈퍼단축","rullet"],
+      ["777","30분연장"],
+      ["666","30분단축"],
+      ["1818","108배"]
+    ];
+   const PAGE_2 = [
+      ["10","팬가입"],
+      ["25","니코니코니"],
+      ["102","포켓몬"],
+      ["103","팬서비스"],
+      ["110","촉촉착착"],
+      ["115","우마우마"],
+      ["119","이멀전시"],
+      ["126","고민중독"],
+      ["127","룰루랄라"],
+      ["128","사쿠란보"],
+      ["129","귀엽기만하면안되나요"],
+      ["133","업다운"],
+      ["139","여우"],
+      ["141","마녀배달부 키키"],
+      ["142","왠지"],
+      ["145","슈퍼그럼요"],
+      ["149","헤비머신건"],
+      ["152","여름이였다"],
+      ["153","러브쉐이크"],
+      ["157","빛을따라서"],
+      ["159","솜사탕"],
+      ["160","묵찌빠"],
+      ["162","뾱뾱이"],
+      ["165","라라리라라"],
+      ["166","모시모시"],
+      ["169","WTF"],
+      ["171","아로아로"],
+      ["175","오빠바이러스"],
+      ["177","외모체크"],
+      ["182","벌룬인러브"],
+      ["188","푱푱"],
+      ["192","키티캣"],
+      ["196","버터플라이"],
+      ["202","MUAH!"],
+      ["204","바나나"],
+      ["205","네모네모"],
+      ["207","마티니"],
+      ["210","바리케이트"],
+      ["214","슈가"],
+      ["215","나랑 사귈래"],
+      ["217","팅커벨"],
+      ["218","제로투"],
+      ["219","If you love me"],
+      ["220","왜요왜요"],
+      ["225","테디베어"],
+      ["233","핑크레이디"],
+      ["238","체온"],
+      ["240","L.S.D"],
+      ["244","바람피면 D지는거야"],
+      ["252","NANANA"],
+      ["255","Fast Cars"],
+      ["261","Supersonic"],
+      ["265","너와의 모든 지금"],
+      ["272","그래비티"],
+      ["275","REBEL HEART"],
+      ["282","바비걸"],
+      ["288","오빠달려붕붕"],
+      ["310","S.귀여워서미안해"],
+      ["312","S.무아"],
+      ["314","터미널"],
+      ["318","핫해"],
+      ["319","계엄령"],
+      ["333","만개화"],
+      ["342","센세"],
+      ["353","간바레"],
+      ["358","오빠하앙"],
+      ["367","바우치"],
+      ["376","출항"],
+      ["425","파티트레인"],
+      ["588","모또하야쿠"]
+    ];
+
+    const FONT = 'KotraHope, Arial, sans-serif';
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+    const ICON_NEW = 'https://i.imgur.com/a5s2iUL.png';
+    const ICON_BEST = 'https://i.imgur.com/1Z3VEON.png';
+    const ICON_Rullet = 'https://i.imgur.com/BfBWx6n.png';
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    function makeShadowFilter(id) {
+      return `
+        <defs>
+          <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="0.0" flood-color="#000000" flood-opacity="0"/>
+          </filter>
+        </defs>`;
+    }
+
+    /* 단가 */
+    function makeNumberSVG(num, variant = 'pink') {
+      const width = numWidth(num.length);
+      const cx = width / 2;
+      const t = esc(num);
+      const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      const fillColor =
+        variant === 'blue' ? '#038EFF' :
+        variant === 'yellow' ? '#FFFB04' :
+        '#FF8B37';
+
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(1.0 1)">
+          <text x="${cx}" y="25"
+            text-anchor="middle"
+            font-family="${FONT}"
+            font-size="30"
+            font-weight="500"
+            stroke="#ffffff"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            filter="url(#${filterId})"
+            fill="${fillColor}">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 텍스트 */
+
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      const lines = t.split('\n');
+      const maxLength = Math.max(...lines.map(line => line.length));
+      const w = Math.max(40, maxLength * 26);
+      const h = 34 + (lines.length - 1) * 30; // 기본 34, 추가 줄당 30
+      const filterId = `labelShadow-${t.replace(/\n/g, '-')}-${Math.random().toString(36).slice(2, 9)}`;
+      const tspans = lines.map((line, index) => 
+        `<tspan x="4" dy="${index === 0 ? 0 : '1.2em'}">${esc(line)}</tspan>`
+      ).join('');
+      return `
+        <svg class="label-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img" preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(1.1 1)">
+          <text x="4" y="25"
+            text-anchor="start"
+            font-family="${FONT}"
+            font-size="30"
+            font-weight="500"
+            stroke="#ffffff"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            filter="url(#${filterId})"
+            fill="#000000">${tspans}</text>
+          </g>
+        </svg>`;
+    }
+    function makeLabelIcon(type) {
+      let src = '';
+      let alt = '';
+
+      if (type === 'new') {
+        src = ICON_NEW;
+        alt = 'NEW';
+      } else if (type === 'best') {
+        src = ICON_BEST;
+        alt = 'BEST';
+      } else if (type === 'rullet') {
+        src = ICON_Rullet;
+        alt = 'RULLET';
+      } else {
+        return '';
+      }
+
+      return `<img class="label-icon" src="${src}" alt="${alt}">`;
+    }
+
+    /* 테이블 */
+    function makeTable(rows, numberVariant = 'pink') {
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col />
+          </colgroup>
+          <tbody>
+            ${rows.map(([num, label, iconType = '']) => `
+              <tr>
+                <td class="num">${makeNumberSVG(num, numberVariant)}</td>
+                <td class="label">
+                  <div class="label-wrap">
+                    <div class="label-text">${makeLabelSVG(label)}</div>
+                    ${makeLabelIcon(iconType)}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function makePage(title, titleClass, rows, variant, pageClass) {
+      return `
+        <div class="page ${pageClass}">
+          <div class="page-title ${titleClass}">${title}</div>
+          ${makeTable(rows, variant)}
+        </div>`;
+    }
+
+    function makeSequenceHTML() { /*페이지 정리*/
+      return `
+        ${makePage('미션', 'title-pink', PAGE_1, 'pink', 'page-1')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('시그니처', 'title-blue', PAGE_2, 'blue', 'page-2')}
+        <div class="page-gap" aria-hidden="true"></div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
