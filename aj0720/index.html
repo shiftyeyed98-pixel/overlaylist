@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=400, height=1080, initial-scale=1.0" />
+  <title>OBS 오버레이 - 리액션 리스트</title>
+  <style>
+
+    @font-face {
+        font-family: 'YPairing';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-4@1.1/YPairingFont-Bd.woff2') format('woff2');
+        font-weight: 700;
+        font-display: swap;
+    }
+
+    :root {
+      --w: 400px;
+      --h: 1080px;
+      --row-gap: 4px;
+      --num-col: 72px;
+      --svg-h: 30px;
+      --page-gap: 10px;     /*페이지사이공백*/
+      --loop-seconds: 50s;  /*속도*/
+      --sequence-height: 1000px;
+      --outline: 5;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'YeogiOttaeJalnan', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 4px 4px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: 10px;
+      flex: 0 0 10px;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num {
+      text-align: center;
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    .num-svg,
+    .label-svg {
+      display: block;
+      width: 100%;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+
+    @keyframes riseLoop {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(calc(-1 * var(--sequence-height)));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_1 = [
+      ["10","팬가입"],
+      ["40","외모체크"],
+      ["44","삐끼삐끼"],
+      ["47","나니가스키"],
+      ["56","날라리"],
+      ["66","포켓몬"],
+      ["78","탕후루"],
+      ["85","뾱뾱이"],
+      ["88","홀드업"],
+      ["92","우치다"],
+      ["96","개굴개"],
+      ["102","카리나닮았대"],
+      ["107","펌프업볼륨"],
+      ["108","컴투미(무아)"],
+      ["112","이머전시"],
+      ["115","슈퍼그럼요"],
+      ["118","핫해"],
+      ["121","땅스땅스"],
+      ["123","팬서비스"],
+      ["126","고민중독"],
+      ["127","마녀배달부키키"],
+      ["133","솜사탕"],
+      ["135","왜요왜요"],
+      ["137","UP"],
+      ["139","바람피면뒤지는거야"],
+      ["142","바니바니"],
+      ["144","이게사랑이지뭐야"],
+      ["146","If You Love Me"],
+      ["147","버터플라이"],
+      ["150","레디올낫"],
+      ["151","니코니코니"],
+      ["158","오빠바이러스"],
+      ["163","베이프"],
+      ["167","NANANA"],
+      ["168","WTF"],
+      ["172","핑크레이디"],
+      ["174","여우"],
+      ["178","겐또"],
+      ["182","벌룬인럽"],
+      ["187","마티니"],
+      ["193","러브쉐이크"],
+      ["200","제로투"],
+      ["205","너뿐이야"],
+      ["207","헤비머신건"],
+      ["210","터미널"],
+      ["217","푱푱"],
+      ["222","이루리"],
+      ["233","런던"],
+      ["237","부티바운스"],
+      ["244","라라리라라"],
+      ["247","SMART"],
+      ["261","간바레센빠이"],
+      ["285","바우치"],
+      ["288","슈퍼스타(우유)"],
+      ["299","이꾸요"],
+      ["302","센세"],
+      ["317","그래비티"],
+      ["333","계엄령"],
+      ["342","Beggin'"],
+      ["475","모또모또"]
+    ];
+   const PAGE_2 = [
+      ["69","붕가댄스"],
+      ["79","스키"],
+      ["89","스케이팅"],
+      ["91","역도"],
+      ["99","닭비트"],
+      ["103","캥거루"],
+      ["220","앙카"],
+      ["255","드라군"],
+      ["300","괴짜가족"]
+    ];
+
+    const FONT = 'YPairing, Arial, sans-serif';
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    function makeShadowFilter(id) {
+      return `
+        <defs>
+          <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3.2" flood-color="#ffffff" flood-opacity="2"/>
+          </filter>
+        </defs>`;
+    }
+
+
+    /* 단가 */
+    function makeNumberSVG(num, variant = 'pink') {
+      const width = numWidth(num.length);
+      const cx = width / 2;
+      const t = esc(num);
+      const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      const fillColor = variant === 'blue' ? '#8fd0ff' : '#ff5fa2';
+
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          ${makeShadowFilter(filterId)}
+          <text x="${cx}" y="25"
+            text-anchor="middle"
+            font-family="${FONT}"
+            font-size="28"
+            font-weight="700"
+            stroke="#000000"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            filter="url(#${filterId})"
+            fill="${fillColor}">${t}</text>
+        </svg>`;
+    }
+    /* 텍스트 */
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      const filterId = `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+      return `
+        <svg class="label-svg" viewBox="0 0 172 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img" preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <text x="4" y="25"
+            text-anchor="start"
+            font-family="${FONT}"
+            font-size="28"
+            font-weight="700"
+            stroke="#ffffff"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            filter="url(#${filterId})"
+            fill="#000000">${t}</text>
+        </svg>`;
+    }
+    /* 테이블 */
+    function makeTable(rows, numberVariant = 'pink') {
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col />
+          </colgroup>
+          <tbody>
+            ${rows.map(([num, label]) => `
+              <tr>
+                <td class="num">${makeNumberSVG(num, numberVariant)}</td>
+                <td class="label">${makeLabelSVG(label)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function makeSequenceHTML() { /*페이지 정리*/
+      return `
+        <div class="page page-1">${makeTable(PAGE_1, 'pink')}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+        <div class="page page-2">${makeTable(PAGE_2, 'blue')}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
