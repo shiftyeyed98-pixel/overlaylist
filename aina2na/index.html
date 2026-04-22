@@ -19,7 +19,7 @@
       --h: 1080px;
       --row-gap: 4px;
       --icon-wrap-col: 34px;
-      --num-col: 80px;
+      --num-col: 120px;
       --svg-h: 30px;
       --page-gap: 10px;     /*페이지사이공백*/
       --loop-seconds: 30s;  /*속도*/
@@ -136,7 +136,7 @@
     .icon-num-wrap {
       display: inline-flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: flex-end;
       gap: 4px;
       width: 100%;
     }
@@ -160,7 +160,7 @@
     .num-box {
       display: inline-flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: flex-end;
       min-width: var(--num-col);
     }
 
@@ -570,12 +570,9 @@
           <tbody>
             ${rows.map(([num, label, note = '', iconType = '']) => `
               <tr>
-                <td class="icon-num-cell"></td>
+                <td class="icon-num-cell">${makeLabelIcon(iconType)}</td>
                 <td class="icon-num-cell">
-                  <div class="icon-num-wrap">
-                    ${makeLabelIcon(iconType)}
-                    <div class="num-box">${makeNumberSVG(num, numberVariant)}</div>
-                  </div>
+                  <div class="num-box">${makeNumberSVG(num, numberVariant)}</div>
                 </td>
                 <td class="label-combined">
                   <div class="label-line">
