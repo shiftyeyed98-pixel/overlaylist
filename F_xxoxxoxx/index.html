@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=300, height=1080, initial-scale=1.0" />
+  <title>플렉스TV 사담 리액션 리스트</title>
+  <style>
+
+    @font-face {
+        font-family: 'Presentation';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-6SemiBold.woff2') format('woff2');
+        font-weight: 600;
+        font-display: swap;
+    }
+
+    :root {
+      --w: 300px;
+      --h: 1080px;
+      --row-gap: 16px;
+      --num-col: 72px;
+      --emoji-col: 34px;
+      --svg-h: 30px;
+      --page-gap: 28px;     /*페이지사이공백*/
+      --loop-seconds: 50s;  /*속도*/
+      --emoji-color: #ff3d73;
+      --sequence-height: 1000px;
+      --outline: 5;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'Presentation', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 10px 8px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: 36px;
+      flex: 0 0 36px;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+    col.emoji-col { width: var(--emoji-col); }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num,
+    td.emoji {
+      text-align: center;
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    .num-svg,
+    .label-svg {
+      display: block;
+      width: 100%;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    .emoji {
+      font-size: 30px;
+      color: var(--emoji-color);
+      font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    }
+
+    .emoji-svg {
+      display: block;
+      width: 30px;
+      height: 30px;
+      margin: 0 auto;
+      overflow: visible;
+    }
+
+    @keyframes riseLoop {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(calc(-1 * var(--sequence-height)));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_1 = [
+      ["1","💗","핫도그"],
+      ["2","💗","윙크"],
+      ["3","💗","뽀뽀"],
+      ["10","💗","벽찍"],
+      ["15","💗","발차기"],
+      ["18","💗","뿅망치"],
+      ["20","💗","스쿼트"],
+      ["25","💗","앞구르기"],
+      ["30","💗","아봉"],
+      ["35","💗","뒷구르기"],
+      ["39","💗","뒷절"],
+      ["40","💗","오벽"],
+      ["45","💗","외모체크"],
+      ["48","💗","삐끼삐끼"],
+      ["55","💗","쭈구리"],
+      ["66","💗","벌서기"],
+      ["69","💗","콩나물"],
+      ["72","💗","홀드업"],
+      ["73","💗","스키"],
+      ["77","💗","슈퍼맨"],
+      ["85","💗","역도"],
+      ["88","💗","마라탕후루"],
+      ["99","💗","광어"],
+      ["100","💗","뽑기"],
+      ["103","💗","솜사탕"],
+      ["105","💗","슈퍼그럼요"],
+      ["106","💗","러브쉐이크"],
+      ["107","💗","킥드베"]
+    ];
+   const PAGE_2 = [      
+      ["110","💗","제로투"],
+      ["111","💗","간바레 센빠이"],
+      ["121","💗","고민중독"],
+      ["122","💗","핫해"],
+      ["123","💗","체온"],
+      ["124","💗","나랑사귈래"],
+      ["125","💗","우유"],
+      ["126","💗","팬서비스"],
+      ["127","💗","롤린"],
+      ["130","💗","색소폰 매직"],
+      ["133","💗","무아"],
+      ["135","💗","자기야 화풀어"],
+      ["144","💗","L.S.D"],
+      ["155","💗","버터컵"],
+      ["158","💗","오빠달려붕붕"],
+      ["160","💗","마티니"],
+      ["202","💗","코카인"],
+      ["203","💗","다이스키"],
+      ["205","💗","터미널"],
+      ["206","💗","앙카"],
+      ["210","💗","계엄령"],
+      ["269","💗","이쿠욧"],
+      ["295","💗","모또모또"],
+      ["333","💗","드라군"],
+      ["740","💗","연장"],
+      ["750","💗","단축"],
+      ["1414","💗","밥묵으라"],
+      ["1415","💗","밥먹지마"]
+    ];
+
+    const FONT = 'Presentation, Arial, sans-serif';
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    /* 이모지 */
+    function makeEmojiSVG() {
+      return `
+        <svg class="emoji-svg" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <filter id="emojiOutline" x="-50%" y="-50%" width="200%" height="200%">
+              <feMorphology in="SourceAlpha" operator="dilate" radius="1.8" result="thicken"/>
+              <feFlood flood-color="#000000" result="outlineColor"/>
+              <feComposite in="outlineColor" in2="thicken" operator="in" result="outline"/>
+              <feMerge>
+                <feMergeNode in="outline"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <image
+            href="https://www.flextv.co.kr/icon/ico_flex.svg"
+            x="0"
+            y="0"
+            width="24"
+            height="24"
+            filter="url(#emojiOutline)"
+            preserveAspectRatio="xMidYMid meet"
+          />
+        </svg>`;
+    }
+
+    /* 단가 */
+    function makeNumberSVG(num) {
+      const width = numWidth(num.length);
+      const cx = width / 2;
+      const t = esc(num);
+      const gid = `grad-${t}-${Math.random().toString(36).slice(2, 9)}`;
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          <defs>
+            <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffd1e6"/>
+              <stop offset="30%" stop-color="#ff9fcb"/>
+              <stop offset="65%" stop-color="#ff5fa2"/>
+              <stop offset="100%" stop-color="#e91e63"/>
+            </linearGradient>
+          </defs>
+          <text x="${cx}" y="25"
+            text-anchor="middle"
+            font-family="${FONT}"
+            font-size="28"
+            font-weight="700"
+            stroke="#000000"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            fill="url(#${gid})">${t}</text>
+        </svg>`;
+    }
+    /* 텍스트 */
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      return `
+        <svg class="label-svg" viewBox="0 0 172 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img" preserveAspectRatio="xMinYMid meet">
+          <text x="4" y="25"
+            text-anchor="start"
+            font-family="${FONT}"
+            font-size="28"
+            font-weight="700"
+            stroke="#000000"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            fill="#ffffff">${t}</text>
+        </svg>`;
+    }
+    /* 이모지 */
+    function makeTable(rows) {
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col class="emoji-col" />
+            <col />
+          </colgroup>
+          <tbody>
+            ${rows.map(([num, emoji, label]) => `
+              <tr>
+                <td class="num">${makeNumberSVG(num)}</td>
+                <td class="emoji">${makeEmojiSVG()}</td>
+                <td class="label">${makeLabelSVG(label)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function makeSequenceHTML() { /*페이지 정리*/
+      return `
+        <div class="page page-1">${makeTable(PAGE_1)}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+        <div class="page page-2">${makeTable(PAGE_2)}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
