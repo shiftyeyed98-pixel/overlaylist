@@ -570,10 +570,13 @@
           <tbody>
             ${rows.map(([num, label, note = '', iconType = '']) => `
               <tr>
-                <td class="icon-num-cell">${makeLabelIcon(iconType)}</td>
                 <td class="icon-num-cell">
-                  <div class="num-box">${makeNumberSVG(num, numberVariant)}</div>
+                  <div class="icon-num-wrap">
+                    ${makeLabelIcon(iconType)}
+                    <div class="num-box">${makeNumberSVG(num, numberVariant)}</div>
+                  </div>
                 </td>
+                <td class="icon-num-cell"></td>
                 <td class="label-combined">
                   <div class="label-line">
                     <div class="label-main">${makeLabelSVG(label)}</div>
