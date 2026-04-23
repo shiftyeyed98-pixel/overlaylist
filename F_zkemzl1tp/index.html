@@ -133,13 +133,6 @@
       margin: 0 auto;
       overflow: visible;
     }
-
-
-    .emoji-svg.shrink-anim {
-      transform-box: fill-box;
-      transform-origin: center;
-      will-change: transform;
-    }
   </style>
 </head>
 <body>
@@ -221,7 +214,7 @@
 
     function makeEmojiSVG() {
       return `
-        <svg class="emoji-svg shrink-anim" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg class="emoji-svg" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
             <filter id="emojiOutline" x="-50%" y="-50%" width="200%" height="200%">
               <feMorphology in="SourceAlpha" operator="dilate" radius="1.8" result="thicken"/>
@@ -234,10 +227,9 @@
             </filter>
           </defs>
           <image
-            class="flex-icon"
             href="https://www.flextv.co.kr/icon/ico_flex.svg"
-            x="3"
-            y="3"
+            x="0"
+            y="0"
             width="24"
             height="24"
             filter="url(#emojiOutline)"
@@ -318,30 +310,8 @@
       `;
     }
 
-    function applyShrinkEffect() {
-      const icons = document.querySelectorAll('.shrink-anim');
-      let start = null;
-      const duration = 900;
-      const minScale = 0.78;
-
-      function animate(ts) {
-        if (start === null) start = ts;
-        const elapsed = (ts - start) % duration;
-        const progress = elapsed / duration;
-        const wave = (Math.cos(progress * Math.PI * 2) + 1) / 2;
-        const scale = minScale + (1 - minScale) * wave;
-        icons.forEach(icon => {
-          icon.style.transform = `scale(${scale})`;
-        });
-        requestAnimationFrame(animate);
-      }
-
-      requestAnimationFrame(animate);
-    }
-
     const sequenceA = document.getElementById('sequenceA');
     sequenceA.innerHTML = makeSequenceHTML();
-    applyShrinkEffect();
   </script>
 </body>
 </html>
