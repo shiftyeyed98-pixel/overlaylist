@@ -200,9 +200,9 @@
       ["261","간바레센빠이"],
       ["285","바우치"],
       ["288","슈퍼스타(우유)"],
+      ["292","GODS"],
       ["299","이꾸요"],
       ["302","센세"],
-      ["303","GODS"],
       ["317","그래비티"],
       ["333","계엄령"],
       ["342","Beggin'"],
@@ -218,6 +218,12 @@
       ["220","앙카"],
       ["255","드라군"],
       ["300","괴짜가족"]
+    ];
+
+    const PAGE_3 = [
+      ["1190","시은전용일한🐯"],
+      ["1852","자카르다🐯"],
+      ["1476","개인시그(천사시은)"],
     ];
 
     const FONT = 'YPairing, Arial, sans-serif';
@@ -256,7 +262,11 @@
       const t = esc(num);
       const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
 
-      const fillColor = variant === 'blue' ? '#8fd0ff' : '#ff5fa2';
+      const fillColor = variant === 'blue'
+       ? '#8fd0ff'
+       : variant === 'yellow'
+         ? '#ffd84d'
+         : '#ff5fa2';
 
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
@@ -318,6 +328,8 @@
         <div class="page page-1">${makeTable(PAGE_1, 'pink')}</div>
         <div class="page-gap" aria-hidden="true"></div>
         <div class="page page-2">${makeTable(PAGE_2, 'blue')}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+        <div class="page page-3">${makeTable(PAGE_3, 'yellow')}</div>
         <div class="page-gap" aria-hidden="true"></div>
       `;
     }
