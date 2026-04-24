@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infinite Flow Gradient - Smooth Blue Purple Blend</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .stage {
+      width: 200px;
+      height: 150px;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+      isolation: isolate;
+    }
+
+    /*
+      원본 GIF 느낌에 맞춘 한 방향 무한루프
+      - 같은 패턴을 3번 이어붙여 끊김 없이 흐르게 구성
+      - 특히 청록/하늘/푸른/보라 경계에 중간 색상을 촘촘히 추가해서
+        푸른색 -> 자주색 구간이 선처럼 끊겨 보이지 않도록 보정
+    */
+    .flow-base,
+    .flow-soft,
+    .flow-glow {
+      position: absolute;
+      left: -100%;
+      top: -28%;
+      width: 300%;
+      height: 170%;
+      transform: rotate(-12deg);
+      transform-origin: center;
+      will-change: transform;
+      animation: flowLeft 3.6s linear infinite;
+      pointer-events: none;
+    }
+
+    .flow-base {
+      background: linear-gradient(
+        90deg,
+
+        /* 1세트 */
+        #fff200 0%,
+        #f0ff00 4.5%,
+        #b8ff2f 9%,
+        #63ff89 13%,
+        #27ffd8 17.5%,
+        #20f6f1 21%,
+        #31ebff 24%,
+        #49dfff 26.5%,
+        #62d1ff 28.8%,
+        #76c0ff 30.8%,
+        #87acff 32.2%,
+        #9394ff 33.3%,
+        #9a7cff 34.4%,
+        #a062ff 35.7%,
+        #c43efc 37.3%,
+        #ff00f0 39.2%,
+
+        /* 2세트 */
+        #fff200 39.2%,
+        #f0ff00 43.7%,
+        #b8ff2f 48.2%,
+        #63ff89 52.2%,
+        #27ffd8 56.7%,
+        #20f6f1 60.2%,
+        #31ebff 63.2%,
+        #49dfff 65.7%,
+        #62d1ff 68.0%,
+        #76c0ff 70.0%,
+        #87acff 71.4%,
+        #9394ff 72.5%,
+        #9a7cff 73.6%,
+        #a062ff 74.9%,
+        #c43efc 76.5%,
+        #ff00f0 78.4%,
+
+        /* 3세트 */
+        #fff200 78.4%,
+        #f0ff00 82.9%,
+        #b8ff2f 87.4%,
+        #63ff89 91.4%,
+        #27ffd8 95.9%,
+        #20f6f1 97.2%,
+        #31ebff 98.1%,
+        #6dbfff 98.9%,
+        #9a7cff 99.5%,
+        #ff00f0 100%
+      );
+      filter: saturate(1.08);
+    }
+
+    /* 경계를 부드럽게 만드는 소프트 레이어 */
+    .flow-soft {
+      background: linear-gradient(
+        90deg,
+        rgba(255,242,0,0.34) 0%,
+        rgba(184,255,47,0.25) 9%,
+        rgba(39,255,216,0.16) 17.5%,
+        rgba(73,223,255,0.15) 26.5%,
+        rgba(98,209,255,0.18) 28.8%,
+        rgba(118,192,255,0.22) 30.8%,
+        rgba(135,172,255,0.24) 32.2%,
+        rgba(147,148,255,0.27) 33.3%,
+        rgba(154,124,255,0.30) 34.4%,
+        rgba(160,98,255,0.34) 35.7%,
+        rgba(196,62,252,0.36) 37.3%,
+        rgba(255,0,240,0.42) 39.2%,
+
+        rgba(255,242,0,0.34) 39.2%,
+        rgba(184,255,47,0.25) 48.2%,
+        rgba(39,255,216,0.16) 56.7%,
+        rgba(73,223,255,0.15) 65.7%,
+        rgba(98,209,255,0.18) 68.0%,
+        rgba(118,192,255,0.22) 70.0%,
+        rgba(135,172,255,0.24) 71.4%,
+        rgba(147,148,255,0.27) 72.5%,
+        rgba(154,124,255,0.30) 73.6%,
+        rgba(160,98,255,0.34) 74.9%,
+        rgba(196,62,252,0.36) 76.5%,
+        rgba(255,0,240,0.42) 78.4%,
+
+        rgba(255,242,0,0.34) 78.4%,
+        rgba(184,255,47,0.25) 87.4%,
+        rgba(39,255,216,0.16) 95.9%,
+        rgba(118,192,255,0.22) 98.9%,
+        rgba(255,0,240,0.42) 100%
+      );
+      filter: blur(7px);
+      mix-blend-mode: screen;
+      opacity: 0.95;
+    }
+
+    /* 전체 번짐 광택 */
+    .flow-glow {
+      background: linear-gradient(
+        90deg,
+        rgba(255, 242, 0, 0.70) 0%,
+        rgba(40, 255, 215, 0.26) 17.5%,
+        rgba(98, 209, 255, 0.22) 28.8%,
+        rgba(135, 172, 255, 0.30) 32.2%,
+        rgba(154, 124, 255, 0.35) 34.4%,
+        rgba(255, 0, 240, 0.65) 39.2%,
+
+        rgba(255, 242, 0, 0.70) 39.2%,
+        rgba(40, 255, 215, 0.26) 56.7%,
+        rgba(98, 209, 255, 0.22) 68.0%,
+        rgba(135, 172, 255, 0.30) 71.4%,
+        rgba(154, 124, 255, 0.35) 73.6%,
+        rgba(255, 0, 240, 0.65) 78.4%,
+
+        rgba(255, 242, 0, 0.70) 78.4%,
+        rgba(40, 255, 215, 0.26) 95.9%,
+        rgba(154, 124, 255, 0.35) 99.5%,
+        rgba(255, 0, 240, 0.65) 100%
+      );
+      filter: blur(14px);
+      mix-blend-mode: screen;
+      opacity: 0.92;
+    }
+
+    @keyframes flowLeft {
+      from {
+        transform: rotate(-12deg) translateX(0%);
+      }
+      to {
+        transform: rotate(-12deg) translateX(-39.2%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="flow-glow"></div>
+    <div class="flow-soft"></div>
+    <div class="flow-base"></div>
+  </div>
+</body>
+</html>

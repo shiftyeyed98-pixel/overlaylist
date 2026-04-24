@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animated Gradient Effect</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .stage {
+      width: 200px;
+      height: 150px;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.05);
+    }
+
+    /* 메인 움직이는 그라데이션 레이어 */
+    .stage::before {
+      content: "";
+      position: absolute;
+      left: -45%;
+      top: -25%;
+      width: 190%;
+      height: 160%;
+      transform: rotate(-12deg);
+      transform-origin: center;
+      background: linear-gradient(
+        90deg,
+        #fff200 0%,
+        #f2ff00 12%,
+        #9eff38 26%,
+        #26ffd4 43%,
+        #1feff5 56%,
+        #52d6ff 69%,
+        #9d63ff 83%,
+        #ff00f0 100%
+      );
+      filter: blur(2px) saturate(1.08);
+      animation: drift 4.2s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    /* 살짝 번지는 보조 광택 레이어 */
+    .stage::after {
+      content: "";
+      position: absolute;
+      left: -55%;
+      top: -35%;
+      width: 210%;
+      height: 180%;
+      transform: rotate(-12deg);
+      transform-origin: center;
+      background: linear-gradient(
+        90deg,
+        rgba(255,242,0,0.75) 0%,
+        rgba(140,255,60,0.30) 28%,
+        rgba(0,255,224,0.28) 48%,
+        rgba(90,210,255,0.24) 68%,
+        rgba(170,90,255,0.34) 84%,
+        rgba(255,0,240,0.72) 100%
+      );
+      filter: blur(14px);
+      animation: driftSoft 4.2s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    @keyframes drift {
+      0% {
+        transform: rotate(-12deg) translateX(-14%) translateY(0%);
+      }
+      100% {
+        transform: rotate(-12deg) translateX(14%) translateY(0%);
+      }
+    }
+
+    @keyframes driftSoft {
+      0% {
+        transform: rotate(-12deg) translateX(-10%) translateY(0%);
+      }
+      100% {
+        transform: rotate(-12deg) translateX(10%) translateY(0%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" aria-label="움직이는 그라데이션 효과"></div>
+</body>
+</html>
