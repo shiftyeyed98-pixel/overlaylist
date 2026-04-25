@@ -205,6 +205,37 @@
     }
 
 
+    .fixed-bottom-label {
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      width: 240px;
+      height: 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: 'OneStoreMobilePop', Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      color: #ffffff;
+
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid #ffffff;
+      border-radius: 10px;
+
+      box-sizing: border-box;
+      z-index: 50;
+
+      text-shadow:
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px  2px 0 #000,
+        2px  2px 0 #000;
+    }
+
 
     @keyframes riseLoop {
       from {
@@ -224,6 +255,7 @@
         <div class="sequence" id="sequenceB" aria-hidden="true"></div>
       </div>
     </div>
+    <div class="fixed-bottom-label">made by 시프티♻️</div>
   </div>
 
   <script>
