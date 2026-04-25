@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=400, height=1080, initial-scale=1.0" />
+  <title>OBS 오버레이 - 리액션 리스트</title>
+  <style>
+    @font-face {
+      font-family: 'YeogiOttaeJalnan';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+      font-weight: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --w: 400px;
+      --h: 1080px;
+      --row-gap: 4px;
+      --num-col: 119px;     /* 풍이미지 25px + 숫자 SVG 92px + 간격 포함 */
+      --svg-h: 30px;
+      --page-gap: 10px;     /* 페이지 사이 공백 */
+      --loop-seconds: 30s;  /* 스크롤 속도 */
+      --sequence-height: 1000px;
+      --outline: 5;
+      --poong-size: 25px;   /* 숫자열 좌측 풍이미지 크기 */
+      --poong-gap: 2px;     /* 풍이미지와 숫자 사이 간격 */
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'YeogiOttaeJalnan', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 4px 4px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: 10px;
+      flex: 0 0 32px;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col  { width: var(--num-col); }
+    col.icon-col { width: 26px; }
+    col.text-col { width: auto; }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num {
+      padding: 0 !important;
+      text-align: right !important;
+    }
+
+    .num-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--poong-gap);
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    .poong-icon {
+      width: var(--poong-size);
+      height: var(--poong-size);
+      flex: 0 0 var(--poong-size);
+      object-fit: contain;
+      display: block;
+    }
+
+    td.num .num-svg {
+      display: block;
+      flex: 0 0 auto;
+      margin: 0 !important;
+    }
+
+    td.label-combined {
+      padding-left: 0 !important;
+    }
+
+    .label-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 0px;
+      white-space: nowrap;
+    }
+
+    .label-main {
+      display: block;
+    }
+
+    .label-note-inline {
+      display: block;
+      position: relative;
+      top: 0;
+      margin-left: -4px;
+    }
+
+    .note-svg {
+      display: block;
+      width: auto;
+      height: 22px;
+      overflow: visible;
+    }
+
+    td.label-icon-cell {
+      padding: 0 !important;
+      margin: 0 !important;
+      vertical-align: middle;
+    }
+
+    .label-icon-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0;
+      margin: 0;
+    }
+
+    .page-title {
+      width: 200px;
+      height: 44px;
+      margin: 0 0 6px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-family: 'YeogiOttaeJalnan', Arial, sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+      color: #ffffff;
+      border-radius: 40px;
+      box-sizing: border-box;
+      border: 6px solid transparent;
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+    }
+
+    .title-pink {
+      background: #F8DDD5;
+      border-color: #E7C3B8;
+    }
+
+    .title-blue {
+      background: #8fd0ff;
+      border-color: #63B8F0;
+    }
+
+    .title-yellow {
+      background: #F6E58D;
+      border-color: #D9C85A;
+    }
+
+    .num-svg,
+    .label-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    .label-icon {
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      font-size: 9px;
+      font-weight: 900;
+      line-height: 1;
+      color: #fff;
+      text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    }
+
+    .label-icon.new {
+      background: #007fff;
+      border-radius: 4px;
+    }
+
+    .label-icon.best {
+      background: #de4c3c;
+      border-radius: 50%;
+    }
+
+    .label-icon.rullet {
+      background: #007f00;
+      border-radius: 50%;
+    }
+
+    .label-icon.warning {
+      background: #fec901;
+      color: #010101;
+      border-radius: 4px;
+      text-shadow: none;
+    }
+
+    @keyframes riseLoop {
+      from { transform: translateY(0); }
+      to   { transform: translateY(calc(-1 * var(--sequence-height))); }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const POONG_ICON = 'https://i.imgur.com/FVLQuHm.png';
+
+    const PAGE_1 = [
+      ["10","OVERDRIVE","",""],
+      ["44","입술사이","","warning"],
+      ["45","삐끼삐끼","",""],
+      ["46","Hold up","",""],
+      ["47","띵띵땅땅","",""],
+      ["48","멋있다","",""],
+      ["90","진압해","",""],
+      ["91","할말이 없네","",""],
+      ["92","UP","","best"],
+      ["93","우치다","",""],
+      ["94","이머전시","",""],
+      ["95","외모체크","",""],
+      ["96","뽁뽁이","",""],
+      ["102","탕후루","",""],
+      ["103","슈퍼도파","",""],
+      ["104","바니바니","",""],
+      ["105","바람피면D져","",""],
+      ["106","팬서비스","",""],
+      ["107","버터컵","",""],
+      ["108","솜사탕","",""],
+      ["109","최애의아이","",""],
+      ["110","핫해","",""],
+      ["111","케케케","","new"],
+      ["120","오!","",""],
+      ["121","고민중독","",""],
+      ["124","위플래쉬","",""],
+      ["125","무아","",""],
+      ["126","체온","",""],
+      ["127","라라리라라","",""],
+      ["128","핑크레이디","",""],
+      ["129","H.M.G","",""],
+      ["150","제로투","",""],
+      ["151","이쿠욧","","best"],
+      ["152","우유","",""],
+      ["153","간바레","","best"],
+      ["154","헨타이","","best"],
+      ["155","터미널","","best"],
+      ["156","빠라뉴","",""],
+      ["157","킥드베","",""],
+      ["158","코카인","",""],
+      ["159","L.S.D","","best"],
+      ["160","알려줄게","",""],
+      ["170","땅쓰땅쓰","","best"],
+      ["171","오빠하앙!","","best"],
+      ["172","누나야","",""],
+      ["173","NANANA","","best"],
+      ["230","No batidão","","new"],
+      ["244","앙카","",""],
+      ["258","계엄령","","best"],
+      ["259","모또하얏꾸","","best"],
+      ["300","바우치","","best"],
+      ["584","모또하얏꾸","Full","best"]
+    ];
+
+    const PAGE_2 = [
+      ["89","스키","",""],
+      ["99","역도","",""],
+      ["198","역도2배속","","best"],
+      ["1818","108배","","rullet"]
+    ];
+
+    const PAGE_3 = [
+      ["248","EDM","","new"],
+      ["450","EDM같은거","(코기ver)","new"],
+      ["452","EDM같은거","(오랑ver)","new"]
+    ];
+
+    const FONT = 'YeogiOttaeJalnan, Arial, sans-serif';
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth() {
+      return 92;
+    }
+
+    function makeShadowFilter(id) {
+      return `
+        <defs>
+          <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="0.0" flood-color="#ffffff" flood-opacity="0"/>
+          </filter>
+        </defs>`;
+    }
+
+    function makeNumberSVG(num, variant = 'pink') {
+      const width = numWidth(num.length);
+      const t = esc(num);
+      const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      const fillColor =
+        variant === 'blue' ? '#8fd0ff' :
+        variant === 'yellow' ? '#F6E58D' :
+        '#F8DDD5';
+
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(1.0 1)">
+            <text x="${width - 1}" y="25"
+              text-anchor="end"
+              font-family="${FONT}"
+              font-size="28"
+              font-weight="700"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="${fillColor}">${t}</text>
+          </g>
+        </svg>`;
+    }
+
+    function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 500) {
+      const canvas = measureTextWidth.canvas || (measureTextWidth.canvas = document.createElement('canvas'));
+      const ctx = canvas.getContext('2d');
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      return Math.ceil(ctx.measureText(text).width);
+    }
+
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      const measured = measureTextWidth(label, 28, FONT, 500);
+      const w = Math.max(40, measured + 0);
+      const filterId = `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      return `
+        <svg class="label-svg" viewBox="0 0 ${w} 34"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(0.9 1)">
+            <text x="4" y="25"
+              text-anchor="start"
+              font-family="${FONT}"
+              font-size="28"
+              font-weight="500"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="#ffffff">${t}</text>
+          </g>
+        </svg>`;
+    }
+
+    function makeNoteSVG(note) {
+      const t = esc(note);
+      const measured = measureTextWidth(note, 20, FONT, 500);
+      const w = Math.max(20, measured + 8);
+      const filterId = `noteShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      return `
+        <svg class="note-svg" viewBox="0 0 ${w} 26"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(0.9 1)">
+            <text x="0" y="20"
+              text-anchor="start"
+              font-family="${FONT}"
+              font-size="22"
+              font-weight="500"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="#ffffff">${t}</text>
+          </g>
+        </svg>`;
+    }
+
+    function makeLabelIcon(type) {
+      if (type === 'new') return `<span class="label-icon new" aria-label="NEW">NEW</span>`;
+      if (type === 'rullet') return `<span class="label-icon rullet" aria-label="RULLET">R</span>`;
+      if (type === 'best') return `<span class="label-icon best" aria-label="BEST">BEST</span>`;
+      if (type === 'warning') return `<span class="label-icon warning" aria-label="WARNING">!</span>`;
+      return '';
+    }
+
+    function makePoongNumber(num, numberVariant) {
+      return `
+        <span class="num-wrap">
+          <img class="poong-icon" src="${POONG_ICON}" alt="" aria-hidden="true" />
+          ${makeNumberSVG(num, numberVariant)}
+        </span>`;
+    }
+
+    function makeTable(rows, numberVariant = 'pink') {
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col class="icon-col" />
+            <col class="text-col" />
+          </colgroup>
+          <tbody>
+            ${rows.map(([num, label, note = '', iconType = '']) => `
+              <tr>
+                <td class="num">${makePoongNumber(num, numberVariant)}</td>
+                <td class="label-icon-cell">
+                  <div class="label-icon-box">${makeLabelIcon(iconType)}</div>
+                </td>
+                <td class="label-combined">
+                  <div class="label-line">
+                    <div class="label-main">${makeLabelSVG(label)}</div>
+                    ${note ? `<div class="label-note-inline">${makeNoteSVG(note)}</div>` : ''}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function makePage(title, titleClass, rows, variant, pageClass) {
+      return `
+        <div class="page ${pageClass}">
+          <div class="page-title ${titleClass}">${title}</div>
+          ${makeTable(rows, variant)}
+        </div>`;
+    }
+
+    function makeSequenceHTML() {
+      return `
+        ${makePage('시그니처', 'title-pink', PAGE_1, 'pink', 'page-1')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('운동/벌칙', 'title-blue', PAGE_2, 'blue', 'page-2')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('룰렛', 'title-yellow', PAGE_3, 'yellow', 'page-3')}
+        <div class="page-gap" aria-hidden="true"></div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(updateLoopHeight);
+    }
+  </script>
+</body>
+</html>
