@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=300, height=1080, initial-scale=1.0" />
+  <title>플렉스TV 다 인 ღ 리액션 리스트</title>
+  <style>
+
+    @font-face {
+        font-family: 'GyeonggiMillenniumTitle';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2410-3@1.0/Title_Bold.woff') format('woff');
+        font-weight: 700;
+        font-display: swap;
+    }
+
+    :root {
+      --w: 300px;
+      --h: 1080px;
+      --row-gap: 4px;
+      --num-col: 86px;
+      --svg-h: 30px;
+      --page-gap: 10px;     /*페이지사이공백*/
+      --loop-seconds: 30s;  /*속도*/
+      --sequence-height: 1000px;
+      --outline: 5;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'GyeonggiMillenniumTitle', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 4px 4px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: 10px;
+      flex: 0 0 32px;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num {
+      text-align: center;
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    .page-title {
+      width: 200px;
+      height: 36px;
+      line-height: 36px;
+      margin: 0 0 6px 0;
+      text-align: center;
+      font-family: 'GyeonggiMillenniumTitle', Arial, sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: #ffffff;
+      border-radius: 40px;
+      box-sizing: border-box;
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+    }
+
+    .title-pink {
+      background: #EF8497;
+    }
+
+    .title-orange {
+      background: #EF9573;
+    }
+
+    .title-yellow {
+      background: #FCBC72;
+    }
+
+    .title-purple {
+      background: #A181E9;
+    }
+
+    .title-blue {
+      background: #376efa;
+    }
+
+    .label-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      width: auto;
+    }
+    
+    .num-svg,
+    .label-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    .label-icon {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      object-fit: contain;
+      display: block;
+      margin-left: -4px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+    }
+
+    .label-text {
+      flex: 0 0 auto;
+      min-width: auto;
+    }
+
+
+
+    @keyframes riseLoop {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(calc(-1 * var(--sequence-height)));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_1 = [
+      ["10","와라와라왕"],
+      ["15","삐삐"],
+      ["20","오버 드라이브"],
+      ["35","애라는"],
+      ["40","만두"],
+      ["45","살구"],
+      ["55","카와이"],
+      ["62","사쿠란보"],
+      ["73","외모 체크"],
+      ["85","뾱뾱이"],
+      ["95","나만 없어 고양이"],
+      ["145","키세스"]
+    ];
+
+    const PAGE_2 = [
+      ["19","뿅망치"],
+      ["30","아봉 1분"],
+      ["32","얼음 1분"],
+      ["50","레몬즙"],
+      ["88","스키","new"],
+      ["92","역도","new"],
+      ["120","머만금"],
+      ["150","간단얼낙 (15분)"],
+      ["400","얼낙연장 (30분)"],
+      ["3000","전체 얼낙"]
+    ];
+    const PAGE_3 = [
+      ["77","연장","rullet"],
+      ["78","단축","rullet"],
+      ["770","슈퍼연장","rullet"],
+      ["780","슈퍼연장","rullet"]
+    ];
+
+    const PAGE_4 = [
+      ["110","띵뽑","new"]
+    ];
+
+    const PAGE_5 = [
+      ["1445","방셀"],
+      ["12445","방종"],
+      ["20982","휴방"]
+    ];
+
+    const FONT = 'GyeonggiMillenniumTitle, Arial, sans-serif';
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+    const ICON_NEW = 'https://i.imgur.com/a5s2iUL.png';
+    const ICON_BEST = 'https://i.imgur.com/1Z3VEON.png';
+    const ICON_Rullet = 'https://i.imgur.com/hVpuiwV.png';
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    function makeShadowFilter(id) {
+      return `
+        <defs>
+          <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="0.0" flood-color="#ffffff" flood-opacity="0"/>
+          </filter>
+        </defs>`;
+    }
+
+    /* 단가 */
+    function makeNumberSVG(num, variant = 'pink') {
+      const width = numWidth(num.length);
+      const cx = width / 2;
+      const t = esc(num);
+      const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      const fillColor =
+        variant === 'orange' ? '#EF9573' :
+        variant === 'yellow' ? '#FCBC72' :
+        variant === 'purple' ? '#A181E9' :
+        variant === 'blue' ? '#376efa' :
+        '#EF8497';
+
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(1.0 1)">
+          <text x="${cx}" y="25"
+            text-anchor="middle"
+            font-family="${FONT}"
+            font-size="30"
+            font-weight="700"
+            stroke="#000000"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            filter="url(#${filterId})"
+            fill="${fillColor}">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 텍스트 */
+    function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 500) {
+      const canvas = measureTextWidth.canvas || (measureTextWidth.canvas = document.createElement('canvas'));
+      const ctx = canvas.getContext('2d');
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      return Math.ceil(ctx.measureText(text).width);
+    }
+
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      const measured = measureTextWidth(label, 28, FONT, 500);
+      const w = Math.max(40, measured + 10); // 여백 10 정도
+      const filterId = `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      return `
+        <svg class="label-svg" viewBox="0 0 ${w} 34"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(0.9 1)">
+            <text x="4" y="25"
+              text-anchor="start"
+              font-family="${FONT}"
+              font-size="30"
+              font-weight="500"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="#ffffff">${t}</text>
+          </g>
+        </svg>`;
+    }
+    function makeLabelIcon(type) {
+      let src = '';
+      let alt = '';
+
+      if (type === 'new') {
+        src = ICON_NEW;
+        alt = 'NEW';
+      } else if (type === 'best') {
+        src = ICON_BEST;
+        alt = 'BEST';
+      } else if (type === 'rullet') {
+        src = ICON_Rullet;
+        alt = 'RULLET';
+      } else {
+        return '';
+      }
+
+      return `<img class="label-icon" src="${src}" alt="${alt}">`;
+    }
+
+    /* 테이블 */
+    function makeTable(rows, numberVariant = 'pink') {
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col />
+          </colgroup>
+          <tbody>
+            ${rows.map(([num, label, iconType = '']) => `
+              <tr>
+                <td class="num">${makeNumberSVG(num, numberVariant)}</td>
+                <td class="label">
+                  <div class="label-wrap">
+                    <div class="label-text">${makeLabelSVG(label)}</div>
+                    ${makeLabelIcon(iconType)}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function makePage(title, titleClass, rows, variant, pageClass) {
+      return `
+        <div class="page ${pageClass}">
+          <div class="page-title ${titleClass}">${title}</div>
+          ${makeTable(rows, variant)}
+        </div>`;
+    }
+
+    function makeSequenceHTML() { /*페이지 정리*/
+      return `
+        ${makePage('시그/캠리', 'title-pink', PAGE_1, 'pink', 'page-1')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('운동/벌칙', 'title-orange', PAGE_2, 'orange', 'page-2')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('연장/단축', 'title-yellow', PAGE_3, 'yellow', 'page-3')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('게임', 'title-blue', PAGE_4, 'blue', 'page-4')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('선물', 'title-purple', PAGE_5, 'purple', 'page-5')}
+        <div class="page-gap" aria-hidden="true"></div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
