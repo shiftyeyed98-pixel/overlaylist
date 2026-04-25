@@ -236,13 +236,12 @@
         2px  2px 0 #000;
     }
 
-
     @keyframes riseLoop {
       from {
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
       }
       to {
-        transform: translateY(calc(-1 * var(--sequence-height)));
+        transform: translate3d(0, calc(-1 * var(--sequence-height)), 0);
       }
     }
   </style>
