@@ -145,7 +145,7 @@
     }
 
     .title-gray {
-      background: #494848;
+      background: #787878;
       border-color: #262525;
     }
 
@@ -390,7 +390,7 @@
       const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
 
       const fillColor =
-        variant === 'gray' ? '#494848' :
+        variant === 'gray' ? '#787878' :
         variant === 'pink' ? '#FAB0C1' :
         variant === 'orange' ? '#EF9573' :
         variant === 'yellow' ? '#FEFA94' :
@@ -453,7 +453,7 @@
     /* 각주 */
     function makeFootnoteSVG(footnote) {
       const t = esc(footnote);
-      const measured = measureTextWidth(footnote, 22, FONT, 500);
+      const measured = measureTextWidth(footnote, 20, FONT, 500);
       const w = Math.max(40, measured + 10);
       const filterId = `footnoteShadow-${Math.random().toString(36).slice(2, 9)}`;
 
