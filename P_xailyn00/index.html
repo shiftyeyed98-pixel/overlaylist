@@ -278,7 +278,7 @@
   </div>
 
   <script>
-  // 프로필
+  /* 프로필
     const PAGE_1 = [
       ["닉네임 :","가화"],
       ["나이 :","25살"],
@@ -290,8 +290,9 @@
       ["방송시간 :","밤9시~"],
       ["휴방 :","금,토"]
     ];
+  */
 
-  // 미션판  
+  /* 미션판  
     const PAGE_2 = [
       ["18","욕"],
       ["230","라이브 1절"],
@@ -303,8 +304,8 @@
       ["1415","식사싫어"],
       ["12434","방종권"]
     ];
-
-  // 운동
+  */
+  /* 운동
     const PAGE_3 = [
       ["20","팔벌뛰 1set"],
       ["22","벽찍","","(Max 100)"],
@@ -320,8 +321,8 @@
       ["111","뿌에","","(30초, Max 5)"],
       ["150","패딩","","(5분)"],
     ];
-
-  // 라이브
+  */
+  /* 라이브
     const PAGE_4 = [
       ["김필","다시 사랑한다면"],
       ["나비","잘 된 일이야"],
@@ -363,7 +364,7 @@
       ["","산다는건"],
       ["","사랑의 배터리"]
     ];
-
+   */
   // 시그/리액션
     const PAGE_5 = [
       ["39","이멀전시"],
@@ -374,7 +375,7 @@
       ["47","만두송"],
       ["48","삐삐야"],
       ["49","키세스"],
-      ["59","이안챌린지","ICON_NEW"],
+      ["59","이안챌린지","NEW"],
       ["60","구찌"],
       ["61","슈퍼그럼요"],
       ["64","마티니"],
@@ -382,7 +383,7 @@
       ["72","아이돌"],
       ["73","배럴업"],
       ["74","플래쉬"],
-      ["75","드라마","ICON_NEW"],
+      ["75","드라마","NEW"],
       ["76","러브인스페이스"],
       ["77","투핫"],
       ["78","헬로스트레인저"],
@@ -423,6 +424,7 @@
       ["114","댓츠노노"],
       ["115","뛰어"],
       ["116","이루리"],
+      ["117","간바레 센빠이"],
       ["",""],
       ["120","위아래",""],
       ["121","롤린"],
@@ -443,11 +445,11 @@
       ["",""],
       ["200","경찰춤"],
       ["201","오도방구"],
-      ["282","랜덤시그","ICON_Rullet",""],
+      ["282","랜덤시그","rullet",""],
       ["333","섹댄오마카세"]
     ];
 
-  // 열혈시그
+   /* 열혈시그
     const PAGE_6 = [
       ["227","우성이"],
       ["228","우성이"],
@@ -455,25 +457,26 @@
       ["999","리어카"],
       ["1111","리어카"]
     ];
+   */ 
 
     const FONT = 'GmarketSansBold, Arial, sans-serif';
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
-    const ICON_PUNG_P1 = 'https://i.imgur.com/qGz1W0y.png'; //프로필 (회색)
-    const ICON_PUNG_P2 = 'https://i.imgur.com/D0ldyfG.png'; //미션판 (주황)
-    const ICON_PUNG_P3 = 'https://i.imgur.com/12lhyTv.png'; //운동 (노랑)
-    const ICON_PUNG_P4 = 'https://i.imgur.com/3i8eoNA.png'; //라이브 보라
+//    const ICON_PUNG_P1 = 'https://i.imgur.com/qGz1W0y.png'; //프로필 (회색)
+//    const ICON_PUNG_P2 = 'https://i.imgur.com/D0ldyfG.png'; //미션판 (주황)
+//    const ICON_PUNG_P3 = 'https://i.imgur.com/12lhyTv.png'; //운동 (노랑)
+//    const ICON_PUNG_P4 = 'https://i.imgur.com/3i8eoNA.png'; //라이브 보라
     const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //시그리액션(빨강)
-    const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //열혈시그
+//    const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //열혈시그
 
     const PAGE_ICON_MAP = {
-      'page-1': ICON_PUNG_P1,
-      'page-2': ICON_PUNG_P2,
-      'page-3': ICON_PUNG_P3,
-      'page-4': ICON_PUNG_P4,
-      'page-5': ICON_PUNG_P5,
-      'page-6': ICON_PUNG_P6  // 미사용
+//      'page-1': ICON_PUNG_P1,
+//      'page-2': ICON_PUNG_P2,
+//      'page-3': ICON_PUNG_P3,
+//      'page-4': ICON_PUNG_P4,
+      'page-5': ICON_PUNG_P5
+//      'page-6': ICON_PUNG_P6
     };
 
     const ICON_NEW = 'https://i.imgur.com/a5s2iUL.png';
@@ -678,19 +681,9 @@
 
     function makeSequenceHTML() { /*페이지 정리*/
       return `
-        ${makePage('♥ 프로필 ♥', 'title-gray', PAGE_1, 'gray', 'page-1')}
-        <div class="page-gap" aria-hidden="true"></div>
-        ${makePage('♥ 미션판 ♥', 'title-orange', PAGE_2, 'orange', 'page-2')}
-        <div class="page-gap" aria-hidden="true"></div>
-        ${makePage('🏋️ 운동 🏋️', 'title-yellow', PAGE_3, 'yellow', 'page-3')}
-        <div class="page-gap" aria-hidden="true"></div>
-        ${makePage('🎤 라이브 🎤', 'title-purple', PAGE_4, 'purple', 'page-4')}
-        <div class="page-gap" aria-hidden="true"></div>
         ${makePage('♥ 시그/리액션 ♥', 'title-pink', PAGE_5, 'pink', 'page-5')}
         <div class="page-gap" aria-hidden="true"></div>
-        ${makePage('♥ 열혈시그 ♥', 'title-blue', PAGE_6, 'blue', 'page-6')}
-        <div class="page-gap" aria-hidden="true"></div>
-      `;
+        `;
     }
 
     const sequenceA = document.getElementById('sequenceA');
