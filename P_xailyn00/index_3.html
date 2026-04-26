@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=300, height=1080, initial-scale=1.0" />
+  <title>OBS 오버레이 - 리액션 리스트 2페이지 무한상승 Rev3</title>
+  <style>
+    @font-face {
+      font-family: 'GmarketSansBold';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --w: 300px;
+      --h: 1080px;
+      --row-gap: 6px;
+      --num-col: 92px;
+      --emoji-col: 28px;
+      --svg-h: 30px;
+      --page-gap: 36px;     /*페이지사이공백*/
+      --loop-seconds: 24s;  /*속도*/
+      --emoji-color: #ff3d73;
+      --sequence-height: 1000px;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'GmarketSansBold', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 10px 8px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--page-gap);
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+    col.emoji-col { width: var(--emoji-col); }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num,
+    td.emoji {
+      text-align: center;
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    .num-svg,
+    .label-svg {
+      display: block;
+      width: 100%;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    .emoji {
+      font-size: 24px;
+      color: var(--emoji-color);
+      font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    }
+
+    @keyframes riseLoop {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(calc(-1 * var(--sequence-height)));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_1 = [
+      ["39","💟","이멀전시"],
+      ["40","💟","뾱뾱이"],
+      ["44","💟","살구송"],
+      ["45","💟","부비부"],
+      ["46","💟","U you"],
+      ["47","💟","만두송"],
+      ["48","💟","삐삐야"],
+      ["49","💟","키세스"],
+      ["60","💟","구찌"],
+      ["61","💟","슈퍼그럼요"],
+      ["64","💟","마티니"],
+      ["65","💟","바람피면D..."],
+      ["72","💟","아이돌"],
+      ["73","💟","배럴업"],
+      ["74","💟","플래쉬"],
+      ["76","💟","러브인스페이스"],
+      ["77","💟","투핫"],
+      ["78","💟","헬로스트레인저"],
+      ["79","💟","왜요왜요"]
+    ];
+    const PAGE_2 = [
+      ["80","💟","파랑새"],
+      ["81","💟","Baby boy"],
+      ["82","💟","체온"],
+      ["83","💟","반해"],
+      ["84","💟","Dance on"],
+      ["86","💟","위플래쉬"],
+      ["87","💟","라이트온"],
+      ["88","💟","판도라"],
+      ["89","💟","네모네모"],
+      ["91","💟","뷰티풀몬스터"],
+      ["92","💟","엘리베이터"],
+      ["93","💟","퀸덤"],
+      ["94","💟","홈스윗홈"],
+      ["95","💟","걸스네버다이"],
+      ["96","💟","피에스타"],
+      ["97","💟","카리나업"],
+      ["98","💟","마지막처럼"],
+      ["99","💟","빛을따라서"]
+    ];
+    const PAGE_3 = [
+      ["100","💟","찌찌뱅"],
+      ["101","💟","라라리라라"],
+      ["102","💟","도깨비불"],
+      ["103","💟","그래비티"],
+      ["104","💟","캉캉캉"],
+      ["105","💟","나니가스키"],
+      ["106","💟","할것"],
+      ["107","💟","두번째지구"],
+      ["108","💟","불도저"],
+      ["109","💟","수퍼레이디"],
+      ["110","💟","다시만난세계"],
+      ["112","💟","뱅뱅"],
+      ["113","💟","런던"],
+      ["114","💟","댓츠노노"],
+      ["115","💟","뛰어"],
+      ["116","💟","이루리"]      
+    ];
+    const PAGE_4 = [
+      ["120","💟","위아래"],
+      ["121","💟","롤린"],
+      ["122","💟","솜사탕"],
+      ["123","💟","토끼춤"],
+      ["124","💟","꿈빛파티시엘"],
+      ["125","💟","아로아로"],
+      ["127","💟","묵찌빠"],
+      ["128","💟","비유어캣"],
+      ["129","💟","제로투1분(M10)"],
+      ["130","💟","제로콕"],
+      ["131","💟","홀덥"],
+      ["132","💟","우유"],
+      ["133","💟","이쿠욧"],
+      ["135","💟","빠라뉴"],
+      ["136","💟","Lick my neck"],
+      ["137","💟","터미널"],
+    ];
+    const PAGE_5 = [
+      ["200","💟","경찰춤"],
+      ["201","💟","오도방구"],
+      ["282","💟","랜덤시그"],
+      ["333","💟","섹댄오마카세"]
+    ];
+
+    const FONT = 'GmarketSansBold, Arial, sans-serif';
+    const STROKE = 5;
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    function makeNumberSVG(num) {
+      const width = numWidth(num.length);
+      const cx = width / 2;
+      const t = esc(num);
+      const gid = `grad-${t}-${Math.random().toString(36).slice(2, 9)}`;
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          <defs>
+            <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#cdb7ff"/>
+              <stop offset="28%" stop-color="#b18cff"/>
+              <stop offset="48%" stop-color="#a770ff"/>
+              <stop offset="72%" stop-color="#d96dbe"/>
+              <stop offset="100%" stop-color="#ff7aa8"/>
+            </linearGradient>
+          </defs>
+          <text x="${cx}" y="25"
+            text-anchor="middle"
+            font-family="${FONT}"
+            font-size="25"
+            font-weight="700"
+            stroke="#ffffff"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            fill="url(#${gid})">${t}</text>
+        </svg>`;
+    }
+
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      return `
+        <svg class="label-svg" viewBox="0 0 172 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img" preserveAspectRatio="xMinYMid meet">
+          <text x="4" y="25"
+            text-anchor="start"
+            font-family="${FONT}"
+            font-size="24"
+            font-weight="700"
+            stroke="#ffffff"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            fill="#000000">${t}</text>
+        </svg>`;
+    }
+
+    function makeTable(rows) {
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col class="emoji-col" />
+            <col />
+          </colgroup>
+          <tbody>
+            ${rows.map(([num, emoji, label]) => `
+              <tr>
+                <td class="num">${makeNumberSVG(num)}</td>
+                <td class="emoji">${emoji}</td>
+                <td class="label">${makeLabelSVG(label)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function makeSequenceHTML() { /*페이지 정리*/
+      return `
+        <div class="page page-1">${makeTable(PAGE_1)}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+        <div class="page page-2">${makeTable(PAGE_2)}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+        <div class="page page-3">${makeTable(PAGE_3)}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+        <div class="page page-4">${makeTable(PAGE_4)}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+        <div class="page page-5">${makeTable(PAGE_5)}</div>
+        <div class="page-gap" aria-hidden="true"></div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
