@@ -22,11 +22,21 @@
       --num-col: 124px;
       --num-icon-size: 28px;
       --svg-h: 30px;
-      --page-gap: 10px;     /*페이지사이공백*/
-      --loop-seconds: 70s;  /*속도*/
+      --page-gap: 10px;
+      --loop-seconds: 70s;
       --sequence-height: 1000px;
       --outline: 5;
+
+      /* ===== 고정 타이틀 영역 ===== */
+      --fixed-title-h: 36px;
+      --fixed-title-mb: 2px;
+
+      /* ===== 하단 고정바 영역 ===== */
+      --fixed-bottom-h: 20px;
+      --fixed-bottom-bottom: 4px;
+      --fixed-bottom-mt: 0px;
     }
+
 
     html, body {
       margin: 0;
@@ -49,16 +59,37 @@
       width: var(--w);
       height: var(--h);
       box-sizing: border-box;
-      padding: 4px 4px;
+      padding: 0;
       overflow: hidden;
       background: transparent !important;
     }
 
+    .fixed-title-wrap {
+      position: absolute;
+      left: 4px;
+      top: 4px;
+      width: calc(100% - 8px);
+      height: var(--fixed-title-h);
+      z-index: 10;
+      pointer-events: none;
+      background: transparent;
+    }
+    
     .viewport {
-      position: relative;
+      position: absolute;
+      left: 0;
+      top: calc(var(--fixed-title-h) + var(--fixed-title-mb));
       width: 100%;
-      height: 100%;
+      height: calc(
+        100%
+        - var(--fixed-title-h)
+        - var(--fixed-title-mb)
+        - var(--fixed-bottom-h)
+        - var(--fixed-bottom-bottom)
+        - var(--fixed-bottom-mt)
+      );
       overflow: hidden;
+      z-index: 1;
     }
 
     .track {
@@ -224,14 +255,12 @@
       min-width: auto;
     }
 
-
     .fixed-bottom-label {
       position: absolute;
       left: 4px;
-      right: 4px;
-      bottom: 4px;
+      bottom: var(--fixed-bottom-bottom);
       width: 240px;
-      height: 20px;
+      height: var(--fixed-bottom-h);
 
       display: flex;
       align-items: center;
@@ -268,6 +297,12 @@
 </head>
 <body>
   <div class="overlay">
+    <!-- 타이틀은 스크롤 트랙 밖에 배치해서 항상 상단에 고정 -->
+    <div class="fixed-title-wrap">
+      <div class="page-title title-pink">BJ가화ღ</div>
+    </div>
+
+    <!-- 숫자 / 텍스트 / 아이콘만 이 영역 안에서 무한 순환 -->
     <div class="viewport">
       <div class="track" id="track">
         <div class="sequence" id="sequenceA"></div>
