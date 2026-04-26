@@ -406,18 +406,19 @@
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
-    const ICON_PUNG_P1 = 'https://i.imgur.com/nZ77v65.png';
-    const ICON_PUNG_P2 = 'https://i.imgur.com/FK4kOFt.png';
-    const ICON_PUNG_P3 = 'https://i.imgur.com/5ka8akK.png';
-    const ICON_PUNG_P4 = 'https://i.imgur.com/evNN4r0.png';
-    const ICON_PUNG_P6 = 'https://i.imgur.com/ESlYkQu.png';
+    const ICON_PUNG_P1 = 'https://i.imgur.com/fa2h0cj.png'; //프로필 (회색)
+    const ICON_PUNG_P2 = 'https://i.imgur.com/7mdKmhK.png'; //미션판 (주황)
+    const ICON_PUNG_P3 = 'https://i.imgur.com/5ka8akK.png'; //방셀 (노랑)
+    const ICON_PUNG_P4 = 'https://i.imgur.com/FK4kOFt.png'; //역팬 보라(미사용)
+    const ICON_PUNG_P5 = 'https://i.imgur.com/evNN4r0.png'; //시그리액션(빨강)
+    const ICON_PUNG_P6 = 'https://i.imgur.com/ESlYkQu.png'; //열혈시그 현재 미사용
 
     const PAGE_ICON_MAP = {
       'page-1': ICON_PUNG_P1,
       'page-2': ICON_PUNG_P2,
       'page-3': ICON_PUNG_P3,
       'page-4': ICON_PUNG_P4,
-      'page-5': ICON_PUNG_P4, // 현재 소스에서 시그/리액션 페이지가 page-5라 같은 이미지 적용
+      'page-5': ICON_PUNG_P5, // 현재 소스에서 시그/리액션 페이지가 page-5라 같은 이미지 적용
       'page-6': ICON_PUNG_P6
     };
 
@@ -465,8 +466,8 @@
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           ${makeShadowFilter(filterId)}
-          <g transform="scale(0.9 1)">
-          <text x="14" y="25"
+          <g transform="scale(1.0 1)">
+          <text x="4" y="25"
             text-anchor="start"
             font-family="${FONT}"
             font-size="28"
@@ -500,8 +501,8 @@
             aria-label="${t}" role="img"
             preserveAspectRatio="xMinYMid meet">
           ${makeShadowFilter(filterId)}
-          <g transform="scale(1.0 1)">
-            <text x="14" y="25"
+          <g transform="scale(0.9 1)">
+            <text x="0" y="25"
               text-anchor="start"
               font-family="${FONT}"
               font-size="28"
@@ -529,7 +530,7 @@
             preserveAspectRatio="xMinYMid meet">
           ${makeShadowFilter(filterId)}
           <g transform="scale(0.9 1)">
-            <text x="146" y="10"
+            <text x="134" y="10"
               text-anchor="start"
               font-family="${FONT}"
               font-size="20"

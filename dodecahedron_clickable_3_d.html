@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정십이면체 3D 클릭 예제</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+      font-family: Arial, sans-serif;
+      user-select: none;
+    }
+
+    #app {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #222 0%, #070707 70%);
+    }
+
+    #info {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      z-index: 10;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.45);
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.5;
+      pointer-events: none;
+    }
+
+    #selected {
+      color: #ffd86b;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="info">
+    마우스 드래그: 회전<br />
+    면 클릭: 선택 / 눌림 효과<br />
+    선택된 면: <span id="selected">없음</span>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js';
+
+    const app = document.getElementById('app');
+    const selectedEl = document.getElementById('selected');
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+    camera.position.set(0, 0.6, 7);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    app.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.rotateSpeed = 0.7;
+    controls.enablePan = false;
+    controls.minDistance = 4;
+    controls.maxDistance = 10;
+
+    const root = new THREE.Group();
+    scene.add(root);
+
+    const light1 = new THREE.DirectionalLight(0xffffff, 2.5);
+    light1.position.set(4, 5, 7);
+    scene.add(light1);
+
+    const light2 = new THREE.DirectionalLight(0xffcc77, 1.2);
+    light2.position.set(-5, -2, 3);
+    scene.add(light2);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+
+    // 정십이면체 기본 좌표를 가져온 뒤, 각 면을 독립 Mesh로 다시 구성한다.
+    // 이렇게 해야 클릭한 면만 안쪽으로 눌리는 효과를 줄 수 있다.
+    const radius = 2.2;
+    const baseGeometry = new THREE.DodecahedronGeometry(radius, 0).toNonIndexed();
+    const pos = baseGeometry.attributes.position;
+
+    const faceMeshes = [];
+    const faceLabels = [];
+    const faceCount = pos.count / 3;
+
+    const baseMaterial = new THREE.MeshStandardMaterial({
+      color: 0xd59a2f,
+      roughness: 0.38,
+      metalness: 0.22,
+      side: THREE.DoubleSide
+    });
+
+    const selectedMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffd86b,
+      roughness: 0.3,
+      metalness: 0.28,
+      side: THREE.DoubleSide
+    });
+
+    function makeNumberTexture(num) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
+      ctx.beginPath();
+      ctx.arc(128, 128, 72, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.stroke();
+
+      ctx.font = 'bold 104px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.lineJoin = 'round';
+
+      ctx.lineWidth = 12;
+      ctx.strokeStyle = '#000000';
+      ctx.strokeText(String(num), 128, 134);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(String(num), 128, 134);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+      return texture;
+    }
+
+    function createFaceMesh(index, a, b, c) {
+      const faceGeometry = new THREE.BufferGeometry();
+      const vertices = new Float32Array([
+        a.x, a.y, a.z,
+        b.x, b.y, b.z,
+        c.x, c.y, c.z
+      ]);
+      faceGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+      faceGeometry.computeVertexNormals();
+
+      const center = new THREE.Vector3()
+        .add(a)
+        .add(b)
+        .add(c)
+        .multiplyScalar(1 / 3);
+
+      const normal = center.clone().normalize();
+
+      const mesh = new THREE.Mesh(faceGeometry, baseMaterial.clone());
+      mesh.userData = {
+        number: index + 1,
+        normal,
+        basePosition: new THREE.Vector3(0, 0, 0),
+        pressed: false,
+        pressAmount: 0,
+        targetPressAmount: 0,
+        originalColor: baseMaterial.color.clone()
+      };
+
+      return { mesh, center, normal };
+    }
+
+    function createLabel(num, center, normal) {
+      const material = new THREE.SpriteMaterial({
+        map: makeNumberTexture(num),
+        transparent: true,
+        depthTest: true,
+        depthWrite: false
+      });
+
+      const sprite = new THREE.Sprite(material);
+      sprite.position.copy(center.clone().add(normal.clone().multiplyScalar(0.045)));
+      sprite.scale.set(0.75, 0.75, 0.75);
+      sprite.userData = {
+        number: num,
+        normal,
+        basePosition: sprite.position.clone(),
+        pressAmount: 0,
+        targetPressAmount: 0
+      };
+
+      return sprite;
+    }
+
+    // DodecahedronGeometry(detail 0)는 삼각형 36개로 구성된다.
+    // 정십이면체의 오각형 면 12개가 각각 삼각형 3개로 쪼개져 있으므로,
+    // 여기서는 삼각형 3개 단위로 한 면 그룹처럼 클릭 처리한다.
+    const faceGroups = [];
+    for (let i = 0; i < faceCount; i += 3) {
+      const groupNumber = Math.floor(i / 3) + 1;
+      const faceGroup = new THREE.Group();
+      faceGroup.userData = {
+        number: groupNumber,
+        normal: new THREE.Vector3(),
+        pressed: false,
+        pressAmount: 0,
+        targetPressAmount: 0
+      };
+
+      const centers = [];
+      const normals = [];
+      const meshes = [];
+
+      for (let j = 0; j < 3; j++) {
+        const triIndex = i + j;
+        const a = new THREE.Vector3().fromBufferAttribute(pos, triIndex * 3 + 0);
+        const b = new THREE.Vector3().fromBufferAttribute(pos, triIndex * 3 + 1);
+        const c = new THREE.Vector3().fromBufferAttribute(pos, triIndex * 3 + 2);
+        const { mesh, center, normal } = createFaceMesh(groupNumber - 1, a, b, c);
+
+        mesh.userData.faceGroup = faceGroup;
+        faceGroup.add(mesh);
+        faceMeshes.push(mesh);
+        centers.push(center);
+        normals.push(normal);
+        meshes.push(mesh);
+      }
+
+      const groupCenter = centers.reduce((acc, v) => acc.add(v), new THREE.Vector3()).multiplyScalar(1 / centers.length);
+      const groupNormal = normals.reduce((acc, v) => acc.add(v), new THREE.Vector3()).normalize();
+      faceGroup.userData.normal.copy(groupNormal);
+      faceGroup.userData.basePosition = new THREE.Vector3(0, 0, 0);
+
+      const label = createLabel(groupNumber, groupCenter, groupNormal);
+      label.userData.faceGroup = faceGroup;
+      faceGroup.add(label);
+      faceLabels.push(label);
+
+      faceGroups.push(faceGroup);
+      root.add(faceGroup);
+    }
+
+    const edgeGeometry = new THREE.EdgesGeometry(new THREE.DodecahedronGeometry(radius * 1.002, 0), 1);
+    const edgeMaterial = new THREE.LineBasicMaterial({
+      color: 0x1b1205,
+      transparent: true,
+      opacity: 0.75
+    });
+    const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
+    root.add(edges);
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let selectedGroup = null;
+    let isPointerDown = false;
+    let pointerDownPos = new THREE.Vector2();
+
+    function setPointerFromEvent(event) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    }
+
+    function clearSelection() {
+      for (const group of faceGroups) {
+        group.userData.targetPressAmount = 0;
+        group.userData.pressed = false;
+        group.children.forEach(child => {
+          if (child.isMesh) child.material.color.copy(baseMaterial.color);
+        });
+      }
+      selectedGroup = null;
+      selectedEl.textContent = '없음';
+    }
+
+    function selectFace(group) {
+      clearSelection();
+      selectedGroup = group;
+      selectedGroup.userData.pressed = true;
+      selectedGroup.userData.targetPressAmount = 0.28;
+      selectedEl.textContent = `${group.userData.number}번 면`;
+
+      group.children.forEach(child => {
+        if (child.isMesh) child.material.color.copy(selectedMaterial.color);
+      });
+    }
+
+    renderer.domElement.addEventListener('pointerdown', (event) => {
+      isPointerDown = true;
+      pointerDownPos.set(event.clientX, event.clientY);
+    });
+
+    renderer.domElement.addEventListener('pointerup', (event) => {
+      if (!isPointerDown) return;
+      isPointerDown = false;
+
+      const dx = event.clientX - pointerDownPos.x;
+      const dy = event.clientY - pointerDownPos.y;
+      const moved = Math.sqrt(dx * dx + dy * dy);
+
+      // 드래그 회전과 클릭을 구분한다.
+      if (moved > 5) return;
+
+      setPointerFromEvent(event);
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(faceMeshes, false);
+
+      if (!hits.length) {
+        clearSelection();
+        controls.enabled = true;
+        return;
+      }
+
+      const hitMesh = hits[0].object;
+      const group = hitMesh.userData.faceGroup;
+      selectFace(group);
+
+      // 클릭 시에는 회전 조작을 잠시 정지한다.
+      controls.enabled = false;
+      window.setTimeout(() => {
+        controls.enabled = true;
+      }, 450);
+    });
+
+    renderer.domElement.addEventListener('pointerleave', () => {
+      isPointerDown = false;
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      controls.update();
+
+      for (const group of faceGroups) {
+        const data = group.userData;
+        data.pressAmount += (data.targetPressAmount - data.pressAmount) * 0.18;
+
+        const inward = data.normal.clone().multiplyScalar(-data.pressAmount);
+        group.position.copy(data.basePosition).add(inward);
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    });
+  </script>
+</body>
+</html>
