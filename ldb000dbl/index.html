@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=300, height=1080, initial-scale=1.0" />
-  <title>OBS 오버레이 - 리액션 리스트 2페이지 무한상승 Rev3</title>
+  <title>플렉스티비 유리ring 오버레이 리액션 리스트</title>
   <style>
     @font-face {
       font-family: 'GmarketSansBold';
@@ -25,6 +25,11 @@
       --loop-seconds: 24s;
       --emoji-color: #ff3d73;
       --sequence-height: 1000px;
+
+      /* ===== 하단 고정바 영역 ===== */
+      --fixed-bottom-h: 20px;
+      --fixed-bottom-bottom: 4px;
+      --fixed-bottom-mt: 0px;
     }
 
     html, body {
@@ -56,8 +61,14 @@
     .viewport {
       position: relative;
       width: 100%;
-      height: 100%;
+      height: calc(
+        100%
+        - var(--fixed-bottom-h)
+        - var(--fixed-bottom-bottom)
+        - var(--fixed-bottom-mt)
+      );
       overflow: hidden;
+      z-index: 1;
     }
 
     .track {
@@ -122,12 +133,44 @@
       font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     }
 
+
+    .fixed-bottom-label {
+      position: absolute;
+      left: 4px;
+      bottom: var(--fixed-bottom-bottom);
+      width: 240px;
+      height: var(--fixed-bottom-h);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: 'GmarketSansBold', Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 100;
+      color: #ffffff;
+
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid #ffffff;
+      border-radius: 10px;
+
+      box-sizing: border-box;
+      z-index: 50;
+      pointer-events: none;
+
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+    }
+
     @keyframes riseLoop {
       from {
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
       }
       to {
-        transform: translateY(calc(-1 * var(--sequence-height)));
+        transform: translate3d(0, calc(-1 * var(--sequence-height)), 0);
       }
     }
   </style>
@@ -140,6 +183,7 @@
         <div class="sequence" id="sequenceB" aria-hidden="true"></div>
       </div>
     </div>
+    <div class="fixed-bottom-label">made by 시프티♻️</div>
   </div>
 
   <script>
@@ -170,6 +214,7 @@
       ["105","⭕","솜사탕"],
       ["108","⭕","우마우마"],
       ["113","⭕","이꾸욧"],
+      ["120","⭕","캐치캐치"],
       ["135","⭕","자기야화풀어"],
       ["150","⭕","제로투"],
       ["155","⭕","버터컵"],
