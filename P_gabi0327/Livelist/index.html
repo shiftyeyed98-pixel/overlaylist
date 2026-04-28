@@ -379,7 +379,7 @@
   - songs : 해당 가수의 노래 제목/단가 목록
   - 한 가수의 songs가 모두 우→좌로 지나간 뒤 다음 artist 세트로 하→상 전환
 */
-const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxb4qqd7ro_-B1jDDhwSx_gCKpUiHHZUqeW0Vnpjet0XQ5EiplXBBdtub3yPa4RrQMH/exec';
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzG5ahn45KGjahhi14w2J6OZk0T1zb_fmNnmzxEiwise83QfLIxT_ZjNe7_YbY_Hcf7/exec';
 
 let SONG_SETS = [];
 
@@ -464,33 +464,30 @@ function startTrackAnimation(setEl, onDone) {
   const track = setEl._track;
   const songWindow = setEl._songWindow;
 
+requestAnimationFrame(() => {
+  const trackW = Math.ceil(track.scrollWidth);
+  const windowW = Math.ceil(songWindow.clientWidth);
+
+  const startX = windowW + 24;
+  const endX = -trackW - 24;
+
   /*
-    모든 세트가 같은 시간 동안 재생되도록 고정 duration 사용
-    단, 이동 거리는 세트별 trackW에 따라 달라지므로 실제 속도는 자동으로 달라짐
+    목록 길이에 따라 재생시간 자동 조정
+    - 노래가 적으면 최소 14초
+    - 노래가 많으면 최대 45초까지 증가
+    - 85는 스크롤 속도 기준값이며, 숫자가 작을수록 느려짐
   */
-  const fixedDuration = getCssNumber('--song-duration-sec', 14);
+  const minDuration = 14;
+  const maxDuration = 45;
+  const pxPerSecond = 85;
+  const dynamicDuration = Math.min(
+    maxDuration,
+    Math.max(minDuration, trackW / pxPerSecond)
+  );
 
-  requestAnimationFrame(() => {
-    const trackW = Math.ceil(track.scrollWidth);
-    const windowW = Math.ceil(songWindow.clientWidth);
-
-    /*
-      시작점:
-      노래 표시창의 오른쪽 바깥.
-      모든 세트가 같은 x 위치에서 시작함.
-    */
-    const startX = windowW + 24;
-
-    /*
-      끝점:
-      트랙 전체가 왼쪽 밖으로 완전히 빠지는 위치.
-      트랙 길이에 따라 달라짐.
-    */
-    const endX = -trackW - 24;
-
-    track.style.setProperty('--start-x', `${startX}px`);
-    track.style.setProperty('--end-x', `${endX}px`);
-    track.style.setProperty('--duration', `${fixedDuration}s`);
+  track.style.setProperty('--start-x', `${startX}px`);
+  track.style.setProperty('--end-x', `${endX}px`);
+  track.style.setProperty('--duration', `${dynamicDuration}s`);
 
     track.classList.remove('is-running');
     void track.offsetWidth;
