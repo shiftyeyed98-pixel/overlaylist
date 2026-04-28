@@ -10,7 +10,7 @@
     노래 리스트 스크롤 오버레이
     - 화면 크기: 1080 x 50
     - 배경: 투명
-    - 구조: 가수명 + 노래제목 가로 스크롤
+    - 구조: 가수명 + 단가 + 노래제목 가로 스크롤
     - 전환: 한 가수의 노래 제목이 모두 지나가면 다음 세트가 상→하 전환
   */
 
@@ -285,9 +285,25 @@
        0 0 8px rgba(255, 255, 255, 0.45);
   }
 
+  .song-price-wrap {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin-right: 10px;
+  }
+
+  .song-price-icon {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    margin-right: 4px;
+    object-fit: contain;
+    vertical-align: middle;
+  }
+
   .song-price {
     display: inline-block;
-    margin-left: 10px;
     padding: 2px 8px 1px;
     border-radius: 999px;
     border: 2px solid rgba(255, 255, 255, 0.85);
@@ -360,7 +376,7 @@
 /*
   DATA 수정 영역
   - artist: 가수명
-  - songs : 해당 가수의 노래 제목 목록
+  - songs : 해당 가수의 노래 제목/단가 목록
   - 한 가수의 songs가 모두 우→좌로 지나간 뒤 다음 artist 세트로 하→상 전환
 */
 const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzTF_7tEtNUfpTNomTurwo771w4kkubZo353-VbmODlCCQDv62YQ9mXvvOcxGcsSQQajg/exec';
@@ -408,17 +424,27 @@ function createSetElement(data) {
     titleSpan.className = 'song-title';
     titleSpan.textContent = typeof song === 'string' ? song : song.title;
 
-    const priceSpan = document.createElement('span');
-    priceSpan.className = 'song-price';
-
     const price = typeof song === 'string' ? '' : song.price;
-    priceSpan.textContent = price ? `${price}` : '';
-
-    item.appendChild(titleSpan);
 
     if (price) {
-      item.appendChild(priceSpan);
+      const priceWrap = document.createElement('span');
+      priceWrap.className = 'song-price-wrap';
+
+      const priceIcon = document.createElement('img');
+      priceIcon.className = 'song-price-icon';
+      priceIcon.src = 'https://i.imgur.com/2PvVhKn.png';
+      priceIcon.alt = '';
+
+      const priceSpan = document.createElement('span');
+      priceSpan.className = 'song-price';
+      priceSpan.textContent = `${price}`;
+
+      priceWrap.appendChild(priceIcon);
+      priceWrap.appendChild(priceSpan);
+      item.appendChild(priceWrap);
     }
+
+    item.appendChild(titleSpan);
 
     songTrack.appendChild(item);
   });
@@ -438,33 +464,30 @@ function startTrackAnimation(setEl, onDone) {
   const track = setEl._track;
   const songWindow = setEl._songWindow;
 
+requestAnimationFrame(() => {
+  const trackW = Math.ceil(track.scrollWidth);
+  const windowW = Math.ceil(songWindow.clientWidth);
+
+  const startX = windowW + 24;
+  const endX = -trackW - 24;
+
   /*
-    모든 세트가 같은 시간 동안 재생되도록 고정 duration 사용
-    단, 이동 거리는 세트별 trackW에 따라 달라지므로 실제 속도는 자동으로 달라짐
+    목록 길이에 따라 재생시간 자동 조정
+    - 노래가 적으면 최소 14초
+    - 노래가 많으면 최대 45초까지 증가
+    - 85는 스크롤 속도 기준값이며, 숫자가 작을수록 느려짐
   */
-  const fixedDuration = getCssNumber('--song-duration-sec', 14);
+  const minDuration = 14;
+  const maxDuration = 45;
+  const pxPerSecond = 85;
+  const dynamicDuration = Math.min(
+    maxDuration,
+    Math.max(minDuration, trackW / pxPerSecond)
+  );
 
-  requestAnimationFrame(() => {
-    const trackW = Math.ceil(track.scrollWidth);
-    const windowW = Math.ceil(songWindow.clientWidth);
-
-    /*
-      시작점:
-      노래 표시창의 오른쪽 바깥.
-      모든 세트가 같은 x 위치에서 시작함.
-    */
-    const startX = windowW + 24;
-
-    /*
-      끝점:
-      트랙 전체가 왼쪽 밖으로 완전히 빠지는 위치.
-      트랙 길이에 따라 달라짐.
-    */
-    const endX = -trackW - 24;
-
-    track.style.setProperty('--start-x', `${startX}px`);
-    track.style.setProperty('--end-x', `${endX}px`);
-    track.style.setProperty('--duration', `${fixedDuration}s`);
+  track.style.setProperty('--start-x', `${startX}px`);
+  track.style.setProperty('--end-x', `${endX}px`);
+  track.style.setProperty('--duration', `${dynamicDuration}s`);
 
     track.classList.remove('is-running');
     void track.offsetWidth;
@@ -533,8 +556,8 @@ async function loadSongSetsFromSheet() {
             }
 
             return {
-              title: song.title || '',
-              price: song.price || ''
+              title: song.title || song.songTitle || song['노래제목'] || song['제목'] || '',
+              price: song.price || song['단가'] || song.cost || song.unitPrice || ''
             };
           })
           .filter(song => song.title)
