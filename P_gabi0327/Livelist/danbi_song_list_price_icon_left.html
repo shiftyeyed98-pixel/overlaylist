@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=50, initial-scale=1.0" />
+<title>단비 노래 리스트 오버레이</title>
+
+<style>
+  /*
+    노래 리스트 스크롤 오버레이
+    - 화면 크기: 1080 x 50
+    - 배경: 투명
+    - 구조: 가수명 + 단가 + 노래제목 가로 스크롤
+    - 전환: 한 가수의 노래 제목이 모두 지나가면 다음 세트가 상→하 전환
+  */
+
+  @font-face {
+      font-family: 'NexonMaplestory';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/MaplestoryOTFLight.woff') format('woff');
+      font-weight: 300;
+      font-display: swap;
+  }
+
+  :root {
+    /* OBS 브라우저 소스 기준 화면 크기 */
+    --overlay-w: 1080px;
+    --overlay-h: 50px;
+
+    /* 전체 여백 */
+    --pad-x: 14px;
+    --pad-y: 10px;
+
+    /* 가수명 영역 */
+    --artist-w: 200px;
+    --artist-h: 50px;
+    --artist-font: 28px;
+
+    /* 노래 제목 영역 */
+    --song-font: 30px;
+    --song-line-h: 1.05;
+    --song-gap: 20px;
+
+    /* 세트 전환 속도 */
+    --set-slide-ms: 650ms;
+
+    /* 기존 속도 방식에서는 사용했지만, 고정 재생시간 방식에서는 사용하지 않음 */
+    /* --song-speed-px-per-sec: 78; */
+
+    /* 노래 제목 가로 이동 시간: 모든 세트 동일 */
+    --song-duration-sec: 14;
+    /* 색상 */
+    --artist-bg-1: rgba(78, 198, 255, 0.86);
+    --artist-bg-2: rgba(184, 103, 255, 0.86);
+    --artist-border: rgba(255, 255, 255, 0.95);
+
+    --song-bg: rgba(0, 0, 0, 0.10);
+    --song-border: rgba(255, 255, 255, 0.72);
+
+    --text-white: #ffffff;
+    --text-yellow: #fff4a8;
+    --stroke-dark: rgba(24, 24, 24, 0.95);
+    --glow: rgba(255, 255, 255, 0.35);
+  }
+
+  * {
+    box-sizing: border-box;
+    font-family: 'NexonMaplestory', sans-serif !important;
+  }
+
+  .artist-text,
+  .artist-text *,
+  .song-item,
+  .song-item::before {
+    font-family: 'NexonMaplestory', sans-serif !important;
+  }
+
+  html,
+  body {
+    width: var(--overlay-w);
+    height: var(--overlay-h);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  body {
+    position: relative;
+  }
+
+  .overlay {
+    position: relative;
+    width: var(--overlay-w);
+    height: var(--overlay-h);
+    overflow: hidden;
+    background: transparent;
+  }
+
+  /*
+    표시 프레임
+    - OBS에서 600x100으로 넣었을 때 이 영역만 보임
+  */
+  .song-frame {
+    position: absolute;
+    inset: 0;
+    width: var(--overlay-w);
+    height: var(--overlay-h);
+    overflow: hidden;
+    padding: var(--pad-y) var(--pad-x);
+    background: transparent;
+  }
+
+  /*
+    세트 1개 단위
+    - 가수명과 노래 제목 스크롤 영역을 한 줄로 구성
+  */
+  .song-set {
+    position: absolute;
+    left: var(--pad-x);
+    top: var(--pad-y);
+    width: calc(var(--overlay-w) - (var(--pad-x) * 2));
+    height: calc(var(--overlay-h) - (var(--pad-y) * 2));
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(-100%);
+    transition:
+      transform var(--set-slide-ms) cubic-bezier(.2, .8, .2, 1),
+      opacity var(--set-slide-ms) ease;
+    pointer-events: none;
+  }
+
+  .song-set.is-active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .song-set.is-leaving {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  /* 대기 상태: 위쪽에 있음 translateY(-100%)
+     활성 상태: 중앙으로 내려옴 translateY(0)
+     퇴장 상태: 아래쪽으로 나감 translateY(100%)
+  */
+
+
+  /*
+    가수명 박스
+    - 세트가 표시되는 동안 고정
+    - 흰색 테두리 + 하늘색~보라색 그라데이션
+  */
+  .artist-box {
+    flex: 0 0 var(--artist-w);
+    width: var(--artist-w);
+    height: var(--artist-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    border: 3px solid var(--artist-border);
+    border-radius: 16px;
+    background:
+      linear-gradient(135deg, var(--artist-bg-1), var(--artist-bg-2));
+    box-shadow:
+      0 0 0 2px rgba(74, 52, 142, 0.70),
+      0 5px 12px rgba(0, 0, 0, 0.25),
+      inset 0 2px 7px rgba(255, 255, 255, 0.35),
+      inset 0 -3px 8px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+
+  .artist-text {
+    max-width: 100%;
+    color: var(--text-white);
+    font-size: var(--artist-font);
+    line-height: 1;
+    letter-spacing: -1px;
+    white-space: nowrap;
+    text-align: center;
+    text-shadow:
+      -2px -2px 0 var(--stroke-dark),
+       2px -2px 0 var(--stroke-dark),
+      -2px  2px 0 var(--stroke-dark),
+       2px  2px 0 var(--stroke-dark),
+       0 0 8px var(--glow);
+  }
+
+  /*
+    노래 제목 표시 영역
+    - 이 영역 안에서 노래 제목들이 우→좌로 흐름
+  */
+  .song-window {
+    position: relative;
+    flex: 1 1 auto;
+    height: var(--artist-h);
+    overflow: hidden;
+    border: 2px solid var(--song-border);
+    border-radius: 16px;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,0.30), var(--song-bg), rgba(0,0,0,0.30));
+    box-shadow:
+      inset 0 0 10px rgba(255, 255, 255, 0.14),
+      0 5px 12px rgba(0, 0, 0, 0.18);
+  }
+
+  /*
+    좌우 페이드 마스크
+    - 텍스트가 영역 밖으로 들어오고 나가는 느낌을 부드럽게 처리
+  */
+  .song-window::before,
+  .song-window::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 38px;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .song-window::before {
+    left: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,0.60), rgba(0,0,0,0));
+  }
+
+  .song-window::after {
+    right: 0;
+    background: linear-gradient(270deg, rgba(0,0,0,0.60), rgba(0,0,0,0));
+  }
+
+  .song-track {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    will-change: transform;
+
+    /*
+      시작 위치는 JS에서 --start-x로 고정 계산
+      기본값은 표시창 너비 정도로 둠
+    */
+    transform: translate3d(var(--start-x, 400px), 0, 0);
+  }
+  .song-track.is-running {
+    animation-name: songScrollRTL;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+    animation-duration: var(--duration, 12s);
+  }
+
+  .song-item {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin-right: var(--song-gap);
+    color: var(--text-yellow);
+    font-size: var(--song-font);
+    line-height: var(--song-line-h);
+    letter-spacing: -1px;
+    text-shadow:
+      -2px -2px 0 var(--stroke-dark),
+       2px -2px 0 var(--stroke-dark),
+      -2px  2px 0 var(--stroke-dark),
+       2px  2px 0 var(--stroke-dark),
+       0 0 8px rgba(255, 255, 255, 0.35);
+  }
+
+  .song-item::before {
+    content: "♪";
+    display: inline-block;
+    margin-right: 8px;
+    color: #ffffff;
+    font-size: 0.92em;
+    text-shadow:
+      -2px -2px 0 var(--stroke-dark),
+       2px -2px 0 var(--stroke-dark),
+      -2px  2px 0 var(--stroke-dark),
+       2px  2px 0 var(--stroke-dark),
+       0 0 8px rgba(255, 255, 255, 0.45);
+  }
+
+  .song-price-wrap {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin-right: 10px;
+  }
+
+  .song-price-icon {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    margin-right: 4px;
+    object-fit: contain;
+    vertical-align: middle;
+  }
+
+  .song-price {
+    display: inline-block;
+    padding: 2px 8px 1px;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    background: rgba(0, 0, 0, 0.28);
+    color: #ffffff;
+    font-size: 0.72em;
+    line-height: 1;
+    vertical-align: middle;
+    text-shadow:
+      -1px -1px 0 var(--stroke-dark),
+      1px -1px 0 var(--stroke-dark),
+      -1px  1px 0 var(--stroke-dark),
+      1px  1px 0 var(--stroke-dark);
+  }
+
+  .song-price::before {
+    content: "";
+    margin-right: 2px;
+  }
+
+
+  @keyframes songScrollRTL {
+    from {
+      transform: translate3d(var(--start-x, 400px), 0, 0);
+    }
+    to {
+      transform: translate3d(var(--end-x, -1000px), 0, 0);
+    }
+  }
+  /*
+    하단 제작자 고정바가 필요한 경우 사용
+    - 기본값은 숨김
+    - .credit-bar { display:flex; } 로 변경하면 표시
+  */
+  .credit-bar {
+    display: none;
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    transform: translateX(-275%);
+    height: 18px;
+    min-width: 190px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    background: rgba(0, 0, 0, 0.35);
+    color: #ffffff;
+    font-size: 10px;
+    line-height: 1;
+    text-shadow:
+      -1px -1px 0 rgba(0,0,0,0.95),
+       1px -1px 0 rgba(0,0,0,0.95),
+      -1px  1px 0 rgba(0,0,0,0.95),
+       1px  1px 0 rgba(0,0,0,0.95);
+    z-index: 30;
+    pointer-events: none;
+  }
+</style>
+</head>
+
+<body>
+  <div class="overlay">
+    <div class="song-frame" id="songFrame"></div>
+    <div class="credit-bar">made by 시프티♻️</div>
+  </div>
+
+<script>
+/*
+  DATA 수정 영역
+  - artist: 가수명
+  - songs : 해당 가수의 노래 제목/단가 목록
+  - 한 가수의 songs가 모두 우→좌로 지나간 뒤 다음 artist 세트로 하→상 전환
+*/
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxb4qqd7ro_-B1jDDhwSx_gCKpUiHHZUqeW0Vnpjet0XQ5EiplXBBdtub3yPa4RrQMH/exec';
+
+let SONG_SETS = [];
+
+/*
+  속도 설정
+  - CSS 변수 --song-speed-px-per-sec 값을 읽어서 사용
+  - 숫자가 클수록 빠르게 이동
+*/
+const frame = document.getElementById('songFrame');
+let currentIndex = 0;
+let activeSetEl = null;
+let isStarted = false;
+
+function getCssNumber(name, fallback) {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const parsed = parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function createSetElement(data) {
+  const set = document.createElement('div');
+  set.className = 'song-set';
+
+  const artistBox = document.createElement('div');
+  artistBox.className = 'artist-box';
+
+  const artistText = document.createElement('div');
+  artistText.className = 'artist-text';
+  artistText.textContent = data.artist;
+
+  const songWindow = document.createElement('div');
+  songWindow.className = 'song-window';
+
+  const songTrack = document.createElement('div');
+  songTrack.className = 'song-track';
+
+  data.songs.forEach(song => {
+    const item = document.createElement('span');
+    item.className = 'song-item';
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'song-title';
+    titleSpan.textContent = typeof song === 'string' ? song : song.title;
+
+    const price = typeof song === 'string' ? '' : song.price;
+
+    if (price) {
+      const priceWrap = document.createElement('span');
+      priceWrap.className = 'song-price-wrap';
+
+      const priceIcon = document.createElement('img');
+      priceIcon.className = 'song-price-icon';
+      priceIcon.src = 'https://i.imgur.com/2PvVhKn.png';
+      priceIcon.alt = '';
+
+      const priceSpan = document.createElement('span');
+      priceSpan.className = 'song-price';
+      priceSpan.textContent = `${price}`;
+
+      priceWrap.appendChild(priceIcon);
+      priceWrap.appendChild(priceSpan);
+      item.appendChild(priceWrap);
+    }
+
+    item.appendChild(titleSpan);
+
+    songTrack.appendChild(item);
+  });
+
+  artistBox.appendChild(artistText);
+  songWindow.appendChild(songTrack);
+  set.appendChild(artistBox);
+  set.appendChild(songWindow);
+
+  set._track = songTrack;
+  set._songWindow = songWindow;
+
+  return set;
+}
+
+function startTrackAnimation(setEl, onDone) {
+  const track = setEl._track;
+  const songWindow = setEl._songWindow;
+
+  /*
+    모든 세트가 같은 시간 동안 재생되도록 고정 duration 사용
+    단, 이동 거리는 세트별 trackW에 따라 달라지므로 실제 속도는 자동으로 달라짐
+  */
+  const fixedDuration = getCssNumber('--song-duration-sec', 14);
+
+  requestAnimationFrame(() => {
+    const trackW = Math.ceil(track.scrollWidth);
+    const windowW = Math.ceil(songWindow.clientWidth);
+
+    /*
+      시작점:
+      노래 표시창의 오른쪽 바깥.
+      모든 세트가 같은 x 위치에서 시작함.
+    */
+    const startX = windowW + 24;
+
+    /*
+      끝점:
+      트랙 전체가 왼쪽 밖으로 완전히 빠지는 위치.
+      트랙 길이에 따라 달라짐.
+    */
+    const endX = -trackW - 24;
+
+    track.style.setProperty('--start-x', `${startX}px`);
+    track.style.setProperty('--end-x', `${endX}px`);
+    track.style.setProperty('--duration', `${fixedDuration}s`);
+
+    track.classList.remove('is-running');
+    void track.offsetWidth;
+    track.classList.add('is-running');
+
+    track.addEventListener('animationend', onDone, { once: true });
+  });
+}
+
+function showSet(index) {
+  const data = SONG_SETS[index];
+  const nextSet = createSetElement(data);
+
+  frame.appendChild(nextSet);
+
+  requestAnimationFrame(() => {
+    if (activeSetEl) {
+      activeSetEl.classList.remove('is-active');
+      activeSetEl.classList.add('is-leaving');
+
+      const oldSet = activeSetEl;
+      window.setTimeout(() => {
+        if (oldSet && oldSet.parentNode) oldSet.parentNode.removeChild(oldSet);
+      }, 800);
+    }
+
+    nextSet.classList.add('is-active');
+    activeSetEl = nextSet;
+
+    startTrackAnimation(nextSet, () => {
+      currentIndex = (currentIndex + 1) % SONG_SETS.length;
+      showSet(currentIndex);
+    });
+  });
+}
+
+async function loadSongSetsFromSheet() {
+  try {
+    const res = await fetch(`${SHEET_API_URL}?t=${Date.now()}`, {
+      method: 'GET',
+      cache: 'no-store'
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    const json = await res.json();
+
+    if (!json.ok || !Array.isArray(json.data)) {
+      throw new Error(json.error || '구글시트 데이터 형식이 올바르지 않습니다.');
+    }
+
+    SONG_SETS = json.data
+      .filter(set => set.artist && Array.isArray(set.songs) && set.songs.length > 0)
+      .map(set => ({
+        genre: set.genre || '',
+        artist: set.artist,
+        songs: set.songs
+          .map(song => {
+            if (typeof song === 'string') {
+              return {
+                title: song,
+                price: ''
+              };
+            }
+
+            return {
+              title: song.title || song.songTitle || song['노래제목'] || song['제목'] || '',
+              price: song.price || song['단가'] || song.cost || song.unitPrice || ''
+            };
+          })
+          .filter(song => song.title)
+      }))
+      .filter(set => set.songs.length > 0);
+
+    return SONG_SETS.length > 0;
+  } catch (err) {
+    console.error('[SongOverlay] 구글시트 데이터 로드 실패:', err);
+
+    /*
+      시트 로드 실패 시 표시할 예비 데이터
+      OBS에서 빈 화면이 되는 것을 방지
+    */
+    SONG_SETS = [
+      {
+        genre: '예비',
+        artist: '데이터 오류',
+        songs: ['구글시트 연결을 확인해주세요']
+      }
+    ];
+
+    return false;
+  }
+}
+
+async function startOverlay() {
+  if (isStarted) return;
+  isStarted = true;
+
+  await loadSongSetsFromSheet();
+
+  if (!Array.isArray(SONG_SETS) || SONG_SETS.length === 0) {
+    console.warn('[SongOverlay] SONG_SETS 데이터가 비어 있습니다.');
+    return;
+  }
+
+  showSet(currentIndex);
+}
+
+/*
+  OBS 브라우저 소스 로딩 안정화용
+*/
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startOverlay);
+} else {
+  startOverlay();
+}
+</script>
+</body>
+</html>
