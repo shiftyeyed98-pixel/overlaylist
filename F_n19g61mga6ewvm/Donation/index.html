@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+  <title>플렉스TV 다인 커스텀 오버레이</title>
+
+  <style>
+    @font-face {
+      font-family: 'NexonMaplestory';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/NEXON%20Lv1%20Gothic%20OTF.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'NexonMaplestory', sans-serif !important;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .overlay-wrap {
+      width: 760px;
+      margin-top: 40px;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 4px solid #ffffff;
+      border-radius: 28px;
+      color: #ffffff;
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+    }
+
+    .title {
+      width: 100%;
+      padding: 16px 24px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 42px;
+      font-weight: 900;
+      border-radius: 20px;
+      border: 3px solid #ffffff;
+      background: linear-gradient(90deg, #67d8ff, #b58cff, #ff9bd2);
+      color: #ffffff;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 70px 1fr 110px;
+      align-items: center;
+      min-height: 58px;
+      padding: 8px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 2px solid rgba(255, 255, 255, 0.75);
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    .num {
+      text-align: right;
+      padding-right: 12px;
+      color: #ffe66d;
+    }
+
+    .name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .price {
+      text-align: right;
+      color: #8fffd2;
+    }
+
+    .loading,
+    .error {
+      padding: 40px 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .error {
+      color: #ff9b9b;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay-wrap">
+    <div class="title">다인</div>
+    <div id="list" class="list">
+      <div class="loading">데이터 불러오는 중...</div>
+    </div>
+  </div>
+
+  <script>
+    const SOURCE_URL = 'https://flexhp.kr/pages/info/4EujoUcDqskBTx9N6AZQyR8WKbPz2IMv';
+
+    /*
+      GitHub Pages에서 CORS 오류가 발생하면 아래처럼 프록시 주소를 사용해야 함.
+
+      예:
+      const PROXY_URL = 'https://내프록시주소.vercel.app/api/proxy?url=' + encodeURIComponent(SOURCE_URL);
+
+      현재는 직접 fetch 기준.
+    */
+    const FETCH_URL = SOURCE_URL;
+
+    const listEl = document.getElementById('list');
+
+    async function loadData() {
+      try {
+        const res = await fetch(FETCH_URL, {
+          method: 'GET',
+          cache: 'no-store'
+        });
+
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status);
+        }
+
+        const htmlText = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+
+        /*
+          이 부분이 핵심.
+          flexhp 원본 DOM 구조에 맞춰 selector를 조정해야 함.
+
+          현재는 범용 예시:
+          - 페이지 안의 텍스트 줄을 읽고
+          - 빈 줄 제거
+          - 행 형태로 임시 출력
+        */
+
+        const rawTexts = Array.from(doc.body.querySelectorAll('*'))
+          .map(el => el.textContent.trim())
+          .filter(Boolean);
+
+        const uniqueTexts = [...new Set(rawTexts)];
+
+        /*
+          실제 후원/미션/시그 데이터 구조가 확인되면
+          여기에서 rank, name, price 형태로 재가공하면 됨.
+        */
+        const items = uniqueTexts
+          .filter(text => text.length <= 40)
+          .slice(0, 20)
+          .map((text, index) => ({
+            rank: index + 1,
+            name: text,
+            price: ''
+          }));
+
+        render(items);
+      } catch (err) {
+        console.error(err);
+
+        listEl.innerHTML = `
+          <div class="error">
+            데이터 로드 실패<br>
+            CORS 차단 가능성이 높습니다.<br>
+            Vercel 또는 Cloudflare Worker 프록시가 필요합니다.
+          </div>
+        `;
+      }
+    }
+
+    function render(items) {
+      if (!items.length) {
+        listEl.innerHTML = `<div class="error">표시할 데이터가 없습니다.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = items.map(item => `
+        <div class="row">
+          <div class="num">${item.rank}</div>
+          <div class="name">${escapeHtml(item.name)}</div>
+          <div class="price">${escapeHtml(item.price)}</div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    loadData();
+
+    // OBS에서 자동 갱신하고 싶으면 사용
+    setInterval(loadData, 30000);
+  </script>
+</body>
+</html>
