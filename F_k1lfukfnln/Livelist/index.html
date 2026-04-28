@@ -2,13 +2,13 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=600, height=100, initial-scale=1.0" />
+<meta name="viewport" content="width=1080, height=50, initial-scale=1.0" />
 <title>플렉스TV 소영 라이브리스트 오버레이</title>
 
 <style>
   /*
     노래 리스트 스크롤 오버레이
-    - 화면 크기: 600 x 100
+    - 화면 크기: 1080 x 50
     - 배경: 투명
     - 구조: 가수명 + 노래제목 가로 스크롤
     - 전환: 한 가수의 노래 제목이 모두 지나가면 다음 세트가 상→하 전환
@@ -279,6 +279,30 @@
        0 0 8px rgba(255, 255, 255, 0.45);
   }
 
+  .song-price {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 2px 8px 1px;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    background: rgba(0, 0, 0, 0.28);
+    color: #ffffff;
+    font-size: 0.72em;
+    line-height: 1;
+    vertical-align: middle;
+    text-shadow:
+      -1px -1px 0 var(--stroke-dark),
+      1px -1px 0 var(--stroke-dark),
+      -1px  1px 0 var(--stroke-dark),
+      1px  1px 0 var(--stroke-dark);
+  }
+
+  .song-price::before {
+    content: "";
+    margin-right: 2px;
+  }
+
+
   @keyframes songScrollRTL {
     from {
       transform: translate3d(100%, 0, 0);
@@ -334,7 +358,7 @@
   - songs : 해당 가수의 노래 제목 목록
   - 한 가수의 songs가 모두 우→좌로 지나간 뒤 다음 artist 세트로 하→상 전환
 */
-const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbypXE9GbfgH_bSyKBCFKQlwVypT9SZBKCThuBFW8XRdCxdC-F_pvSpIxNe-JAui8b-71g/exec';
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzV5ytB-ZcJKIPjnjUxNtYUgtqUYYQco7z8k5E5u2goL0-Cs82AnBWHmFH1NBLEU1Gw/exec';
 
 let SONG_SETS = [];
 
@@ -371,10 +395,26 @@ function createSetElement(data) {
   const songTrack = document.createElement('div');
   songTrack.className = 'song-track';
 
-  data.songs.forEach(title => {
+  data.songs.forEach(song => {
     const item = document.createElement('span');
     item.className = 'song-item';
-    item.textContent = title;
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'song-title';
+    titleSpan.textContent = typeof song === 'string' ? song : song.title;
+
+    const priceSpan = document.createElement('span');
+    priceSpan.className = 'song-price';
+
+    const price = typeof song === 'string' ? '' : song.price;
+    priceSpan.textContent = price ? `${price}` : '';
+
+    item.appendChild(titleSpan);
+
+    if (price) {
+      item.appendChild(priceSpan);
+    }
+
     songTrack.appendChild(item);
   });
 
@@ -465,7 +505,22 @@ async function loadSongSetsFromSheet() {
         genre: set.genre || '',
         artist: set.artist,
         songs: set.songs
-      }));
+          .map(song => {
+            if (typeof song === 'string') {
+              return {
+                title: song,
+                price: ''
+              };
+            }
+
+            return {
+              title: song.title || '',
+              price: song.price || ''
+            };
+          })
+          .filter(song => song.title)
+      }))
+      .filter(set => set.songs.length > 0);
 
     return SONG_SETS.length > 0;
   } catch (err) {
