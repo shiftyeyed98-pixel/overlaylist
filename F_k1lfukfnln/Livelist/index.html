@@ -43,9 +43,11 @@
     /* 세트 전환 속도 */
     --set-slide-ms: 650ms;
 
-    /* 노래 제목 가로 이동 속도: 값이 작을수록 빠름 */
-    --song-speed-px-per-sec: 78;
+    /* 기존 속도 방식에서는 사용했지만, 고정 재생시간 방식에서는 사용하지 않음 */
+    /* --song-speed-px-per-sec: 78; */
 
+    /* 노래 제목 가로 이동 시간: 모든 세트 동일 */
+    --song-duration-sec: 14;
     /* 색상 */
     --artist-bg-1: rgba(78, 198, 255, 0.86);
     --artist-bg-2: rgba(184, 103, 255, 0.86);
@@ -237,9 +239,13 @@
     align-items: center;
     white-space: nowrap;
     will-change: transform;
-    transform: translate3d(100%, 0, 0);
-  }
 
+    /*
+      시작 위치는 JS에서 --start-x로 고정 계산
+      기본값은 표시창 너비 정도로 둠
+    */
+    transform: translate3d(var(--start-x, 400px), 0, 0);
+  }
   .song-track.is-running {
     animation-name: songScrollRTL;
     animation-timing-function: linear;
@@ -305,13 +311,12 @@
 
   @keyframes songScrollRTL {
     from {
-      transform: translate3d(100%, 0, 0);
+      transform: translate3d(var(--start-x, 400px), 0, 0);
     }
     to {
-      transform: translate3d(calc(-1 * var(--track-w, 1000px)), 0, 0);
+      transform: translate3d(var(--end-x, -1000px), 0, 0);
     }
   }
-
   /*
     하단 제작자 고정바가 필요한 경우 사용
     - 기본값은 숨김
@@ -432,20 +437,34 @@ function createSetElement(data) {
 function startTrackAnimation(setEl, onDone) {
   const track = setEl._track;
   const songWindow = setEl._songWindow;
-  const speed = getCssNumber('--song-speed-px-per-sec', 78);
 
   /*
-    트랙 전체 너비 + 표시창 너비만큼 이동해야
-    마지막 노래 제목까지 완전히 빠져나간 뒤 다음 세트로 전환됨
+    모든 세트가 같은 시간 동안 재생되도록 고정 duration 사용
+    단, 이동 거리는 세트별 trackW에 따라 달라지므로 실제 속도는 자동으로 달라짐
   */
+  const fixedDuration = getCssNumber('--song-duration-sec', 14);
+
   requestAnimationFrame(() => {
     const trackW = Math.ceil(track.scrollWidth);
     const windowW = Math.ceil(songWindow.clientWidth);
-    const distance = trackW + windowW;
-    const duration = Math.max(6, distance / speed);
 
-    track.style.setProperty('--track-w', `${trackW}px`);
-    track.style.setProperty('--duration', `${duration}s`);
+    /*
+      시작점:
+      노래 표시창의 오른쪽 바깥.
+      모든 세트가 같은 x 위치에서 시작함.
+    */
+    const startX = windowW + 24;
+
+    /*
+      끝점:
+      트랙 전체가 왼쪽 밖으로 완전히 빠지는 위치.
+      트랙 길이에 따라 달라짐.
+    */
+    const endX = -trackW - 24;
+
+    track.style.setProperty('--start-x', `${startX}px`);
+    track.style.setProperty('--end-x', `${endX}px`);
+    track.style.setProperty('--duration', `${fixedDuration}s`);
 
     track.classList.remove('is-running');
     void track.offsetWidth;
