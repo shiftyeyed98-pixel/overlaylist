@@ -285,9 +285,25 @@
        0 0 8px rgba(255, 255, 255, 0.45);
   }
 
+  .song-price-wrap {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin-right: 10px;
+  }
+
+  .song-price-icon {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    margin-right: 4px;
+    object-fit: contain;
+    vertical-align: middle;
+  }
+
   .song-price {
     display: inline-block;
-    margin-right: 10px;
     padding: 2px 8px 1px;
     border-radius: 999px;
     border: 2px solid rgba(255, 255, 255, 0.85);
@@ -408,14 +424,24 @@ function createSetElement(data) {
     titleSpan.className = 'song-title';
     titleSpan.textContent = typeof song === 'string' ? song : song.title;
 
-    const priceSpan = document.createElement('span');
-    priceSpan.className = 'song-price';
-
     const price = typeof song === 'string' ? '' : song.price;
-    priceSpan.textContent = price ? `${price}` : '';
 
     if (price) {
-      item.appendChild(priceSpan);
+      const priceWrap = document.createElement('span');
+      priceWrap.className = 'song-price-wrap';
+
+      const priceIcon = document.createElement('img');
+      priceIcon.className = 'song-price-icon';
+      priceIcon.src = 'https://i.imgur.com/2PvVhKn.png';
+      priceIcon.alt = '';
+
+      const priceSpan = document.createElement('span');
+      priceSpan.className = 'song-price';
+      priceSpan.textContent = `${price}`;
+
+      priceWrap.appendChild(priceIcon);
+      priceWrap.appendChild(priceSpan);
+      item.appendChild(priceWrap);
     }
 
     item.appendChild(titleSpan);
