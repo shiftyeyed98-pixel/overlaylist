@@ -307,7 +307,7 @@
     ];
 
     const PAGE_3 = [
-      ["101","라이브 1절"],
+      ["101","라이브 1절","","[!노래1]"],
       ["200","라이브 완곡"],
       ["282","헬곡","","[확인 !헬곡]"],
       ["399","스탠딩 라이브"],
@@ -325,23 +325,28 @@
       ["57","스키","","[1.2배속]"],
       ["77","마신춤"],
       ["99","뿌에","","[Max.10 휴식3분]"],
-      ["299","뿌에 3분","","[블핑 JUMP]"]
+      ["299","뿌에 3분","","[블핑 JUMP]"],
+      ["300","패딩","",""]
     ];
 
     const PAGE_5 = [
+      ["120","치뽑","",""],      
       ["666","단축","","[30분 Max.4]"],
       ["777","의첸","","[방종까지]"],
-      ["120","치뽑","",""],
-      ["300","패딩","",""],
       ["50>500","장충동왕보쌈","","[두번째부터 500개]"],
       ["3333","술방"],
       ["12486","방종해용!"]
     ];
 
     const PAGE_6 = [
-/* 열혈시그
-    ["",""]
-*/
+      ["","!프로필, !방송시간"],
+      ["","!팬등급, !미션"],
+      ["","!노래1, !노래2"],
+      ["","!노래3, !노래4"],
+      ["","!노래5, !팝, !팝2"],
+      ["","!국악곡, !헬곡, !새헬곡"],
+      ["","!운동, !게이파티"],
+      ["","!유튜브, !단비뮤직"]
     ];
 
     const FONT = 'IMCrisujin, Arial, sans-serif';
@@ -353,7 +358,7 @@
     const ICON_PUNG_P3 = 'https://i.imgur.com/12lhyTv.png'; //라이브/의첸 (노랑)
     const ICON_PUNG_P4 = 'https://i.imgur.com/3i8eoNA.png'; //운동/벌칙(보라)
     const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //미션 (빨강)
-    const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //열혈시그 현재 미사용
+    const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //!명령어 (파랑)
 
     const PAGE_ICON_MAP = {
       'page-1': ICON_PUNG_P1,
@@ -576,10 +581,8 @@
         <div class="page-gap" aria-hidden="true"></div>
         ${makePage('♥ 미션 ♥', 'title-pink', PAGE_5, 'pink', 'page-5')}
         <div class="page-gap" aria-hidden="true"></div>
-    <!-- 열혈시그 
-        ${makePage('♥ 열혈시그 ♥', 'title-blue', PAGE_6, 'blue', 'page-6')}
+        ${makePage('♥ 명령어 ♥', 'title-blue', PAGE_6, 'blue', 'page-6')}
         <div class="page-gap" aria-hidden="true"></div>
-    -->
       `;
     }
 
