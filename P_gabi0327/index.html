@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=380, height=1080, initial-scale=1.0" />
+  <title>팬더티비 단비 리액션 리스트</title>
+  <style>
+
+    @font-face {
+        font-family: 'IMCrisujin';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.3/ImcreSoojin.woff') format('woff');
+        font-weight: normal;
+        font-display: swap;
+    }
+
+    :root {
+      --w: 380px;
+      --h: 1080px;
+      --row-gap: 4px;
+      --num-col: 124px;
+      --num-icon-size: 28px;
+      --svg-h: 30px;
+      --page-gap: 10px;     /*페이지사이공백*/
+      --loop-seconds: 70s;  /*속도*/
+      --sequence-height: 1000px;
+      --outline: 5;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'IMCrisujin', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 4px 4px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: 10px;
+      flex: 0 0 32px;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+    col.icon-col { width: 34px; }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num {
+      text-align: left;
+    }
+
+    .num-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0;
+      width: max-content;
+      height: var(--svg-h);
+    }
+
+    .num-left-icon {
+      width: var(--num-icon-size);
+      height: var(--num-icon-size);
+      flex: 0 0 var(--num-icon-size);
+      object-fit: contain;
+      display: block;
+      margin: 0;
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    td.icon-cell {
+      width: 34px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    td.footnote {
+      padding: 0 0 0 6px;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .page-title {
+      width: 240px;
+      height: 36px;
+      line-height: 36px;
+      margin: 0 0 6px 0;
+      text-align: center;
+      font-family: 'IMCrisujin', Arial, sans-serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: #ffffff;
+      border: 2px solid currentColor;
+      border-radius: 10px;
+      box-sizing: border-box;
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+    }
+
+    .title-gray {
+      background: #bfbfbf;
+      border-color: #262525;
+    }
+
+    .title-pink {
+      background: #FAB0C1;
+      border-color: #D36C86;
+    }
+
+    .title-orange {
+      background: #EF9573;
+      border-color: #C96541;
+    }
+
+    .title-yellow {
+      background: #FEFA94;
+      border-color: #D4BE36;
+    }
+
+    .title-purple {
+      background: #DCAEF8;
+      border-color: #9F67C3;
+    }
+
+    .title-blue {
+      background: #4A90E2;
+      border-color: #1F5EA6;
+    }
+
+    .label-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      width: auto;
+    }
+    
+    .num-svg,
+    .label-svg,
+    .footnote-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    .label-icon {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      object-fit: contain;
+      display: block;
+      margin-left: -6px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+    }
+
+    .label-text {
+      flex: 0 0 auto;
+      min-width: auto;
+    }
+
+
+    .fixed-bottom-label {
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      width: 240px;
+      height: 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: 'IMCrisujin', Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 100;
+      color: #ffffff;
+
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid #ffffff;
+      border-radius: 10px;
+
+      box-sizing: border-box;
+      z-index: 50;
+
+      text-shadow:
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px  2px 0 #000,
+        2px  2px 0 #000;
+    }
+
+    @keyframes riseLoop {
+      from {
+        transform: translate3d(0, 0, 0);
+      }
+      to {
+        transform: translate3d(0, calc(-1 * var(--sequence-height)), 0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+    <div class="fixed-bottom-label">made by 시프티♻️</div>
+  </div>
+
+  <script>
+    const PAGE_1 = [
+      ["닉네임 :","단비"],
+      ["나이 :","97년생"],
+      ["키 :","160㎝"],
+      ["몸무게 :","55㎏"],
+      ["사는곳 :","마계인천"],
+      ["MBTI :","INFP"],
+      ["시간 :","공지"],
+      ["휴방 :","공지"]
+    ];
+
+    const PAGE_2 = [
+      ["1","단도그"],
+      ["2","찐따데헷"],
+      ["30","고라니"],
+      ["40","일렉라니"],
+      ["42","팬가입","","[라이브 1절]"],
+      ["79","스펀지밥댄스"],
+      ["81","버터컵"],
+      ["82","Hold up"],
+      ["92","단쿠란보"],
+      ["93","뾱뾱이"],
+      ["95","살구"],
+      ["94","구미베어"],
+      ["96","썩은모찌"],
+      ["97","마티니"],
+      ["98","너뿐이야"],
+    ];
+
+    const PAGE_3 = [
+      ["101","라이브 1절"],
+      ["200","라이브 완곡"],
+      ["282","헬곡","","[확인 !헬곡]"],
+      ["399","스탠딩 라이브"],
+      ["444","의첸 라이브","","[한복20분+국악1절]"],
+      ["455","의첸","","[30분]"],
+      ["555","연장","","[30분]"]
+    ];
+
+    const PAGE_4 = [
+      ["8","벽찍"],
+      ["15","뿅망치","","[Max.300]"],
+      ["33","아봉","","[30초]"],
+      ["50","역도"],
+      ["55","스키"],
+      ["57","스키","","[1.2배속]"],
+      ["77","마신춤"],
+      ["99","뿌에","","[Max.10 휴식3분]"],
+      ["299","뿌에 3분","","[블핑 JUMP]"]
+    ];
+
+    const PAGE_5 = [
+      ["666","단축","","[30분 Max.4]"],
+      ["777","의첸","","[방종까지]"],
+      ["120","치뽑","",""],
+      ["300","패딩","",""],
+      ["50>500","장충동왕보쌈"],
+      ["3333","술방"],
+      ["12486","방종해용!"]
+    ];
+
+    const PAGE_6 = [
+/* 열혈시그
+    ["",""]
+*/
+    ];
+
+    const FONT = 'IMCrisujin, Arial, sans-serif';
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+    const ICON_PUNG_P1 = 'https://i.imgur.com/qGz1W0y.png'; //프로필 (회색)
+    const ICON_PUNG_P2 = 'https://i.imgur.com/D0ldyfG.png'; //시그/캠리 (주황)
+    const ICON_PUNG_P3 = 'https://i.imgur.com/12lhyTv.png'; //라이브/의첸 (노랑)
+    const ICON_PUNG_P4 = 'https://i.imgur.com/3i8eoNA.png'; //운동/벌칙(보라)
+    const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //미션 (빨강)
+    const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //열혈시그 현재 미사용
+
+    const PAGE_ICON_MAP = {
+      'page-1': ICON_PUNG_P1,
+      'page-2': ICON_PUNG_P2,
+      'page-3': ICON_PUNG_P3,
+      'page-4': ICON_PUNG_P4,
+      'page-5': ICON_PUNG_P5,
+      'page-6': ICON_PUNG_P6
+    };
+
+    const ICON_NEW = 'https://i.imgur.com/a5s2iUL.png';
+    const ICON_BEST = 'https://i.imgur.com/1Z3VEON.png';
+    const ICON_Rullet = 'https://i.imgur.com/hVpuiwV.png';
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    function makeShadowFilter(id) {
+      return `
+        <defs>
+          <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="0.0" flood-color="#ffffff" flood-opacity="0"/>
+          </filter>
+        </defs>`;
+    }
+
+    /* 단가 */
+    function makeNumberSVG(num, variant = 'pink') {
+      const width = numWidth(num.length);
+      const t = esc(num);
+      const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      const fillColor =
+        variant === 'gray' ? '#bfbfbf' :
+        variant === 'pink' ? '#FAB0C1' :
+        variant === 'orange' ? '#EF9573' :
+        variant === 'yellow' ? '#FEFA94' :
+        variant === 'purple' ? '#DCAEF8' :
+        '#4A90E2';
+
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(1.0 1)">
+          <text x="4" y="25"
+            text-anchor="start"
+            font-family="${FONT}"
+            font-size="28"
+            font-weight="600"
+            stroke="#000000"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            filter="url(#${filterId})"
+            fill="${fillColor}">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 텍스트 */
+    function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 500) {
+      const canvas = measureTextWidth.canvas || (measureTextWidth.canvas = document.createElement('canvas'));
+      const ctx = canvas.getContext('2d');
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      return Math.ceil(ctx.measureText(text).width);
+    }
+
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      const measured = measureTextWidth(label, 28, FONT, 500);
+      const w = Math.max(40, measured + 10); // 여백 10 정도
+      const filterId = `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      return `
+        <svg class="label-svg" viewBox="0 0 ${w} 34"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(0.9 1)">
+            <text x="0" y="25"
+              text-anchor="start"
+              font-family="${FONT}"
+              font-size="28"
+              font-weight="300"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="#ffffff">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 각주 */
+    function makeFootnoteSVG(footnote) {
+      const t = esc(footnote);
+      const measured = measureTextWidth(footnote, 20, FONT, 500);
+      const w = Math.max(40, measured + 10);
+      const filterId = `footnoteShadow-${Math.random().toString(36).slice(2, 9)}`;
+
+      return `
+        <svg class="footnote-svg" viewBox="0 0 ${w} 30"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(0.9 1)">
+            <text x="134" y="10"
+              text-anchor="start"
+              font-family="${FONT}"
+              font-size="20"
+              font-weight="500"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="#ffffff">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 숫자 좌측 풍 이미지 */
+    function makeNumberIcon(pageClass) {
+      const src = PAGE_ICON_MAP[pageClass] || '';
+      return src ? `<img class="num-left-icon" src="${src}" alt="풍">` : '';
+    }
+
+    /* 아이콘 */
+    function makeLabelIcon(type) {
+      let src = '';
+      let alt = '';
+
+      if (type === 'new') {
+        src = ICON_NEW;
+        alt = 'NEW';
+      } else if (type === 'best') {
+        src = ICON_BEST;
+        alt = 'BEST';
+      } else if (type === 'rullet') {
+        src = ICON_Rullet;
+        alt = 'RULLET';
+      } else {
+        return '';
+      }
+
+      return `<img class="label-icon" src="${src}" alt="${alt}">`;
+    }
+
+    /* 테이블 */
+    function makeTable(rows, numberVariant = 'pink', pageClass = '') {
+      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '']) => {
+        const safeNum = String(num ?? '').trim();
+        const safeLabel = String(label ?? '').trim();
+        const safeFootnote = String(footnote ?? '').trim();
+
+        const mainRow = `
+          <tr>
+            <td class="num">
+              ${safeNum ? `<div class="num-wrap">${makeNumberIcon(pageClass)}${makeNumberSVG(safeNum, numberVariant)}</div>` : ''}
+            </td>
+            <td class="label">
+              <div class="label-wrap">
+                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel) : ''}</div>
+              </div>
+            </td>
+            <td class="icon-cell">${makeLabelIcon(iconType)}</td>
+          </tr>`;
+
+        const footnoteRow = safeFootnote
+          ? `
+          <tr class="footnote-row">
+            <td class="footnote" colspan="3">${makeFootnoteSVG(safeFootnote)}</td>
+          </tr>`
+          : '';
+
+        return mainRow + footnoteRow;
+      }).join('');
+
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col />
+            <col class="icon-col" />
+          </colgroup>
+          <tbody>
+            ${bodyHTML}
+          </tbody>
+        </table>`;
+    }
+
+    function makePage(title, titleClass, rows, variant, pageClass) {
+      return `
+        <div class="page ${pageClass}">
+          <div class="page-title ${titleClass}">${title}</div>
+          ${makeTable(rows, variant, pageClass)}
+        </div>`;
+    }
+
+    function makeSequenceHTML() { /*페이지 정리*/
+      return `
+        ${makePage('♥ 프로필 ♥', 'title-gray', PAGE_1, 'gray', 'page-1')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('♥ 시그/캠리 ♥', 'title-orange', PAGE_2, 'orange', 'page-2')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('♥ 라이브/의첸 ♥', 'title-yellow', PAGE_3, 'yellow', 'page-3')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('♥ 운동/벌칙 ♥', 'title-purple', PAGE_4, 'purple', 'page-4')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('♥ 미션 ♥', 'title-pink', PAGE_5, 'pink', 'page-5')}
+        <div class="page-gap" aria-hidden="true"></div>
+    <!-- 열혈시그 
+        ${makePage('♥ 열혈시그 ♥', 'title-blue', PAGE_6, 'blue', 'page-6')}
+        <div class="page-gap" aria-hidden="true"></div>
+    -->
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
