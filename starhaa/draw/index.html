@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=400, initial-scale=1.0">
+<title>홍보판</title>
+
+<style>
+body {
+  margin: 0;
+  background: transparent;
+  font-family: sans-serif;
+}
+
+.container {
+  width: 400px;
+  color: #ffffff;
+}
+
+/* 제목 */
+.title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+/* 리스트 영역 */
+#list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 한 줄 */
+.item {
+  display: flex;
+  align-items: center;
+}
+
+/* 번호 */
+.number {
+  width: 60px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* 텍스트 */
+.text {
+  flex: 1;
+  font-size: 20px;
+  word-break: keep-all;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="title">📢 홍보 안내</div>
+  <div id="list"></div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbztllA6jupVAiszW_v8nAgdLcfJlkfK-9Vw_0ZIeegSzJiO6F0DFqS1T2dAv_bA_1M2/exec";
+
+async function loadData() {
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    const list = document.getElementById("list");
+
+    // 기존 내용 초기화 (중복 방지 + 개수 자동 반영)
+    list.innerHTML = "";
+
+    // 데이터 개수만큼 자동 생성
+    data.forEach((item) => {
+      // 빈 데이터 방어
+      if (!item.number || !item.text) return;
+
+      const row = document.createElement("div");
+      row.className = "item";
+
+      row.innerHTML = `
+        <div class="number">${item.number}</div>
+        <div class="text">${item.text}</div>
+      `;
+
+      list.appendChild(row);
+    });
+
+  } catch (err) {
+    console.error("데이터 로드 실패:", err);
+  }
+}
+
+// 최초 실행
+loadData();
+
+// 주기적 갱신 (3초)
+setInterval(loadData, 3000);
+</script>
+
+</body>
+</html>
