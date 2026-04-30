@@ -111,6 +111,36 @@
       padding-left: 4px;
     }
 
+    .page-title {
+      width: 240px;
+      height: 36px;
+      line-height: 36px;
+      margin: 0 0 6px 0;
+      text-align: center;
+      font-family: 'YPairing', Arial, sans-serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: #ffffff;
+      border: 2px solid currentColor;
+      border-radius: 5px;
+      box-sizing: border-box;
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+    }
+
+    .title-yellow {
+      background: #FEFA94;
+      border-color: #D4BE36;
+    }
+
+    .title-purple {
+      background: #DCAEF8;
+      border-color: #9F67C3;
+    }
+    
     .num-svg,
     .label-svg {
       display: block;
@@ -188,6 +218,7 @@
       ["187","마티니"],
       ["193","러브쉐이크"],
       ["200","제로투"],
+      ["202","GODS"],
       ["205","너뿐이야"],
       ["207","헤비머신건"],
       ["210","터미널"],
@@ -200,7 +231,6 @@
       ["261","간바레센빠이"],
       ["285","바우치"],
       ["288","슈퍼스타(우유)"],
-      ["292","GODS"],
       ["299","이꾸요"],
       ["302","센세"],
       ["317","그래비티"],
@@ -221,7 +251,6 @@
     ];
 
     const PAGE_3 = [
-      ["열혈시그"],
       ["777","아줌시☾"],
       ["1142","우리 승 이🐤"],
       ["1190","시은전용일한🐯"],
@@ -229,10 +258,12 @@
       ["1673","백스터:)"],
       ["1817","니가가락시장)"],
       ["1818","♨️뜨겁다"],
-      ["1852","자카르다🐯"],
-      ["",""],
-      ["1476","개인시그(천사시은)"],
-      ["",""] // 10 팬가입 과 간격줄이기 용
+      ["1852","자카르다🐯"]
+    ];
+
+    const PAGE_4 = [
+      ["1476","천사시은"],
+      ["",""]
     ];
 
     const FONT = 'YPairing, Arial, sans-serif';
@@ -338,8 +369,14 @@
         <div class="page-gap" aria-hidden="true"></div>
         <div class="page page-2">${makeTable(PAGE_2, 'blue')}</div>
         <div class="page-gap" aria-hidden="true"></div>
-        <div class="page page-3">${makeTable(PAGE_3, 'yellow')}</div>
-        <div class="page-gap" aria-hidden="true"></div>
+
+        <div class="page page-3"><div class="page-title title-yellow">열혈시그</div>
+        ${makeTable(PAGE_3, 'yellow')}</div>
+
+        <div class="page page-4"><div class="page-title title-purple">개인시그</div>
+        ${makeTable(PAGE_4, 'purple')}</div>
+
+                
       `;
     }
 
