@@ -131,6 +131,11 @@
          2px  2px 0 #000;
     }
 
+    .title-blue {
+      background: #8fd0ff;
+      border-color: #1F5EA6;
+    }
+
     .title-yellow {
       background: #FEFA94;
       border-color: #D4BE36;
@@ -236,7 +241,8 @@
       ["317","그래비티"],
       ["333","계엄령"],
       ["342","Beggin'"],
-      ["475","모또모또"]
+      ["475","모또모또"],
+      ["",""]
     ];
    const PAGE_2 = [
       ["69","붕가댄스"],
@@ -247,7 +253,8 @@
       ["103","캥거루"],
       ["220","앙카"],
       ["255","드라군"],
-      ["300","괴짜가족"]
+      ["300","괴짜가족"],
+      ["",""]
     ];
 
     const PAGE_3 = [
@@ -258,7 +265,8 @@
       ["1673","백스터:)"],
       ["1817","니가가락시장)"],
       ["1818","♨️뜨겁다"],
-      ["1852","자카르다🐯"]
+      ["1852","자카르다🐯"],
+      ["",""]
     ];
 
     const PAGE_4 = [
@@ -293,7 +301,6 @@
           </filter>
         </defs>`;
     }
-
 
     /* 단가 */
     function makeNumberSVG(num, variant = 'pink') {
@@ -369,16 +376,14 @@
       return `
         <div class="page page-1">${makeTable(PAGE_1, 'pink')}</div>
         <div class="page-gap" aria-hidden="true"></div>
-        <div class="page page-2">${makeTable(PAGE_2, 'blue')}</div>
-        <div class="page-gap" aria-hidden="true"></div>
+        <div class="page page-2"><div class="page-title title-blue">운동시그</div>
+        ${makeTable(PAGE_2, 'blue')}</div>
 
         <div class="page page-3"><div class="page-title title-yellow">열혈시그</div>
         ${makeTable(PAGE_3, 'yellow')}</div>
 
         <div class="page page-4"><div class="page-title title-purple">개인시그</div>
         ${makeTable(PAGE_4, 'purple')}</div>
-
-                
       `;
     }
 
