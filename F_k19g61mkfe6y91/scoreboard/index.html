@@ -573,7 +573,7 @@ body {
     <div class="hp-left" id="hpL">
       <div class="hp-fill-l" id="fillL"></div>
       <div class="shine"></div>
-      <span class="snum" id="sL" onclick="openScore('left')">0</span><span class="sunit">LEX</span>
+      <span class="snum" id="sL">0</span><span class="sunit">LEX</span>
     </div>
 
     <!-- 타이머 캡슐 (클릭 가능) -->
@@ -588,7 +588,7 @@ body {
     <div class="hp-right" id="hpR">
       <div class="hp-fill-r" id="fillR"></div>
       <div class="shine"></div>
-      <span class="snum" id="sR" onclick="openScore('right')">0</span><span class="sunit">LEX</span>
+      <span class="snum" id="sR">0</span><span class="sunit">LEX</span>
     </div>
 
     <!-- 불꽃 캔버스 — hprow 직속, JS로 위치 제어 -->
@@ -1049,7 +1049,7 @@ fireLoop();
 // ===== 구글시트 연동 =====
 async function loadScoresFromSheet() {
   try {
-    const res = await fetch("https://script.google.com/macros/s/AKfycbwrjCzsDIhR9Bmnhx6x_00QBoRnpdGoam-EFs4dbFzy_fNHoBANy5MZHGUA69jRsxT9/execYOUR_WEBAPP_URL"); // ← 반드시 교체
+    const res = await fetch("https://script.google.com/macros/s/AKfycbwrjCzsDIhR9Bmnhx6x_00QBoRnpdGoam-EFs4dbFzy_fNHoBANy5MZHGUA69jRsxT9/exec"); // ← 반드시 교체
     const data = await res.json();
 
     const newL = data.감자 || 0;
@@ -1074,8 +1074,8 @@ document.getElementById('ovName').addEventListener('click',e=>{ if(e.target===do
 // 최초 1회
 loadScoresFromSheet();
 
-// 주기 갱신 (3초)
-setInterval(loadScoresFromSheet, 3000);
+// 주기 갱신 (5초)
+setInterval(loadScoresFromSheet, 5000);
 
 renderScores();
 renderTimer();
