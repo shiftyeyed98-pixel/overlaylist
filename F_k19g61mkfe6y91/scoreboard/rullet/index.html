@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<title>돌려돌려 돌림판</title>
+	<link rel="stylesheet" type="text/css" href="roulette.css">
+	<script type="text/javascript" src="jquery-3.2.0.min.js"></script>
+	<script type="text/javascript" src="jquery.color-2.1.2.min.js"></script>
+</head>
+<body>
+    <textarea id="inputData" placeholder="이름:숫자"></textarea>
+    <button id="addItems">확인</button>
+	<div class="container">
+		<div class="wrap">
+			<h1 contenteditable="true" spellcheck="false">행운의 돌림판</h1>
+			<canvas width="600" height="600" class="roulette">지원하지 않는 브라우저입니다. Google Chrome 최신 버전을 사용해주세요.</canvas>
+			<div id="roll" class="button"></div>
+		</div>
+		<ul>
+			<li class="item empty" data-chance="0">
+				<div class="item-title" placeholder="이름" contenteditable="true"></div>
+				<div class="item-weight" data-weight="1"></div>
+				<div class="item-weight-add">+</div>
+				<div class="item-weight-sub">-</div>
+				<div class="item-delete">X</div>
+			</li>
+		</ul>
+	</div>
+	<div id="button-tooltip" style="display: none;">
+		<div><span class="command">Alt + 클릭</span><span class="number">±100</span></div>
+		<div><span class="command">Ctrl + 클릭</span><span class="number">±10</span></div>
+		<div><span class="command">클릭</span><span class="number">±1</span></div>
+	</div>
+	<div id="result" style="display: none;"></div>
+	<script type="text/javascript" src="roulette.js"></script>
+</body>
+<script>
+    document.getElementById("inputData").addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            this.value += "\n";
+        }
+    })
+</script>
+</html>
