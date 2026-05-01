@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>스코어보드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 30px;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  .scoreboard {
+    width: 700px;
+    position: relative;
+  }
+
+  /* ── 상단 점수 바 ── */
+  .score-bar {
+    display: flex;
+    height: 36px;
+    position: relative;
+    align-items: center;
+  }
+
+  .score-bar-left {
+    flex: 1;
+    height: 100%;
+    background: #d0002e;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .score-bar-right {
+    flex: 1;
+    height: 100%;
+    background: #0044dd;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 이기는 쪽: 반대쪽 끝에 노란 빛 */
+  .score-bar-left.winning::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0;
+    width: 80px; height: 100%;
+    background: linear-gradient(90deg, transparent 0%, #e8b800 60%, #fff176 100%);
+    pointer-events: none;
+  }
+  .score-bar-right.winning::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    width: 80px; height: 100%;
+    background: linear-gradient(270deg, transparent 0%, #e8b800 60%, #fff176 100%);
+    pointer-events: none;
+  }
+
+  .score-val {
+    font-size: 19px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: background 0.1s;
+    font-style: italic;
+  }
+  .score-val:hover { background: rgba(255,255,255,0.2); }
+
+  /* 중앙 타이머 박스 */
+  .timer-wrap {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .timer-box {
+    background: #0f1117;
+    border: 1.5px solid #4a4a6a;
+    border-radius: 4px;
+    padding: 3px 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.7);
+    min-width: 130px;
+    text-align: center;
+  }
+
+  .timer-text {
+    font-size: 16px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 2px;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+  }
+
+  /* ── 하단 이름 바 ── */
+  .name-bar {
+    display: flex;
+    height: 26px;
+    position: relative;
+    align-items: center;
+    margin-top: 1px;
+  }
+
+  .name-bar-left {
+    flex: 1;
+    height: 100%;
+    background: #8a001e;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+  }
+
+  .name-bar-right {
+    flex: 1;
+    height: 100%;
+    background: #002fa0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+  }
+
+  .player-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  /* 중앙 노란 점수 - 이름 바 위에 겹침 */
+  .center-score-wrap {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .center-score-text {
+    font-size: 22px;
+    font-weight: 900;
+    color: #ffe000;
+    text-shadow:
+      0 0 6px rgba(180,130,0,0.9),
+      0 1px 3px rgba(0,0,0,1);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  /* ── 컨트롤 ── */
+  .controls {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .ctrl-btn {
+    padding: 7px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .btn-start { background: #22c55e; color: #fff; }
+  .btn-pause { background: #f59e0b; color: #fff; }
+  .btn-reset { background: #6b7280; color: #fff; }
+
+  .hint {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #777;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  /* ── 모달 ── */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-bg.on { display: flex; }
+
+  .modal {
+    background: #1e1e2e;
+    border: 2px solid #444;
+    border-radius: 10px;
+    padding: 24px 32px;
+    text-align: center;
+  }
+
+  .modal h3 {
+    color: #fff;
+    font-size: 15px;
+    margin-bottom: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+  }
+
+  .modal input {
+    font-size: 28px;
+    font-weight: 900;
+    width: 150px;
+    text-align: center;
+    background: #111;
+    border: 2px solid #555;
+    border-radius: 6px;
+    color: #ffe000;
+    padding: 4px 8px;
+    outline: none;
+    font-family: 'Courier New', monospace;
+  }
+  .modal input:focus { border-color: #ffe000; }
+
+  .modal-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 14px;
+  }
+
+  .mbtn {
+    padding: 7px 24px;
+    border: none;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .mbtn-ok     { background: #ffe000; color: #111; }
+  .mbtn-cancel { background: #555;    color: #fff; }
+</style>
+</head>
+<body>
+
+<div class="scoreboard">
+  <!-- 점수 바 -->
+  <div class="score-bar">
+    <div class="score-bar-left" id="barL">
+      <span class="score-val" id="svL" onclick="openModal('left')">0</span>
+    </div>
+
+    <div class="timer-wrap">
+      <div class="timer-box">
+        <span class="timer-text" id="timerDisp">05:00:00</span>
+      </div>
+    </div>
+
+    <div class="score-bar-right" id="barR">
+      <span class="score-val" id="svR" onclick="openModal('right')">0</span>
+    </div>
+  </div>
+
+  <!-- 이름 바 -->
+  <div class="name-bar">
+    <div class="name-bar-left">
+      <span class="player-name">감자</span>
+    </div>
+
+    <div class="center-score-wrap">
+      <span class="center-score-text" id="cScore">0</span>
+    </div>
+
+    <div class="name-bar-right">
+      <span class="player-name">핑핑</span>
+    </div>
+  </div>
+</div>
+
+<!-- 컨트롤 -->
+<div class="controls">
+  <button class="ctrl-btn btn-start" onclick="startTimer()">▶ 시작</button>
+  <button class="ctrl-btn btn-pause" onclick="pauseTimer()">⏸ 정지</button>
+  <button class="ctrl-btn btn-reset" onclick="resetTimer()">↺ 리셋</button>
+</div>
+<div class="hint">※ 점수 클릭 시 직접 입력 가능 | 타이머: 카운트다운</div>
+
+<!-- 모달 -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="mTitle">점수 입력</h3>
+    <input type="number" id="mInput" min="0" onkeydown="if(event.key==='Enter')confirmScore()">
+    <div class="modal-btns">
+      <button class="mbtn mbtn-ok"     onclick="confirmScore()">확인</button>
+      <button class="mbtn mbtn-cancel" onclick="closeModal()">취소</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let lScore = 0, rScore = 0;
+  let side = null;
+  let secs = 5 * 3600;
+  let tInterval = null;
+  let tRunning = false;
+
+  function pad(n) { return String(n).padStart(2,'0'); }
+
+  function renderTimer() {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    document.getElementById('timerDisp').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+  }
+
+  function startTimer() {
+    if (tRunning) return;
+    tRunning = true;
+    tInterval = setInterval(() => {
+      if (secs <= 0) { clearInterval(tInterval); tRunning = false; return; }
+      secs--;
+      renderTimer();
+    }, 1000);
+  }
+
+  function pauseTimer() { clearInterval(tInterval); tRunning = false; }
+
+  function resetTimer() {
+    pauseTimer();
+    secs = 5 * 3600;
+    renderTimer();
+  }
+
+  function renderScores() {
+    document.getElementById('svL').textContent = lScore;
+    document.getElementById('svR').textContent = rScore;
+    document.getElementById('cScore').textContent = lScore + rScore;
+
+    const bL = document.getElementById('barL');
+    const bR = document.getElementById('barR');
+    bL.classList.remove('winning');
+    bR.classList.remove('winning');
+    if (lScore > rScore)      bL.classList.add('winning');
+    else if (rScore > lScore) bR.classList.add('winning');
+  }
+
+  function openModal(s) {
+    side = s;
+    const name = s === 'left' ? '감자' : '핑핑';
+    document.getElementById('mTitle').textContent = `${name} 점수 입력`;
+    document.getElementById('mInput').value = s === 'left' ? lScore : rScore;
+    document.getElementById('modalBg').classList.add('on');
+    setTimeout(() => { const i = document.getElementById('mInput'); i.focus(); i.select(); }, 40);
+  }
+
+  function closeModal() { document.getElementById('modalBg').classList.remove('on'); side = null; }
+
+  function confirmScore() {
+    const v = parseInt(document.getElementById('mInput').value, 10);
+    if (!isNaN(v) && v >= 0) {
+      if (side === 'left')  lScore = v;
+      if (side === 'right') rScore = v;
+      renderScores();
+    }
+    closeModal();
+  }
+
+  document.getElementById('modalBg').addEventListener('click', e => {
+    if (e.target === document.getElementById('modalBg')) closeModal();
+  });
+</script>
+</body>
+</html>
