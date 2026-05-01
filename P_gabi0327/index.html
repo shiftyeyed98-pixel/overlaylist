@@ -193,6 +193,21 @@
       border-color: #1F5EA6;
     }
 
+    .title-black {
+      background: #3c3c3c;
+      border-color: #000000;
+
+      display: flex;
+      align-items: center;     /* 세로 중앙 */
+      justify-content: center; /* 가로 중앙 */
+    }
+
+    .title-img {
+      display: block;   /* inline 이미지의 하단 여백 제거 */
+      height: 30px;       /* 필요에 맞게 조정 */
+      object-fit: contain;
+    }
+
     .label-wrap {
       display: inline-flex;
       align-items: center;
@@ -346,8 +361,11 @@
       ["!노래3, !노래4"],
       ["!노래5, !팝, !팝2"],
       ["!국악곡, !헬곡, !새헬곡"],
-      ["!운동, !게이파티"],
-      ["!유튜브, !단비뮤직"]
+      ["!운동, !게이파티"]
+    ];
+
+    const PAGE_7 = [
+      ["@DANBI_MUSIC-cq2oo"]
     ];
 
     const FONT = 'IMCrisujin, Arial, sans-serif';
@@ -360,6 +378,7 @@
     const ICON_PUNG_P4 = 'https://i.imgur.com/3i8eoNA.png'; //운동/벌칙(보라)
     const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //미션 (빨강)
     const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //!명령어 (파랑)
+    const ICON_PUNG_P7 = 'https://i.imgur.com/iMnnprr.png'; //유튜브 (검정)
 
     const PAGE_ICON_MAP = {
       'page-1': ICON_PUNG_P1,
@@ -367,7 +386,8 @@
       'page-3': ICON_PUNG_P3,
       'page-4': ICON_PUNG_P4,
       'page-5': ICON_PUNG_P5,
-      'page-6': ICON_PUNG_P6
+      'page-6': ICON_PUNG_P6,
+      'page-7': ICON_PUNG_P7
     };
 
     const ICON_NEW = 'https://i.imgur.com/a5s2iUL.png';
@@ -409,6 +429,7 @@
         variant === 'orange' ? '#EF9573' :
         variant === 'yellow' ? '#FEFA94' :
         variant === 'purple' ? '#DCAEF8' :
+        variant === 'black' ? '#FFFFFF' :
         '#4A90E2';
 
       return `
@@ -583,6 +604,8 @@
         ${makePage('♥ 미션 ♥', 'title-pink', PAGE_5, 'pink', 'page-5')}
         <div class="page-gap" aria-hidden="true"></div>
         ${makePage('♥ 명령어 ♥', 'title-blue', PAGE_6, 'blue', 'page-6')}
+        <div class="page-gap" aria-hidden="true"></div>
+        ${makePage('<img src="https://i.imgur.com/DkIzaeo.png" alt="유튜브" class="title-img">', 'title-black', PAGE_7, 'black', 'page-7')}
         <div class="page-gap" aria-hidden="true"></div>
       `;
     }
