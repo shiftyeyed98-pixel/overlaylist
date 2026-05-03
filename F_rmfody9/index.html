@@ -262,7 +262,7 @@
       ['889','연장 30분'],
       ['1004','뽑기 13장'],
       ['12465','식데사다리'],
-      ['28265','한방식데'],
+      ['28265','한방식데']
     ];
 
     const PAGE_2 = [
@@ -485,11 +485,11 @@
     function makeSequenceHTML() { 
       return `
         ${makePage(PAGE_1, 'pink', 'page-1')}
-        <div class="page-gap" aria-hidden="true"> MISSION </div>
-        ${makePage(PAGE_2, 'yellow', 'page-2')}
         <div class="page-gap" aria-hidden="true"> DANCE </div>
-        ${makePage(PAGE_3, 'purple', 'page-3')}
+        ${makePage(PAGE_2, 'yellow', 'page-2')}
         <div class="page-gap" aria-hidden="true"> 열혈시그 </div>
+        ${makePage(PAGE_3, 'purple', 'page-3')}
+        <div class="page-gap" aria-hidden="true"> MISSION </div>
       `;
     }
 
