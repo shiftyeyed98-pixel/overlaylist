@@ -10,12 +10,12 @@
     @font-face {
         font-family: 'SchoolSafetyRoundedSmile';
         src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-B.woff2') format('woff2');
-        font-weight: 700;
+        font-weight: 500;
         font-display: swap;
     }
 
     :root {
-      --w: 400px;
+      --w: 300px;
       --h: 1080px;
       --row-gap: 4px;
       --num-col: 72px;
@@ -104,7 +104,7 @@
 
     .page-gap {
       width: 100%;
-      height: 10px;
+      height: 32px;
       flex: 0 0 32px;
     }
 
@@ -184,7 +184,7 @@
       flex: 0 0 26px;
       object-fit: contain;
       display: block;
-      margin-left: -4px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+      margin-left: 5px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
     }
 
     .label-text {
@@ -354,7 +354,7 @@
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           ${makeShadowFilter(filterId)}
-          <g transform="scale(0.8 1)">
+          <g transform="scale(1.0 1)">
           <text x="${cx}" y="25"
             text-anchor="middle"
             font-family="${FONT}"
@@ -389,7 +389,7 @@
             aria-label="${t}" role="img"
             preserveAspectRatio="xMinYMid meet">
           ${makeShadowFilter(filterId)}
-          <g transform="scale(0.8 1)">
+          <g transform="scale(1.0 1)">
             <text x="4" y="26"
               text-anchor="start"
               font-family="${FONT}"
