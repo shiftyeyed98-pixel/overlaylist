@@ -62,7 +62,7 @@
       position: absolute;
       left: 0;
       top: var(--title-top-gap);
-      left: var(--title-left-gap);
+      left: var(--title--gap);
       width: 100%;
       height: var(--fixed-title-h);
       z-index: 10;
@@ -167,8 +167,7 @@
     .label-wrap {
       display: inline-flex;
       align-items: center;
-      gap: 0;
-      width: auto;
+      gap: 0px;
     }
 
     .label-svg {
@@ -179,17 +178,18 @@
     }
 
     .label-icon {
-      width: 26px;
-      height: 26px;
+      position: static;
+      width: 38px;
+      height: 38px;
       flex: 0 0 26px;
       object-fit: contain;
       display: block;
-      margin-left: -3px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+      margin-left: -4px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
     }
 
     .label-text {
-      flex: 0 0 auto;
-      min-width: auto;
+      display: flex;
+      align-items: center;
     }
 
     .num-svg,
@@ -228,15 +228,15 @@
 
   <script>
     const PAGE_1 = [
-      ['9','태권도'],
+      ['9','태권도','new'],
       ['10','와라왕'],
       ['11','와라왕 2배'],
-      ['33','숫자송'],
-      ['34','모찌송'],
+      ['33','숫자송','new'],
+      ['34','모찌송','new'],
       ['35','키세스'],
       ['45','너뿐이야'],
-      ['50','캐치캐치'],
-      ['55','캥거루'],
+      ['50','캐치캐치','new'],
+      ['55','캥거루','new'],
       ['83','모시모시'],
       ['88','삐끼삐끼'],
       ['101','스마트'],
@@ -244,7 +244,7 @@
       ['105','나니가스키'],
       ['108','솜사탕'],
       ['110','이머전시'],
-      ['111','엔젤'],
+      ['111','엔젤','new'],
       ['119','마녀배달부키키'],
       ['120','바람피면디지는거야'],
       ['121','자기야 화풀어'],
@@ -259,20 +259,20 @@
       ['157','홀드업'],
       ['174','이꾸욧'],
       ['175','붕가'],
-      ['176','미스터츄'],
+      ['176','미스터츄','new'],
       ['182','외모체크'],
       ['184','엘에스디'],
       ['185','반해'],
       ['200','고민중독'],
       ['201','이게사랑이지뭐야'],
-      ['202','바빠'],
+      ['202','바빠','new'],
       ['211','너와의모든지금'],
       ['212','뽁뽁뽁'],
       ['213','마티니'],
       ['214','러브쉐이크'],
       ['215','핑크레이디'],
       ['216','포켓로켓'],
-      ['217','스파게티'],
+      ['217','스파게티','new'],
       ['220','바우치'],
       ['221','WTF'],
       ['222','빛을따라서'],
@@ -284,7 +284,7 @@
       ['232','그래비티'],
       ['233','헨타이'],
       ['234','오빠 나 해도돼'],
-      ['235','야메떼'],
+      ['235','야메떼','new'],
       ['240','Waveway'],
       ['241','S.O.S'],
       ['242','버터플라이'],
@@ -295,7 +295,7 @@
       ['258','라라리라라'],
       ['274','이루리'],
       ['275','무아'],
-      ['281','야몽음인'],
+      ['281','야몽음인','new'],
       ['289','미야오'],
       ['300','모또모또'],
       ['312','겐또'],
@@ -306,7 +306,7 @@
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
-    const ICON_NEW = 'https://i.imgur.com/a5s2iUL.png';
+    const ICON_NEW = 'https://i.imgur.com/etmR2k2.png';
     const ICON_BEST = 'https://i.imgur.com/1Z3VEON.png';
     const ICON_Rullet = 'https://i.imgur.com/BfBWx6n.png';
 
