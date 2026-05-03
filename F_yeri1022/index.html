@@ -24,6 +24,8 @@
       --loop-seconds: 50s;  /*속도*/
       --sequence-height: 1000px;
       --outline: 5;
+      --title-top-gap: 6px;
+      --title-left-gap: 6px;
 
       /* ===== 고정 타이틀 영역 ===== */
       --fixed-title-h: 42px;  /* 타이틀이 차지하는 세로 영역 */
@@ -59,7 +61,8 @@
     .fixed-title-wrap {
       position: absolute;
       left: 0;
-      top: 0;
+      top: var(--title-top-gap);
+      left: var(--title-left-gap);
       width: 100%;
       height: var(--fixed-title-h);
       z-index: 10;
@@ -70,7 +73,7 @@
     .viewport {
       position: absolute;
       left: 0;
-      top: calc(var(--fixed-title-h) + var(--fixed-title-mb));
+      top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + var(--title-top-gap));
       width: 100%;
       height: calc(100% - var(--fixed-title-h) - var(--fixed-title-mb));
       overflow: hidden;
