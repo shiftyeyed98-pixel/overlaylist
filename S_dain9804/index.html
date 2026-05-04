@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=300, height=1080, initial-scale=1.0" />
+  <meta name="viewport" content="width=360, height=1080, initial-scale=1.0" />
   <title>숲 설윤이 리액션 리스트</title>
   <style>
 
@@ -15,11 +15,12 @@
     }
 
     :root {
-      --w: 300px;
+      --w: 360px;
       --h: 1080px;
-      --row-gap: 0px;
+      --row-gap: 5px;
       --num-col: 72px;
-      --svg-h: 24px;
+      --svg-h: 30px;
+      --img-col: 26px;
       --page-gap: 60px;     /*페이지사이공백*/
       --loop-seconds: 50s;  /*속도*/
       --sequence-height: 1000px;
@@ -60,9 +61,8 @@
 
     .fixed-title-wrap {
       position: absolute;
-      left: 0;
       top: var(--title-top-gap);
-      left: var(--title--gap);
+      left: var(--title-left-gap);
       width: 70%;
       height: var(--fixed-title-h);
       z-index: 10;
@@ -133,21 +133,35 @@
     }
 
     col.num-col { width: var(--num-col); }
+    col.img-col { width: var(--img-col); }
 
     td {
       padding: 0;
       vertical-align: middle;
       white-space: nowrap;
       line-height: 1;
+      text-align: center; /* 추가 */
+    }
+
+    td.img {
+      padding-right: 2px;
+      place-items: center;
+    }
+
+    .pung-icon {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
     }
 
     td.num {
-      display: grid;
+      padding-left: 2px;
       place-items: center;
     }
 
     td.label {
       padding-left: 4px;
+      text-align: left;
     }
 
     .page-title {
@@ -189,7 +203,7 @@
     .label-wrap {
       display: inline-flex;
       align-items: center;
-      gap: 0px;
+      gap: 2px;
     }
 
     .label-svg {
@@ -221,6 +235,10 @@
       height: var(--svg-h);
       overflow: visible;
     }
+    .pung-icon {
+      vertical-align: middle;
+    }
+
 
     @keyframes riseLoop {
       from {
@@ -444,6 +462,13 @@
           </g>
         </svg>`;
     }
+
+    const ICON_PUNG = 'https://i.imgur.com/FK4kOFt.png';
+
+    function makeImage() {
+      return `<img class="pung-icon" src="${ICON_PUNG}" alt="pung">`;
+    }
+
     function makeLabelIcon(type) {
       let src = '';
       let alt = '';
@@ -469,12 +494,14 @@
       return `
         <table aria-label="리액션 리스트">
           <colgroup>
+            <col class="img-col" />
             <col class="num-col" />
             <col />
           </colgroup>
           <tbody>
             ${rows.map(([num, label, iconType = '']) => `
               <tr>
+                <td class="img">${makeImage()}</td>
                 <td class="num">${makeNumberSVG(num, numberVariant)}</td>
                 <td class="label">
                   <div class="label-wrap">
