@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=360, height=1080, initial-scale=1.0" />
+  <title>플렉스TV 수심 리액션 리스트</title>
+  <style>
+
+    @font-face {
+        font-family: 'Rix';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2102-01@1.0/RixYeoljeongdo_Regular.woff') format('woff');
+        font-weight: normal;
+        font-display: swap;
+    }
+
+    :root {
+      --w: 360px;
+      --h: 1080px;
+      --row-gap: 5px;
+      --num-col: 100px;
+      --svg-h: 30px;
+      --img-col: 26px;
+      --page-gap: 60px;     /*페이지사이공백*/
+      --loop-seconds: 50s;  /*속도*/
+      --sequence-height: 1000px;
+      --outline: 5;
+      --title-top-gap: 6px;
+      --title-left-gap: 6px;
+
+      /* ===== 고정 타이틀 영역 ===== */
+      --fixed-title-h: 30px;  /* 타이틀이 차지하는 세로 영역 */
+      --fixed-title-mb: 6px;  /* 타이틀과 리스트 사이 여백 */
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'Rix', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 4px 4px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .fixed-title-wrap {
+      position: absolute;
+      top: var(--title-top-gap);
+      left: var(--title-left-gap);
+      width: 70%;
+      height: var(--fixed-title-h);
+      z-index: 10;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    .viewport {
+      position: absolute;
+      left: 0;
+      top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + var(--title-top-gap));
+      width: 100%;
+      height: calc(100% - var(--fixed-title-h) - var(--fixed-title-mb));
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: var(--page-gap);
+      flex: 0 0 var(--page-gap);
+      
+      display: flex;
+      align-items: center;      /* 세로 가운데 */
+      justify-content: flex-start;  /* 가로 가운데 */
+      padding-left: 30px;  /* 살짝 여백 */
+
+      font-size: 24px;          /* 텍스트 크기 */
+      color: #ffffff;
+
+      text-align: center;
+
+      text-shadow:
+       -2px -2px 0 #000,
+        2px -2px 0 #000,
+       -2px  2px 0 #000,
+        2px  2px 0 #000;
+        
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+    col.img-col { width: var(--img-col); }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+      text-align: center; /* 추가 */
+    }
+
+    td.img {
+      padding-right: 2px;
+      place-items: center;
+    }
+
+    .pung-icon {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      margin-left: 8px;   /* 추가 */
+    }
+
+    td.num {
+      padding-left: 2px;
+      place-items: center;
+    }
+
+    td.label {
+      padding-left: 4px;
+      text-align: left;
+    }
+
+    .page-title {
+      width: 200px;
+      height: 36px;
+      line-height: 36px;
+      margin: 0;
+      text-align: center;
+      font-family: 'Rix', Arial, sans-serif;
+      font-size: 24px;
+      font-weight: 500;
+      color: #FFFFFF;
+      border-radius: 10px;
+      box-sizing: border-box;
+         
+      text-shadow:
+        -2px -2px 0 #de7bbe,
+         2px -2px 0 #de7bbe,
+        -2px  2px 0 #de7bbe,
+         2px  2px 0 #de7bbe;
+
+      border: 4px solid #de7bbe;
+      box-sizing: border-box;
+      border-radius:10px;
+    }
+
+    .title-pink {
+      background: #F0BCDA;
+    }
+
+    .title-purple {
+      background: #673fa6;
+    }
+
+    .title-yellow {
+      background: #FED3A0;
+    }
+
+    .label-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .label-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    .label-icon {
+      position: static;
+      width: 50px;
+      height: 30px;
+      flex: 0 0 26px;
+      object-fit: contain;
+      display: block;
+      margin-left: -6px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+    }
+
+    .label-text {
+      display: flex;
+      align-items: center;
+    }
+
+    .num-svg {
+      transform: translateY(1px);
+    }
+    .label-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      overflow: visible;
+      transform: translateY(0px);
+    }
+    .pung-icon {
+      vertical-align: middle;
+    }
+
+    .fixed-bottom-label {
+      position: absolute;
+      left: 6px;
+      right: 4px;
+      bottom: 0px;
+      width: 200px;
+      height: 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: 'Rix', Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 100;
+      color: #ffffff;
+
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid #ffffff;
+      border-radius: 10px;
+
+      box-sizing: border-box;
+      z-index: 50;
+
+      text-shadow:
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px  2px 0 #000,
+        2px  2px 0 #000;
+    }
+
+    @keyframes riseLoop {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(calc(-1 * var(--sequence-height)));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <!-- 타이틀은 스크롤 트랙 밖에 배치해서 항상 상단에 고정 -->
+    <div class="fixed-title-wrap">
+      <div class="page-title title-pink"> 수심이 리액션 </div>
+    </div>
+
+    <!-- 숫자 / 텍스트 / 아이콘만 이 영역 안에서 무한 순환 -->
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+      <div class="fixed-bottom-label">designed by 시프티♻️</div>
+  </div>
+
+  <script>
+    const PAGE_1 = [
+      ['','44','아파트',''],
+      ['','55','우치다',''],
+      ['','66','피라미숙',''],
+      ['','77','외모체크',''],
+      ['','78','귀여워서미안해(캠)',''],
+      ['','79','역도','new'],
+      ['','85','이안챌린지','new'],
+      ['','88','이안챌린지','new'],
+      ['','88','이멀전시','new'],
+      ['','89','랜덤시그','hot'],
+      ['','97','슈퍼맨',''],
+      ['','99','비둘기',''],
+      ['','101','포켓몬',''],
+      ['','104','캥거루','new'],
+      ['','105','사쿠란보',''],
+      ['','106','삐삐',''],
+      ['','107','토끼송',''],
+      ['','108','티모',''],
+      ['','110','자기야화풀어','new'],
+      ['','111','콩나물',''],
+      ['','112','진압해',''],
+      ['','113','킹받쥬',''],
+      ['','114','바나나차차',''],
+      ['','116','뾱뾱이','new'],
+      ['','117','푸른산호초',''],
+      ['','121','버터플라이',''],
+      ['','123','주차송','new'],
+      ['','124','슈퍼그럼요',''],
+      ['','127','나니가스키','new'],
+      ['','128','솜사탕',''],
+      ['','129','인민댄스',''],
+      ['','130','왜요왜요',''],
+      ['','131','나랑사귈래',''],
+      ['','133','아로아로',''],
+      ['','134','뿌에뿌에','new'],
+      ['','141','러브쉐이크',''],
+      ['','142','핫해',''],
+      ['','143','벌룬인러브',''],
+      ['','145','A',''],
+      ['','146','사랑받을준비','new'],
+      ['','149','하트쉐이커',''],
+      ['','151','포켓로켓','new'],
+      ['','156','팬서비스',''],
+      ['','158','어마어마해',''],
+      ['','166','빛을 따라서',''],
+      ['','170','레디올낫',''],
+      ['','175','위플래쉬',''],
+      ['','180','앙킥',''],
+      ['','185','고민중독',''],
+      ['','187','묵찌빠',''],
+      ['','188','빠우치','sexy'],
+      ['','189','슬램덩크','sexy'],
+      ['','193','난예술이야',''],
+      ['','196','홀드업',''],
+      ['','198','계엄령','new'],
+      ['','201','코카인',''],
+      ['','212','메트로댄스',''],
+      ['','217','지코토닉','new'],
+      ['','218','패스트카','new'],
+      ['','220','3종세트',''],
+      ['','222','촉촉착착',''],
+      ['','232','제로투','sexy'],
+      ['','240','킥드베',''],
+      ['','243','오빠달려붕붕','sexy'],
+      ['','249','터미널','sexy'],
+      ['','255','우유','sexy'],
+      ['','260','LSD','sexy'],
+      ['','262','이꾸욧','sexy'],
+      ['','288','오빠나해도돼','sexy'],
+      ['','321','EDM','sexy'],
+      ['','340','알려줄게','sexy'],
+      ['','375','간바레센빠이','sexy'],
+      ['','388','드라군',''],
+      ['','392','앙카','sexy'],
+      ['','399','엉큰녀','sexy'],
+      ['','404','오빠하앙','sexy'],
+      ['','450','헨타이','sexy']
+    ];
+
+    const PAGE_2 = [
+      ['','1000','완곡댄스',''],
+      ['','1463','정성방셀(4장)',''],
+      ['','2863','전신방셀(10장)',''],
+      ['','3333','얼낙방셀(12장)',''],
+      ['','5050','의첸',''],
+      ['','10000','술상펴',''],
+      ['','12463','한방카톡',''],
+    ];
+    /*
+    const PAGE_3 = [
+      ['','']
+    ];
+    */
+
+    const FONT = 'Rix, Arial, sans-serif';
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+    const ICON_NEW = 'https://i.imgur.com/eHdlAJD.png';
+    const ICON_BEST = 'https://i.imgur.com/NRsqmKK.png';
+    const ICON_HOT = 'https://i.imgur.com/C9jDgyJ.png';
+    const ICON_SEXY = 'https://i.imgur.com/D4qGulQ.png';
+    const ICON_RULLET = 'https://i.imgur.com/BfBWx6n.png';
+    const ICON_PUNG = 'https://i.imgur.com/FK4kOFt.png';
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    function makeShadowFilter(id) {
+      return `
+        <defs>
+          <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="0.0" flood-color="#ffffff" flood-opacity="0.0"/>
+          </filter>
+        </defs>`;
+    }
+
+    const FIXED_NUM_WIDTH = parseInt(
+      getComputedStyle(document.documentElement)
+        .getPropertyValue('--num-col')
+    );
+
+    /* 단가 */
+    function makeNumberSVG(num, variant = 'white') {
+      const width = FIXED_NUM_WIDTH;
+      const cx = width / 2;
+      const t = esc(num);
+      const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      /* 글꼴색 */
+      const fillColor =
+        variant === 'purple' ? '#673fa6' :
+        variant === 'yellow' ? '#FED3A0' :
+        variant === 'white' ? '#000000' :
+        '#F0BCDA';
+
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(0.9 1)">
+          <text x="${cx}" y="22"
+            text-anchor="middle"
+            font-family="${FONT}"
+            font-size="24"
+            font-weight="300"
+            stroke="#000000"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            filter="url(#${filterId})"
+            fill="${fillColor}">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 텍스트 */
+    function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 300) {
+      const canvas = measureTextWidth.canvas || (measureTextWidth.canvas = document.createElement('canvas'));
+      const ctx = canvas.getContext('2d');
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      return Math.ceil(ctx.measureText(text).width);
+    }
+
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      const measured = measureTextWidth(label, 28, FONT, 300);
+      const w = Math.max(40, measured + 10); // 여백 10 정도
+      const filterId = `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      return `
+        <svg class="label-svg" viewBox="0 0 ${w} 34"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(0.9 1)">
+            <text x="4" y="25"
+              text-anchor="start"
+              font-family="${FONT}"
+              font-size="28"
+              font-weight="300"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="#FFFFFF">${t}</text>
+          </g>
+        </svg>`;
+    }
+
+    function makeImage(type) {
+      if (type === 'pung') {
+        return `<img class="pung-icon" src="${ICON_PUNG}" alt="pung">`;
+      }
+      return ''; // 없으면 아무것도 출력 안함
+    }
+
+    function makeLabelIcon(type) {
+      let src = '';
+      let alt = '';
+
+      if (type === 'new') {
+        src = ICON_NEW;
+        alt = 'NEW';
+      } else if (type === 'best') {
+        src = ICON_BEST;
+        alt = 'BEST';
+      } else if (type === 'hot') {
+        src = ICON_HOT;
+        alt = 'HOT';
+      } else if (type === 'sexy') {
+        src = ICON_SEXY;
+        alt = 'SEXY';
+      } else if (type === 'rullet') {
+        src = ICON_RULLET;
+        alt = 'RULLET';
+      } else {
+        return '';
+      }
+
+      return `<img class="label-icon" src="${src}" alt="${alt}">`;
+    }
+
+    /* 테이블 */
+    function makeTable(rows, numberVariant = 'pink') {
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="img-col" />
+            <col class="num-col" />
+            <col />
+          </colgroup>
+          <tbody>
+            ${rows.map(([imgType = '', num = '', label = '', iconType = '']) => `
+              <tr>
+                <td class="img">${makeImage(imgType)}</td>
+                <td class="num">${makeNumberSVG(num, numberVariant)}</td>
+                <td class="label">
+                  <div class="label-wrap">
+                    <div class="label-text">${makeLabelSVG(label)}</div>
+                    ${makeLabelIcon(iconType)}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function makePage(rows, variant, pageClass) {
+      return `
+        <div class="page ${pageClass}">
+          ${makeTable(rows, variant)}
+        </div>`;
+    }
+
+    function makeSequenceHTML() { 
+      return `
+        ${makePage(PAGE_1, 'pink', 'page-1')}
+        <div class="page-gap" aria-hidden="true"> VIP 전용 </div>
+        ${makePage(PAGE_2, 'purple', 'page-2')}
+        <div class="page-gap" aria-hidden="true"> </div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
