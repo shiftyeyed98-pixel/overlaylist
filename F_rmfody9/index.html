@@ -117,11 +117,12 @@
 
       text-align: center;
 
-      text-shadow:
+     /* text-shadow:
         -2px -2px 0 #000,
         2px -2px 0 #000,
         -2px  2px 0 #000,
         2px  2px 0 #000;
+      */  
     }
 
     table {
@@ -161,11 +162,15 @@
       color: #ffffff;
       border-radius: 10px;
       box-sizing: border-box;
+    
+    /*
       text-shadow:
         -2px -2px 0 #000,
          2px -2px 0 #000,
         -2px  2px 0 #000,
          2px  2px 0 #000;
+    */
+         
     }
 
     .title-pink {
@@ -355,7 +360,7 @@
       return `
         <defs>
           <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="1" dy="1" stdDeviation="3.2" flood-color="#ffffff" flood-opacity="0.9"/>
+            <feDropShadow dx="1" dy="1" stdDeviation="0.0" flood-color="#ffffff" flood-opacity="0.9"/>
           </filter>
         </defs>`;
     }
