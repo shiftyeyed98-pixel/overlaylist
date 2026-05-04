@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=300, height=1080, initial-scale=1.0" />
+  <title>숲 설윤이 리액션 리스트</title>
+  <style>
+
+    @font-face {
+        font-family: 'Gyeombalbal';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/insungitCutelivelyjisu.woff2') format('woff2');
+        font-weight: normal;
+        font-display: swap;
+    }
+
+    :root {
+      --w: 300px;
+      --h: 1080px;
+      --row-gap: 0px;
+      --num-col: 72px;
+      --svg-h: 24px;
+      --page-gap: 60px;     /*페이지사이공백*/
+      --loop-seconds: 50s;  /*속도*/
+      --sequence-height: 1000px;
+      --outline: 5;
+      --title-top-gap: 6px;
+      --title-left-gap: 6px;
+
+      /* ===== 고정 타이틀 영역 ===== */
+      --fixed-title-h: 30px;  /* 타이틀이 차지하는 세로 영역 */
+      --fixed-title-mb: 6px;  /* 타이틀과 리스트 사이 여백 */
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'Gyeombalbal', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 4px 4px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .fixed-title-wrap {
+      position: absolute;
+      left: 0;
+      top: var(--title-top-gap);
+      left: var(--title--gap);
+      width: 70%;
+      height: var(--fixed-title-h);
+      z-index: 10;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    .viewport {
+      position: absolute;
+      left: 0;
+      top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + var(--title-top-gap));
+      width: 100%;
+      height: calc(100% - var(--fixed-title-h) - var(--fixed-title-mb));
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: var(--page-gap);
+      flex: 0 0 var(--page-gap);
+      
+      display: flex;
+      align-items: center;      /* 세로 가운데 */
+      justify-content: flex-start;  /* 가로 가운데 */
+      padding-left: 30px;  /* 살짝 여백 */
+
+      font-size: 24px;          /* 텍스트 크기 */
+      color: #ffffff;
+
+      text-align: center;
+
+      text-shadow:
+       -2px -2px 0 #000,
+        2px -2px 0 #000,
+       -2px  2px 0 #000,
+        2px  2px 0 #000;
+        
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num {
+      display: grid;
+      place-items: center;
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    .page-title {
+      width: 200px;
+      height: 36px;
+      line-height: 36px;
+      margin: 0;
+      text-align: center;
+      font-family: 'Gyeombalbal', Arial, sans-serif;
+      font-size: 24px;
+      font-weight: 500;
+      color: #FFFFFF;
+      border-radius: 10px;
+      box-sizing: border-box;
+         
+      text-shadow:
+        -2px -2px 0 #de7bbe,
+         2px -2px 0 #de7bbe,
+        -2px  2px 0 #de7bbe,
+         2px  2px 0 #de7bbe;
+
+      border: 4px solid #de7bbe;
+      box-sizing: border-box;
+      border-radius:10px;
+    }
+
+    .title-pink {
+      background: #F0BCDA;
+    }
+
+    .title-purple {
+      background: #AE86A0;
+    }
+
+    .title-yellow {
+      background: #FED3A0;
+    }
+
+    .label-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0px;
+    }
+
+    .label-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    .label-icon {
+      position: static;
+      width: 50px;
+      height: 30px;
+      flex: 0 0 26px;
+      object-fit: contain;
+      display: block;
+      margin-left: 5px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+    }
+
+    .label-text {
+      display: flex;
+      align-items: center;
+    }
+
+    .num-svg,
+    .label-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    @keyframes riseLoop {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(calc(-1 * var(--sequence-height)));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <!-- 타이틀은 스크롤 트랙 밖에 배치해서 항상 상단에 고정 -->
+    <div class="fixed-title-wrap">
+      <div class="page-title title-pink"> 설윤이꺼 </div>
+    </div>
+
+    <!-- 숫자 / 텍스트 / 아이콘만 이 영역 안에서 무한 순환 -->
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_1 = [
+      ['100','오버드라이브'],
+      ['101','외모체크'],
+      ['102','나니가스키'],
+      ['103','핫해'],
+      ['104','뾱뾱이'],
+      ['105','사랑받을 준비완료'],
+      ['106','팬서비스'],
+      ['107','귀여워서 미안해'],
+      ['108','역도'],
+      ['109','카리나 닮았대'],
+      ['110','이멀전시'],
+      ['111','무아'],
+      ['112','나랑 사귈래'],
+      ['113','힙사돈'],
+      ['114','포켓몬'],
+      ['115','체온'],
+      ['116','슈퍼그럼요'],
+      ['117','빛을 따라서'],
+      ['118','스키'],
+      ['119','베이프'],
+      ['120','자기야 화풀어'],
+      ['121','너와의 모든 지금'],
+      ['122','암쏘섹시'],
+      ['123','캐치캐치'],
+      ['124','핑크레이디'],
+      ['125','미워'],
+      ['126','up'],
+      ['130','여우'],
+      ['131','키티켓'],
+      ['144','마녀배달부키키'],
+      ['145','진압해'],
+      ['150','제로투'],
+      ['201','고민중독'],
+      ['203','언더그라운드'],
+      ['204','헤비머신건'],
+      ['205','우유'],
+      ['222','앙카'],
+      ['244','back it up'],
+      ['','하입보이'],
+      ['250','벌룬인럽'],
+      ['251','마티니'],
+      ['252','if you love me'],
+      ['253','nanana'],
+      ['254','not like us'],
+      ['255','오빠달려붕붕'],
+      ['256','영차'],
+      ['257','brrr'],
+      ['258','살아있네'],
+      ['259','쉿'],
+      ['299','give me more'],
+      ['300','그래비티'],
+      ['331','왓더퍽'],
+      ['332','야몽음인'],
+      ['333','몸'],
+      ['340','간바레'],
+      ['352','코카인'],
+      ['360','헨타이'],
+      ['361','빠라뉴'],
+      ['363','계엄령'],
+      ['403','할 것'],
+      ['440','바우치'],
+      ['441','tuesday'],
+      ['442','오니짱'],
+      ['443','터미널'],
+      ['444','Do it'],
+      ['445','엉큰녀'],
+      ['446','Lying Together'],
+      ['447','모또하야쿠'],
+      ['500','드라군'],
+      ['501','알려줄게'],
+      ['502','오빠하앙'],
+      ['503','배드가이'],
+      ['504','EDM'],
+      ['',''],
+      ['',''],
+      ['1000','♥완곡댄스'],
+      ['',''],
+      ['',''],
+      ['1100','♥역팬'],
+    ];
+
+    /*
+    const PAGE_2 = [
+      ['','']
+    ];
+
+    const PAGE_3 = [
+      ['','']
+    ];
+    */
+
+    const FONT = 'Gyeombalbal, Arial, sans-serif';
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+    const ICON_NEW = 'https://i.imgur.com/rnoY6bd.png';
+    const ICON_BEST = 'https://i.imgur.com/fa0W5J9.png';
+    const ICON_Rullet = 'https://i.imgur.com/BfBWx6n.png';
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    function makeShadowFilter(id) {
+      return `
+        <defs>
+          <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="0.0" flood-color="#ffffff" flood-opacity="0.0"/>
+          </filter>
+        </defs>`;
+    }
+
+    const FIXED_NUM_WIDTH = parseInt(
+      getComputedStyle(document.documentElement)
+        .getPropertyValue('--num-col')
+    );
+
+    /* 단가 */
+    function makeNumberSVG(num, variant = 'white') {
+      const width = FIXED_NUM_WIDTH;
+      const cx = width / 2;
+      const t = esc(num);
+      const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      /* 글꼴색 */
+      const fillColor =
+        variant === 'purple' ? '#AE86A0' :
+        variant === 'yellow' ? '#FED3A0' :
+        variant === 'white' ? '#FFFFFF' :
+        '#F0BCDA';
+
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(1.0 1)">
+          <text x="${cx}" y="25"
+            text-anchor="middle"
+            font-family="${FONT}"
+            font-size="30"
+            font-weight="500"
+            stroke="#AE86A0"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            filter="url(#${filterId})"
+            fill="${fillColor}">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 텍스트 */
+    function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 500) {
+      const canvas = measureTextWidth.canvas || (measureTextWidth.canvas = document.createElement('canvas'));
+      const ctx = canvas.getContext('2d');
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      return Math.ceil(ctx.measureText(text).width);
+    }
+
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      const measured = measureTextWidth(label, 30, FONT, 500);
+      const w = Math.max(40, measured + 10); // 여백 10 정도
+      const filterId = `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      return `
+        <svg class="label-svg" viewBox="0 0 ${w} 34"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(1.0 1)">
+            <text x="4" y="25"
+              text-anchor="start"
+              font-family="${FONT}"
+              font-size="30"
+              font-weight="500"
+              stroke="#AE86A0"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="#FFFFFF">${t}</text>
+          </g>
+        </svg>`;
+    }
+    function makeLabelIcon(type) {
+      let src = '';
+      let alt = '';
+
+      if (type === 'new') {
+        src = ICON_NEW;
+        alt = 'NEW';
+      } else if (type === 'best') {
+        src = ICON_BEST;
+        alt = 'BEST';
+      } else if (type === 'rullet') {
+        src = ICON_Rullet;
+        alt = 'RULLET';
+      } else {
+        return '';
+      }
+
+      return `<img class="label-icon" src="${src}" alt="${alt}">`;
+    }
+
+    /* 테이블 */
+    function makeTable(rows, numberVariant = 'pink') {
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col />
+          </colgroup>
+          <tbody>
+            ${rows.map(([num, label, iconType = '']) => `
+              <tr>
+                <td class="num">${makeNumberSVG(num, numberVariant)}</td>
+                <td class="label">
+                  <div class="label-wrap">
+                    <div class="label-text">${makeLabelSVG(label)}</div>
+                    ${makeLabelIcon(iconType)}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function makePage(rows, variant, pageClass) {
+      return `
+        <div class="page ${pageClass}">
+          ${makeTable(rows, variant)}
+        </div>`;
+    }
+
+    function makeSequenceHTML() { 
+      return `
+        ${makePage(PAGE_1, 'white', 'page-1')}
+        <div class="page-gap" aria-hidden="true"> </div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
