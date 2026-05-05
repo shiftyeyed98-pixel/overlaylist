@@ -23,7 +23,7 @@
       --num-icon-size: 28px;
       --svg-h: 30px;
       --page-gap: 10px;
-      --loop-seconds: 70s;
+      --loop-seconds: 50s;
       --sequence-height: 1000px;
       --outline: 5;
 
@@ -31,9 +31,12 @@
       --fixed-title-h: 36px;
       --fixed-title-mb: 2px;
 
+      /* ===== 고정 페이지 영역 ===== */
+      --fixed-page-h: 0px; /* 기본값 */
+
       /* ===== 하단 고정바 영역 ===== */
       --fixed-bottom-h: 20px;
-      --fixed-bottom-bottom: 4px;
+      --fixed-bottom-bottom: 0px;
       --fixed-bottom-mt: 0px;
     }
 
@@ -78,7 +81,11 @@
     .viewport {
       position: absolute;
       left: 4px;
-      top: calc(var(--fixed-title-h) + var(--fixed-title-mb));
+        top: calc(
+        var(--fixed-title-h)
+        + var(--fixed-title-mb)
+        + var(--fixed-page-h)
+      );
       width: 100%;
       height: calc(
         100%
@@ -260,6 +267,15 @@
       min-width: auto;
     }
 
+    .fixed-page-wrap {
+      position: absolute;
+      left: 4px;
+      top: calc(var(--fixed-title-h) + var(--fixed-title-mb));
+      width: calc(100% - 8px);
+      z-index: 5;
+      pointer-events: none;
+    }
+
     .fixed-bottom-label {
       position: absolute;
       left: 4px;
@@ -306,7 +322,8 @@
     <div class="fixed-title-wrap">
       <div class="page-title title-black"> 유빈✨</div>
     </div>
-
+     <!-- 타이틀 하단 스크롤 상단 배치하는 고정 페이지 영역 -->
+    <div class="fixed-page-wrap" id="fixedPage"></div>
     <!-- 숫자 / 텍스트 / 아이콘만 이 영역 안에서 무한 순환 -->
     <div class="viewport">
       <div class="track" id="track">
@@ -318,6 +335,9 @@
   </div>
 
   <script>
+    const FIXED_PAGE_INDEX = 5; 
+    // 상단 고정페이지 설정 1 = PAGE_1, 2 = PAGE_2, 3 = PAGE_3, 4 = PAGE_4, 5 = PAGE_5
+
     const PAGE_1 = [
       ["10","팬가입"],
       ["18","욕"],
@@ -350,6 +370,13 @@
     ];
 
     const PAGE_3 = [
+      ["78","연장"],
+      ["79","단축"],
+      ["780","슈퍼연장"],
+      ["790","슈퍼단축"]
+    ];
+
+    const PAGE_4 = [
       ["11","와라와라왕"],
       ["66","UU"],
       ["68","짠쿵쾅",""],
@@ -415,7 +442,7 @@
       ["333","치로투"]
   ];
 
-    const PAGE_4 = [
+    const PAGE_5 = [
       ["1등","카톡or상품권30","","[레드존이상 식데]"],
       ["2등","방셀or상품권10","",""],
       ["3등","리액션or배민2","",""],
@@ -443,7 +470,8 @@
         'page-1': ICON_PUNG_P4,
         'page-2': ICON_PUNG_P4,
         'page-3': ICON_PUNG_P4,
-        'page-4': ICON_PUNG_P4
+        'page-4': ICON_PUNG_P4,
+        'page-5': ICON_PUNG_P4
 //      'page-6': ICON_PUNG_P6
     };
 
@@ -649,21 +677,53 @@
         </div>`;
     }
 
-    function makeSequenceHTML() { /*페이지 정리*/
-      return `
-        ${makePage('미션', 'title-gray', PAGE_1, 'black', 'page-1')}
-        <div class="page-gap" aria-hidden="true"> </div>
-        ${makePage('운동/벌칙', 'title-gray', PAGE_2, 'black', 'page-2')}
-        <div class="page-gap" aria-hidden="true"> </div>
-        ${makePage('시그니처', 'title-gray', PAGE_3, 'black', 'page-3')}
-        <div class="page-gap" aria-hidden="true"> </div>
-        ${makePage('104개 뽑기', 'title-pink', PAGE_4, 'black', 'page-4')}
-        <div class="page-gap" aria-hidden="true"> </div>
-        `;
+    function makeSequenceHTML() {
+      const pages = [
+        { i:1, data: ['미션','title-gray',PAGE_1,'black','page-1'] },
+        { i:2, data: ['운동/벌칙','title-gray',PAGE_2,'black','page-2'] },
+        { i:3, data: ['연장/단축 룰렛','title-yellow',PAGE_3,'black','page-3'] },
+        { i:4, data: ['시그니처','title-gray',PAGE_4,'black','page-4'] },
+        { i:5, data: ['104개 뽑기','title-pink',PAGE_5,'black','page-5'] }
+      ];
+
+      return pages
+        .filter(p => p.i !== FIXED_PAGE_INDEX) // 고정 페이지 제외
+        .map(p => `
+          ${makePage(...p.data)}
+          <div class="page-gap"></div>
+        `).join('');
+    }
+
+    function getPageData(index) {
+      if (index === 1) return ['미션', 'title-gray', PAGE_1, 'black', 'page-1'];
+      if (index === 2) return ['운동/벌칙', 'title-gray', PAGE_2, 'black', 'page-2'];
+      if (index === 3) return ['연장/단축 룰렛', 'title-gray', PAGE_3, 'black', 'page-3'];
+      if (index === 4) return ['시그니처', 'title-gray', PAGE_4, 'black', 'page-4'];
+      if (index === 5) return ['104개 뽑기', 'title-pink', PAGE_5, 'black', 'page-5'];
+      return null;
+    }
+
+    function renderFixedPage() {
+      if (!FIXED_PAGE_INDEX) return;
+
+      const data = getPageData(FIXED_PAGE_INDEX);
+      if (!data) return;
+
+      const html = makePage(...data);
+
+      const fixedEl = document.getElementById('fixedPage');
+      fixedEl.innerHTML = html;
+
+      // 높이 계산 후 viewport 밀기
+      const h = fixedEl.offsetHeight;
+      document.documentElement.style.setProperty('--fixed-page-h', `${h}px`);
     }
 
     const sequenceA = document.getElementById('sequenceA');
     const sequenceB = document.getElementById('sequenceB');
+
+    renderFixedPage(); /* 고정페이지 렌더링 */
+
     sequenceA.innerHTML = makeSequenceHTML();
     sequenceB.innerHTML = makeSequenceHTML();
 
