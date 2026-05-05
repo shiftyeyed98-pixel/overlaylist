@@ -84,7 +84,7 @@
         top: calc(
         var(--fixed-title-h)
         + var(--fixed-title-mb)
-        + var(--fixed-page-h)
+        + var(--fixed-page-h) + 20px
       );
       width: 100%;
       height: calc(
@@ -240,8 +240,7 @@
     .label-wrap {
       display: inline-flex;
       align-items: center;
-      gap: 0;
-      width: auto;
+      gap: 4px; /* 텍스트와 아이콘 간격 */
     }
     
     .num-svg,
@@ -254,12 +253,12 @@
     }
 
     .label-icon {
-      width: 30px;
-      height: 30px;
-      flex: 0 0 30px;
+      width: 28px;
+      height: 40px;
+      flex: 0 0 40px;
       object-fit: contain;
       display: block;
-      margin-left: -6px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+      margin-left: 10px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
     }
 
     .label-text {
@@ -277,7 +276,7 @@
     }
 
     .fixed-page-wrap::before {
-      width:290px;
+      width:310px;
       content: "";
       position: absolute;
       inset: 0;
@@ -401,14 +400,14 @@
     const PAGE_4 = [
       ["11","와라와라왕"],
       ["66","UU"],
-      ["68","짠쿵쾅",""],
+      ["68","짠쿵쾅","best",""],
       ["90","키세스"],
       ["91","심장이쿵"],
       ["92","너뿐이야"],
       ["95","사쿠란보"],
       ["96","여봉봉"],
       ["97","부비부"],
-      ["98","삐삐"],
+      ["98","삐삐","best",""],
       ["",""],
       ["100","오또케송"],
       ["101","미모자랑"],
@@ -420,7 +419,7 @@
       ["114","바나나차차"],
       ["170","포케로켓"],
       ["171","포켓몬"],
-      ["172","뾱뾱이"],
+      ["172","뾱뾱이","best",""],
       ["173","UP"],
       ["174","패스트카"],
       ["175","스마트"],
@@ -433,22 +432,22 @@
       ["181","슈퍼그럼요"],
       ["182","바니바니"],
       ["183","고민중독"],
-      ["184","러브쉐이크"],
+      ["184","러브쉐이크","best",""],
       ["185","여우"],
       ["186","도레미파"],
-      ["187","무아"],
+      ["187","무아","best",""],
       ["188","WTF"],
-      ["189","핑크레이디"],
+      ["189","핑크레이디","best",""],
       ["190","간바레센빠이"],
       ["191","이게사랑이지뭐야"],
-      ["192","빛을따라서"],
-      ["193","사랑받을준비완료"],
-      ["194","마티니"],
+      ["192","빛을따라서","best",""],
+      ["193","사랑받을준비완료","best",""],
+      ["194","마티니","best",""],
       ["195","살아있네"],
-      ["196","나랑사귈래"],
-      ["197","팬서비스"],
-      ["198","오빠바이러스"],
-      ["199","버터플라이"],
+      ["196","나랑사귈래","best",""],
+      ["197","팬서비스","best",""],
+      ["198","오빠바이러스","best",""],
+      ["199","버터플라이","best",""],
       ["",""],
       ["200","제로투"],
       ["222","앙카"],
@@ -457,8 +456,8 @@
       ["263","코카인"],
       ["264","킥드베"],
       ["265","이꾸욧"],
-      ["266","우유"],
-      ["267","바우치"],
+      ["266","우유","best",""],
+      ["267","바우치","best",""],
       ["268","터미널"],
       ["269","계엄령"],
       ["333","치로투"]
@@ -578,7 +577,7 @@
             aria-label="${t}" role="img"
             preserveAspectRatio="xMinYMid meet">
           ${makeShadowFilter(filterId)}
-          <g transform="scale(0.9 1)">
+          <g transform="scale(1.0 1)">
             <text x="24" y="25"
               text-anchor="start"
               font-family="${FONT}"
@@ -660,12 +659,12 @@
             <td class="num">
               ${safeNum ? `<div class="num-wrap">${makeNumberIcon(pageClass)}${makeNumberSVG(safeNum, numberVariant)}</div>` : ''}
             </td>
-            <td class="label">
-              <div class="label-wrap">
-                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel) : ''}</div>
-              </div>
-            </td>
-            <td class="icon-cell">${makeLabelIcon(iconType)}</td>
+              <td class="label">
+                <div class="label-wrap">
+                  <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel) : ''}</div>
+                  ${makeLabelIcon(iconType)}
+                </div>
+              </td>
           </tr>`;
 
         const footnoteRow = safeFootnote
@@ -683,7 +682,6 @@
           <colgroup>
             <col class="num-col" />
             <col />
-            <col class="icon-col" />
           </colgroup>
           <tbody>
             ${bodyHTML}
