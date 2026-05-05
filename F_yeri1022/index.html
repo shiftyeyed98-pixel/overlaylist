@@ -14,6 +14,14 @@
         font-display: swap;
     }
 
+    @font-face {
+      font-family: 'GmarketSansBold';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }    
+
     :root {
       --w: 300px;
       --h: 1080px;
@@ -30,6 +38,11 @@
       /* ===== 고정 타이틀 영역 ===== */
       --fixed-title-h: 42px;  /* 타이틀이 차지하는 세로 영역 */
       --fixed-title-mb: 6px;  /* 타이틀과 리스트 사이 여백 */
+
+      /* ===== 하단 고정바 영역 ===== */
+      --fixed-bottom-h: 20px;
+      --fixed-bottom-bottom: 4px;
+      --fixed-bottom-mt: 0px;
     }
 
     html, body {
@@ -72,10 +85,17 @@
 
     .viewport {
       position: absolute;
-      left: 0;
-      top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + var(--title-top-gap));
+      left: 4px;
+      top: calc(var(--fixed-title-h) + var(--fixed-title-mb));
       width: 100%;
-      height: calc(100% - var(--fixed-title-h) - var(--fixed-title-mb));
+      height: calc(
+        100%
+        - var(--fixed-title-h)
+        - var(--fixed-title-mb)
+        - var(--fixed-bottom-h)
+        - var(--fixed-bottom-bottom)
+        - var(--fixed-bottom-mt)
+      );
       overflow: hidden;
       z-index: 1;
     }
@@ -200,6 +220,36 @@
       overflow: visible;
     }
 
+    .fixed-bottom-label {
+      position: absolute;
+      left: 4px;
+      bottom: var(--fixed-bottom-bottom);
+      width: 240px;
+      height: var(--fixed-bottom-h);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: 'GmarketSansBold', Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 100;
+      color: #ffffff;
+
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid #ffffff;
+      border-radius: 10px;
+
+      box-sizing: border-box;
+      z-index: 50;
+
+      text-shadow:
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px  2px 0 #000,
+        2px  2px 0 #000;
+    }
+
     @keyframes riseLoop {
       from {
         transform: translateY(0);
@@ -224,6 +274,7 @@
         <div class="sequence" id="sequenceB" aria-hidden="true"></div>
       </div>
     </div>
+    <div class="fixed-bottom-label">designed by 시프티♻️</div>
   </div>
 
   <script>
