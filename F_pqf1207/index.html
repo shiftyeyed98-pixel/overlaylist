@@ -30,6 +30,9 @@
       /* ===== 고정 타이틀 영역 ===== */
       --fixed-title-h: 36px;
       --fixed-title-mb: 2px;
+  
+      /* ===== 하단 고정 페이지 영역 ===== */
+      --fixed-page-side-gap: 0px; /* ← 원하는 값 */
 
       /* ===== 하단 고정바 영역 ===== */
       --fixed-bottom-h: 20px;
@@ -86,7 +89,7 @@
         - var(--fixed-title-mb)
         - var(--fixed-bottom-h)
         - var(--fixed-bottom-bottom)
-        - var(--fixed-bottom-mt)
+        - 120px   /* ← 고정페이지 높이 만큼 추가 감소 */
       );
       overflow: hidden;
       z-index: 1;
@@ -285,6 +288,14 @@
         2px  2px 0 #000;
     }
 
+    .page-2 .label-svg text {
+      font-size: 22px !important;
+    }
+
+    .page-2 .num-svg text {
+      font-size: 22px !important;
+    }
+
     @keyframes riseLoop {
       from {
         transform: translate3d(0, 0, 0);
@@ -292,6 +303,27 @@
       to {
         transform: translate3d(0, calc(-1 * var(--sequence-height)), 0);
       }
+    }
+
+    .fixed-bottom-page {
+      position: absolute;
+      left: var(--fixed-page-side-gap);
+      bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom) + 0px);
+      width: calc(85% - (var(--fixed-page-side-gap) * 2));
+
+      z-index: 40;
+
+      padding: 6px 6px 8px 6px;
+
+      border-radius: 14px;
+
+      background: rgba(120, 120, 120, 0.18);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+
+      border: 1px solid rgba(255,255,255,0.4);
+
+      box-sizing: border-box;
     }
   </style>
 </head>
@@ -309,23 +341,11 @@
         <div class="sequence" id="sequenceB" aria-hidden="true"></div>
       </div>
     </div>
+    <div class="fixed-bottom-page" id="fixedPage"></div>
     <div class="fixed-bottom-label">designed by 시프티♻️</div>
   </div>
 
   <script>
-    /*
-    const PAGE_1 = [
-      ["닉네임 :","히 리ミ⛧"],
-      ["나이 :","26살"],
-      ["키 :","163㎝"],
-      ["체중 :","당일싯가㎏"],
-      ["MBTI :","INTP"],
-      ["사는곳 :","오빠들마음속"],
-      ["취미 :","호구조사,먹기,자기"],
-      ["방송시간 :","밤9시~"],
-      ["휴방 :","금,토"]
-    ];
-    */
     const PAGE_1 = [
       ["20","스쿼트"],
       ["25","니코니코니"],
@@ -342,13 +362,21 @@
     ];
   
     const PAGE_2 = [
+      ["1등","소원권or신세경10"],
+      ["2등","카톡or5772사다리"],
+      ["3등","치피방역4다리or뽑기10"],
+      ["4등","역팬10or리액션"],
+      ["5등","스쿼트!!"]
+    ];
+
+    const PAGE_3 = [
       ["73","연장"],
       ["74","단축"],
       ["730","슈퍼연장"],
       ["740","슈퍼단축"]
     ];
 
-    const PAGE_3 = [
+    const PAGE_4 = [
       ["72","허리업"],
       ["80","포니테일"],
       ["91","맷돌"],
@@ -383,100 +411,6 @@
       ["888","치로투"]
     ];
 
-  /* 시그/리액션
-    const PAGE_5 = [
-      ["39","이멀전시"],
-      ["40","뾱뾱이"],
-      ["44","살구송"],
-      ["45","부비부"],
-      ["46","U you"],
-      ["47","만두송"],
-      ["48","삐삐야"],
-      ["49","키세스"],
-      ["59","이안챌린지",""],
-      ["60","구찌"],
-      ["61","슈퍼그럼요"],
-      ["64","마티니"],
-      ["65","바람피면D지···."],
-      ["72","아이돌"],
-      ["73","배럴업"],
-      ["74","플래쉬"],
-      ["75","드라마",""],
-      ["76","러브인스페이스"],
-      ["77","투핫"],
-      ["78","헬로스트레인저"],
-      ["79","왜요왜요"],
-      ["",""],
-      ["80","파랑새"],
-      ["81","Baby boy"],
-      ["82","체온"],
-      ["83","반해"],
-      ["84","Dance on"],
-      ["86","위플래쉬"],
-      ["87","라이트온"],
-      ["88","판도라"],
-      ["89","네모네모"],
-      ["91","뷰티풀몬스터"],
-      ["92","엘리베이터"],
-      ["93","퀸덤"],
-      ["94","홈스윗홈"],
-      ["95","걸스네버다이"],
-      ["96","피에스타"],
-      ["97","카리나업"],
-      ["98","마지막처럼"],
-      ["99","빛을따라서"],
-      ["",""],
-      ["100","찌찌뱅"],
-      ["101","라라리라라"],
-      ["102","도깨비불"],
-      ["103","그래비티"],
-      ["104","캉캉캉"],
-      ["105","나니가스키"],
-      ["106","할것"],
-      ["107","두번째지구"],
-      ["108","불도저"],
-      ["109","수퍼레이디"],
-      ["110","다시만난세계"],
-      ["112","뱅뱅"],
-      ["113","런던"],
-      ["114","댓츠노노"],
-      ["115","뛰어"],
-      ["116","이루리"],
-      ["117","간바레 센빠이"],
-      ["",""],
-      ["120","위아래",""],
-      ["121","롤린"],
-      ["122","솜사탕"],
-      ["123","토끼춤"],
-      ["124","꿈빛파티시엘"],
-      ["125","아로아로"],
-      ["127","묵찌빠"],
-      ["128","비유어캣"],
-      ["129","제로투","","(1분, MAX10)"],
-      ["130","제로콕"],
-      ["131","홀덥"],
-      ["132","우유"],
-      ["133","이쿠욧"],
-      ["135","빠라뉴"],
-      ["136","Lick my neck"],
-      ["137","터미널"],
-      ["",""],
-      ["200","경찰춤"],
-      ["201","오도방구"],
-      ["282","랜덤시그","",""],
-      ["333","섹댄오마카세"]
-    ];
-
-   /* 열혈시그
-    const PAGE_6 = [
-      ["227","우성이"],
-      ["228","우성이"],
-      ["990","버스"],
-      ["999","리어카"],
-      ["1111","리어카"]
-    ];
-   */ 
-
     const FONT = 'GmarketSansBold, Arial, sans-serif';
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
@@ -495,13 +429,16 @@
 //      'page-4': ICON_PUNG_P4,
         'page-1': ICON_PUNG_P4,
         'page-2': ICON_PUNG_P4,
-        'page-3': ICON_PUNG_P4
-//      'page-6': ICON_PUNG_P6
+        'page-3': ICON_PUNG_P4,
+        'page-4': ICON_PUNG_P4
     };
 
     const ICON_NEW = 'https://i.imgur.com/a5s2iUL.png';
     const ICON_BEST = 'https://i.imgur.com/1Z3VEON.png';
     const ICON_Rullet = 'https://i.imgur.com/hVpuiwV.png';
+
+    const FIXED_PAGE_KEY = 'page-2'; 
+    // 'page-1', 'page-2', 'page-3', 'page-4' 로 변경 가능
 
     function esc(s) {
       return String(s)
@@ -693,7 +630,7 @@
 
     function makePage(title, titleClass, rows, variant, pageClass) {
       return `
-        <div class="page ${pageClass}">
+        <div class="page ${pageClass}" data-page="${pageClass}">
           <div class="page-title ${titleClass}">${title}</div>
           ${makeTable(rows, variant, pageClass)}
         </div>`;
@@ -703,17 +640,66 @@
       return `
         ${makePage('미션판', 'title-purple', PAGE_1, 'purple', 'page-1')}
         <div class="page-gap" aria-hidden="true"> </div>
-        ${makePage('연장/단축', 'title-purple', PAGE_2, 'purple', 'page-2')}
+        ${makePage('100개 뽑기', 'title-purple', PAGE_2, 'purple', 'page-2')}
         <div class="page-gap" aria-hidden="true"> </div>
-        ${makePage('시그니쳐', 'title-purple', PAGE_3, 'purple', 'page-3')}
+        ${makePage('연장/단축', 'title-purple', PAGE_3, 'purple', 'page-3')}
         <div class="page-gap" aria-hidden="true"> </div>
+        ${makePage('시그니쳐', 'title-purple', PAGE_4, 'purple', 'page-4')}
+        <div class="page-gap" aria-hidden="true"> </div>        
         `;
+    }
+
+    function extractFixedPage() {
+      const fixedContainer = document.getElementById('fixedPage');
+
+      // sequenceA 기준으로 찾기
+      const target = sequenceA.querySelector(`[data-page="${FIXED_PAGE_KEY}"]`);
+
+      if (!target) return;
+
+      // 복제해서 고정 영역으로 이동
+      fixedContainer.innerHTML = target.outerHTML;
+
+      // 스크롤에서 제거 (A/B 둘 다 제거)
+      [sequenceA, sequenceB].forEach(seq => {
+        const el = seq.querySelector(`[data-page="${FIXED_PAGE_KEY}"]`);
+        if (!el) return;
+
+        const next = el.nextElementSibling;
+
+        el.remove();
+
+        // 바로 다음이 gap이면 그것만 제거
+        if (next && next.classList.contains('page-gap')) {
+          next.remove();
+        }
+      });
+    }
+
+    function adjustViewportHeight() {
+      const fixed = document.getElementById('fixedPage');
+      const vh = document.querySelector('.viewport');
+
+      const h = fixed.offsetHeight || 0;
+
+      vh.style.height = `calc(
+        100%
+        - var(--fixed-title-h)
+        - var(--fixed-title-mb)
+        - var(--fixed-bottom-h)
+        - var(--fixed-bottom-bottom)
+        - ${h}px
+      )`;
     }
 
     const sequenceA = document.getElementById('sequenceA');
     const sequenceB = document.getElementById('sequenceB');
+    
     sequenceA.innerHTML = makeSequenceHTML();
     sequenceB.innerHTML = makeSequenceHTML();
+
+    extractFixedPage();   // 하단 고정페이지 렌더링
+    adjustViewportHeight();   // 하단 페이지 고정으로 인한 렌더링 위치 자동계산
 
     function updateLoopHeight() {
       const h = sequenceA.offsetHeight;
