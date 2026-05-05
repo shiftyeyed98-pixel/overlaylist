@@ -322,6 +322,7 @@
       ["10","팬가입"],
       ["18","욕"],
       ["99","핀볼게임"],
+      ["104","뽑기","",""],
       ["120","배민사다리","",""],
       ["144","라이브완곡","",""],
       ["155","배민띵뽑기"],
@@ -412,7 +413,15 @@
       ["268","터미널"],
       ["269","계엄령"],
       ["333","치로투"]
+  ];
 
+    const PAGE_4 = [
+      ["1등","카톡or상품권30","","[레드존이상 식데]"],
+      ["2등","방셀or상품권10","",""],
+      ["3등","리액션or배민2","",""],
+      ["4등","캠리액션","",""],
+      ["5등","꽝","",""],
+      ["판찢","48668","",""]
   ];
 
     const FONT = 'GmarketSansBold, Arial, sans-serif';
@@ -433,7 +442,8 @@
 //      'page-4': ICON_PUNG_P4,
         'page-1': ICON_PUNG_P4,
         'page-2': ICON_PUNG_P4,
-        'page-3': ICON_PUNG_P4
+        'page-3': ICON_PUNG_P4,
+        'page-4': ICON_PUNG_P4
 //      'page-6': ICON_PUNG_P6
     };
 
@@ -646,6 +656,8 @@
         ${makePage('운동/벌칙', 'title-gray', PAGE_2, 'black', 'page-2')}
         <div class="page-gap" aria-hidden="true"> </div>
         ${makePage('시그니처', 'title-gray', PAGE_3, 'black', 'page-3')}
+        <div class="page-gap" aria-hidden="true"> </div>
+        ${makePage('104개 뽑기', 'title-pink', PAGE_4, 'black', 'page-4')}
         <div class="page-gap" aria-hidden="true"> </div>
         `;
     }
