@@ -181,21 +181,29 @@
     .page-title {
       width: 240px;
       height: 36px;
-      line-height: 36px;
+
+      display: flex;
+      align-items: center;       /* 세로 중앙 */
+      justify-content: center;   /* 가로 중앙 */
+
       margin: 0 0 6px 0;
       text-align: center;
+
       font-family: 'GmarketSansBold', Arial, sans-serif;
       font-size: 28px;
       font-weight: 400;
       color: #ffffff;
+
       border: 2px solid currentColor;
       border-radius: 10px;
       box-sizing: border-box;
+
       text-shadow:
         -2px -2px 0 #000,
          2px -2px 0 #000,
         -2px  2px 0 #000,
          2px  2px 0 #000;
+      transform: translateY(-1px);
     }
 
     .title-gray {
@@ -433,7 +441,7 @@
 //      'page-3': ICON_PUNG_P3,
 //      'page-4': ICON_PUNG_P4,
         'page-1': ICON_PUNG_P4,
-        'page-2': ICON_PUNG_P4,
+//      'page-2': ICON_PUNG_P4,
         'page-3': ICON_PUNG_P4,
         'page-4': ICON_PUNG_P4
     };
@@ -563,7 +571,7 @@
           </g>
         </svg>`;
     }
-    /* 숫자 좌측 하트 이미지 */
+    /* 숫자 좌측 아이콘 이미지 */
     function makeNumberIcon(pageClass) {
       const src = PAGE_ICON_MAP[pageClass] || '';
       return src ? `<img class="num-left-icon" src="${src}" alt="풍">` : '';
