@@ -434,6 +434,14 @@
       ["250","뒷태앙카","",""]
     ];
 
+    const PAGE_3 = [
+      ["5050","한방카톡"],
+      ["50000","한방식데"],
+      ["200000","한방술데","",""],
+      ["천시그","쪽지답장하기","","(1통당)"],
+      ["1489","방셀","","(5/7부터 일주일간)"]
+    ];
+
     const FONT = 'Juache, Arial, sans-serif';
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
@@ -566,7 +574,7 @@
             preserveAspectRatio="xMinYMid meet">
           ${makeShadowFilter(filterId)}
           <g transform="scale(1.0 1)">
-            <text x="98" y="10"
+            <text x="90" y="10"
               text-anchor="start"
               font-family="${FONT}"
               font-size="20"
@@ -663,6 +671,8 @@
         ${makePage('일반미션', 'title-blue', PAGE_1, 'blue', 'page-1')}
         <div class="page-gap" aria-hidden="true"> </div>
         ${makePage('운동/벌칙', 'title-blue', PAGE_2, 'blue', 'page-2')}
+        <div class="page-gap" aria-hidden="true"> </div>
+        ${makePage('믿는사람없제?ㅋ', 'title-blue', PAGE_3, 'blue', 'page-3')}
         <div class="page-gap" aria-hidden="true"> </div>
         `;
     }
