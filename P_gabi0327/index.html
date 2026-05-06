@@ -270,6 +270,17 @@
         2px  2px 0 #000;
     }
 
+    .e-colorshift text {
+      animation: colorShift 2s linear infinite;
+    }
+
+    @keyframes colorShift {
+      0%   { fill: #ff6; }
+      33%  { fill: #6ff; }
+      66%  { fill: #f6f; }
+      100% { fill: #ff6; }
+    }
+
     @keyframes riseLoop {
       from {
         transform: translate3d(0, 0, 0);
@@ -293,10 +304,10 @@
 
   <script>
     const PAGE_1 = [
-      ["닉네임 :","단비"],
+      ["닉네임 :","단비","",""],
       ["나이 :","97년생"],
       ["키 :","160㎝"],
-      ["몸무게 :","55㎏"],
+      ["몸무게 :","55㎏","","","e_colorshift"],
       ["사는곳 :","마계인천"],
       ["MBTI :","INFP"],
       ["시간 :","공지"],
@@ -418,7 +429,7 @@
     }
 
     /* 단가 */
-    function makeNumberSVG(num, variant = 'pink') {
+    function makeNumberSVG(num, variant = 'pink', effect = '') {
       const width = numWidth(num.length);
       const t = esc(num);
       const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
@@ -433,7 +444,7 @@
         '#4A90E2';
 
       return `
-        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+        <svg class="num-svg ${effect === 'e_colorshift' ? 'e-colorshift' : ''}" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           ${makeShadowFilter(filterId)}
           <g transform="scale(1.0 1)">
           <text x="4" y="25"
@@ -458,14 +469,14 @@
       return Math.ceil(ctx.measureText(text).width);
     }
 
-    function makeLabelSVG(label) {
+    function makeLabelSVG(label, effect = '') {
       const t = esc(label);
       const measured = measureTextWidth(label, 28, FONT, 500);
       const w = Math.max(40, measured + 10); // 여백 10 정도
       const filterId = `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
 
       return `
-        <svg class="label-svg" viewBox="0 0 ${w} 34"
+        <svg class="label-svg ${effect === 'e_colorshift' ? 'e-colorshift' : ''}" viewBox="0 0 ${w} 34"
             xmlns="http://www.w3.org/2000/svg"
             aria-label="${t}" role="img"
             preserveAspectRatio="xMinYMid meet">
@@ -486,14 +497,14 @@
         </svg>`;
     }
     /* 각주 */
-    function makeFootnoteSVG(footnote) {
+    function makeFootnoteSVG(footnote, effect = '') {
       const t = esc(footnote);
       const measured = measureTextWidth(footnote, 20, FONT, 500);
       const w = Math.max(40, measured + 10);
       const filterId = `footnoteShadow-${Math.random().toString(36).slice(2, 9)}`;
 
       return `
-        <svg class="footnote-svg" viewBox="0 0 ${w} 30"
+        <svg class="footnote-svg ${effect === 'e_colorshift' ? 'e-colorshift' : ''}" viewBox="0 0 ${w} 30"
             xmlns="http://www.w3.org/2000/svg"
             aria-label="${t}" role="img"
             preserveAspectRatio="xMinYMid meet">
@@ -542,7 +553,7 @@
 
     /* 테이블 */
     function makeTable(rows, numberVariant = 'pink', pageClass = '') {
-      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '']) => {
+      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '', effect = '']) => {
         const safeNum = String(num ?? '').trim();
         const safeLabel = String(label ?? '').trim();
         const safeFootnote = String(footnote ?? '').trim();
@@ -550,11 +561,11 @@
         const mainRow = `
           <tr>
             <td class="num">
-              ${safeNum ? `<div class="num-wrap">${makeNumberIcon(pageClass)}${makeNumberSVG(safeNum, numberVariant)}</div>` : ''}
+              ${safeNum ? `<div class="num-wrap">${makeNumberIcon(pageClass)}${makeNumberSVG(safeNum, numberVariant, effect)}</div>` : ''}
             </td>
             <td class="label">
               <div class="label-wrap">
-                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel) : ''}</div>
+                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel, effect) : ''}</div>
               </div>
             </td>
             <td class="icon-cell">${makeLabelIcon(iconType)}</td>
@@ -563,7 +574,7 @@
         const footnoteRow = safeFootnote
           ? `
           <tr class="footnote-row">
-            <td class="footnote" colspan="3">${makeFootnoteSVG(safeFootnote)}</td>
+            <td class="footnote" colspan="3">${makeFootnoteSVG(safeFootnote, effect)}</td>
           </tr>`
           : '';
 
