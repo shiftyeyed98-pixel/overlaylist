@@ -152,6 +152,7 @@
     .title-pink {
       background: #FAB0C1;
       border-color: #D36C86;
+      font-size: 22px !important;
     }
 
     .title-orange {
@@ -172,7 +173,6 @@
     .title-blue {
       background: #4A90E2;
       border-color: #1F5EA6;
-      font-size: 22px !important;
     }
 
     .label-wrap {
@@ -260,39 +260,25 @@
 
   <script>
     const PAGE_1 = [
-      ["닉네임 :","단하나_❤️"],
-      ["나이 :","95년생"],
-      ["키 :","163㎝"],
-      ["몸무게 :","45㎏"],
-      ["MBTI :","INFP"],
-      ["방송시간 :","공지"],
-      ["휴방 :","공지"]
+      ["12484","한방카톡"],
+      ["20982","방종권"],
+      ["40000","한방식데"]
     ];
 
     const PAGE_2 = [
-      ["184","뽑기"],
-      ["282","노래 1절"],
-      ["399","앙카 1분"],
-      ["555","드라군"],
-      ["1414","식사식사"],
-      ["1415","식사싫어"],
-      ["1818","108배"],
-      ["7777","슈퍼의첸"],
-      ["12484","한방카톡♥"],
-      ["20982","방종권♥"],
-      ["40000","한방식데♥"]
+      ["2884","정성방셀","","(움짤+사진 10장)"],
+      ["5000","정성방셀 2개","","(전신포함)"]
     ];
 
     const PAGE_3 = [
-      ["1484","방셀5장"],
-      ["2884","정성방셀","","(움짤+사진 10장)"],
-      ["5784","정성방셀2개","","(전신포함)"]
+      ["1등","식데","","열혈(1)/일반(2)"],
+      ["2등","카톡"],
+      ["3등","간단방셀"],
+      ["4등","시그댄스"],
+      ["5등","쪽~ 사랑해❤️"]
     ];
 
     const PAGE_4 = [
-    ];
-
-    const PAGE_5 = [
       ["66","뾱뾱이"],
       ["77","오버드라이브"],
       ["88","외모체크"],
@@ -366,7 +352,7 @@
       ["666","바우치"],
     ];
 
-  const PAGE_6 = [
+  const PAGE_5 = [
       ["- Bust'Em"],
       ["- Twerk Shake Drop"],
       ["- BOOTY"],
@@ -580,19 +566,16 @@
 
     function makeSequenceHTML() { /*페이지 정리*/
       return `
-        ${makePage('♥프로필♥', 'title-gray', PAGE_1, 'gray', 'page-1')}
+        ${makePage('♥카톡/식데♥', 'title-gray', PAGE_1, 'gray', 'page-1')}
         <div class="page-gap" aria-hidden="true"></div>
-        ${makePage('♥미션판♥', 'title-orange', PAGE_2, 'orange', 'page-2')}
+        ${makePage('📸 방셀 📸', 'title-orange', PAGE_2, 'orange', 'page-2')}
         <div class="page-gap" aria-hidden="true"></div>
-        ${makePage('📸방셀📸', 'title-yellow', PAGE_3, 'yellow', 'page-3')}
+        ${makePage('100풍 뽑기', 'title-yellow', PAGE_3, 'yellow', 'page-3')}
         <div class="page-gap" aria-hidden="true"></div>
-        ${makePage('♥역팬 10%♥', 'title-purple', PAGE_4, 'purple', 'page-4')}
+        ${makePage('♥시그/리액션♥', 'title-purple', PAGE_4, 'purple', 'page-4')}
         <div class="page-gap" aria-hidden="true"></div>
-        ${makePage('♥시그/리액션♥', 'title-pink', PAGE_5, 'pink', 'page-5')}
+        ${makePage('♥1000개 완곡시그♥', 'title-pink', PAGE_5, 'pink', 'page-5')}
         <div class="page-gap" aria-hidden="true"></div>
-        ${makePage('♥1000개 완곡시그♥', 'title-blue', PAGE_6, 'blue', 'page-6')}
-        <div class="page-gap" aria-hidden="true"></div>
-
       `;
     }
 
