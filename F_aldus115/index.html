@@ -361,7 +361,18 @@
         background: rgba(120, 120, 120, 0.18);
         backdrop-filter: blur(2px);
         -webkit-backdrop-filter: blur(2px);
-    }    
+    }
+
+    .waveChar {
+      display: inline-block;
+      animation: wave 1s ease-in-out infinite;
+    }
+
+    @keyframes wave {
+      50% {
+        transform: translateY(-6px);
+      }
+    }
 
   </style>
 </head>
@@ -698,6 +709,22 @@
       });
     }
 
+    function applyWaveToFixedTitle() {
+      if (!FIXED_PAGE_KEY) return;
+
+      const fixedContainer = document.getElementById('fixedPage');
+      const titleEl = fixedContainer.querySelector('.page-title');
+
+      if (!titleEl) return;
+
+      const text = titleEl.textContent.trim();
+
+      // 글자 단위로 쪼개서 span 적용
+      titleEl.innerHTML = [...text].map((c, i) =>
+        `<span class="waveChar" style="animation-delay:${i * 0.08}s">${c}</span>`
+      ).join('');
+    }
+
     function adjustViewportHeight() {
       const vh = document.querySelector('.viewport');
 
@@ -719,6 +746,7 @@
     sequenceB.innerHTML = makeSequenceHTML();
 
     extractFixedPage();   // 하단 고정페이지 렌더링
+    applyWaveToFixedTitle();
     adjustViewportHeight();   // 하단 페이지 고정으로 인한 렌더링 위치 자동계산
 
     if (!FIXED_PAGE_KEY) {
