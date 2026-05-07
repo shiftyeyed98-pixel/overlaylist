@@ -335,8 +335,6 @@
     const PAGE_1 = [
       ['32','현이개'],
       ['55','킹받쥬'],
-      ['92','역도'],
-      ['97','스키'],
       ['100','니코니코니'],
       ['115','팬서비스'],
       ['118','캐치캐치'],
@@ -371,6 +369,11 @@
     ];
 
     const PAGE_2 = [
+      ['92','역도'],
+      ['97','스키']
+    ];
+
+    const PAGE_3 = [
       ["1등","식데"],
       ["2등","카톡"],
       ["3등","방셀"],
@@ -378,7 +381,7 @@
       ["5등","꽝"]
     ];
 
-    const FIXED_PAGE_KEY = 'page-2'; 
+    const FIXED_PAGE_KEY = 'page-3'; 
     // 'page-1', 'page-2', 'page-3', 'page-4' 로 변경 가능    
 
     const FONT = 'KyoboHandwriting2019, Arial, sans-serif';
@@ -541,7 +544,9 @@
       return `
         ${makePage('시그니처', 'title-blue', PAGE_1, 'blue', 'page-1')}
         <div class="page-gap" aria-hidden="true"> </div>
-        ${makePage('100개 뽑기', 'title-blue2', PAGE_2, 'blue2', 'page-2')}
+        ${makePage('운동', 'title-blue', PAGE_2, 'blue', 'page-2')}
+        <div class="page-gap" aria-hidden="true"> </div>
+        ${makePage('100개 뽑기', 'title-blue2', PAGE_3, 'blue2', 'page-3')}
         <div class="page-gap" aria-hidden="true"> </div>
       `;
     }
