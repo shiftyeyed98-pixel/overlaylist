@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=380, height=1080, initial-scale=1.0" />
-  <title>플렉스TV 예리 리액션 리스트</title>
+  <title>플렉스TV 우리 아 현🐤 리액션 리스트</title>
   <style>
 
     @font-face {
-        font-family: 'SchoolSafetyRoundedSmile';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-B.woff2') format('woff2');
-        font-weight: 500;
+        font-family: 'KyoboHandwriting2019';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/KyoboHand.woff') format('woff');
+        font-weight: normal;
         font-display: swap;
     }
 
@@ -29,7 +29,7 @@
       --num-col: 72px;
       --svg-h: 30px;
       --page-gap: 10px;     /*페이지사이공백*/
-      --loop-seconds: 50s;  /*속도*/
+      --loop-seconds: 30s;  /*속도*/
       --sequence-height: 1000px;
       --outline: 5;
       --title-top-gap: 6px;
@@ -58,7 +58,7 @@
     }
 
     body {
-      font-family: 'SchoolSafetyRoundedSmile', Arial, sans-serif;
+      font-family: 'KyoboHandwriting2019', Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       background: transparent !important;
@@ -166,7 +166,7 @@
       margin: 0;
       text-align: center;
 
-      font-family: 'SchoolSafetyRoundedSmile', Arial, sans-serif;
+      font-family: 'KyoboHandwriting2019', Arial, sans-serif;
       font-size: 28px;
       font-weight: 700;
       color: #ffffff;
@@ -190,6 +190,14 @@
     .title-blue {
       background: #8fd0ff;
     }
+
+    .title-blue2 {
+      background: #99ccfe;
+    }
+
+    .title-purple {
+      background: #7643b5;
+    }    
 
     .title-yellow {
       background: #F6E58D;
@@ -263,18 +271,18 @@
     }
 
     .page-2 .label-svg text {
-      font-size: 22px !important;
+      font-size: 28px !important;
     }
 
     .page-2 .num-svg text {
-      font-size: 22px !important;
+      font-size: 28px !important;
     }
 
     .fixed-bottom-page {
       position: absolute;
       left: var(--fixed-page-side-gap);
       bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom) + 0px);
-      width: calc(95% - (var(--fixed-page-side-gap) * 2));
+      width: calc(60% - (var(--fixed-page-side-gap) * 2));
 
       z-index: 40;
 
@@ -309,7 +317,7 @@
   <div class="overlay">
     <!-- 타이틀은 스크롤 트랙 밖에 배치해서 항상 상단에 고정 -->
     <div class="fixed-title-wrap">
-      <div class="page-title title-pink">예리한 시그 </div>
+      <div class="page-title title-blue"> 우리 아 현🐤 </div>
     </div>
 
     <!-- 숫자 / 텍스트 / 아이콘만 이 영역 안에서 무한 순환 -->
@@ -325,92 +333,55 @@
 
   <script>
     const PAGE_1 = [
-      ['9','태권도','new'],
-      ['10','와라왕'],
-      ['11','와라왕 2배'],
-      ['33','숫자송','new'],
-      ['34','모찌송','new'],
-      ['35','키세스'],
-      ['45','너뿐이야'],
-      ['50','캐치캐치','new'],
-      ['55','캥거루','new'],
-      ['83','모시모시'],
-      ['88','삐끼삐끼'],
-      ['101','스마트'],
-      ['104','귀여워서미안해'],
-      ['105','나니가스키'],
-      ['108','솜사탕'],
-      ['110','이머전시'],
-      ['111','엔젤','new'],
-      ['119','마녀배달부키키'],
-      ['120','바람피면디지는거야'],
-      ['121','자기야 화풀어'],
-      ['122','나랑사귈래'],
-      ['123','사쿠란보'],
-      ['132','업'],
-      ['134','오빠바이러스','best'],
-      ['135','슈퍼그럼요'],
-      ['136','내얘기를들어봐'],
-      ['138','토끼춤'],
-      ['146','포켓몬'],
-      ['157','홀드업'],
-      ['174','이꾸욧'],
-      ['175','붕가'],
-      ['176','미스터츄','new'],
-      ['182','외모체크'],
-      ['184','엘에스디'],
-      ['185','반해'],
-      ['200','고민중독'],
-      ['201','이게사랑이지뭐야'],
-      ['202','바빠','new'],
-      ['211','너와의모든지금'],
-      ['212','뽁뽁뽁'],
-      ['213','마티니'],
-      ['214','러브쉐이크'],
-      ['215','핑크레이디'],
-      ['216','포켓로켓'],
-      ['217','스파게티','new'],
-      ['220','바우치'],
-      ['221','WTF'],
-      ['222','빛을따라서'],
-      ['223','테디베어'],
-      ['224','이퓨럽미','best'],
-      ['225','앙카'],
-      ['230','바니바니챌린지'],
-      ['231','We Go'],
-      ['232','그래비티'],
-      ['233','헨타이'],
-      ['234','오빠 나 해도돼','best'],
-      ['235','야메떼','new'],
-      ['240','Waveway'],
-      ['241','S.O.S'],
-      ['242','버터플라이'],
-      ['244','알려줄게'],
-      ['245','제로투'],
-      ['246','터미널'],
-      ['247','뉴쿠란보'],
-      ['258','라라리라라'],
-      ['274','이루리'],
-      ['275','무아'],
-      ['281','야몽음인','new'],
-      ['289','미야오'],
-      ['300','모또모또'],
-      ['312','겐또'],
-      ['313','스텝']
+      ['32','현이개'],
+      ['55','킹받쥬'],
+      ['92','역도'],
+      ['97','스키'],
+      ['100','니코니코니'],
+      ['115','팬서비스'],
+      ['118','캐치캐치'],
+      ['151','이머전시'],
+      ['122','나니가스키'],
+      ['123','홀드업'],
+      ['124','파티트레인'],
+      ['125','러브쉐이크'],
+      ['126','귀여워서미안해'],
+      ['127','핫해'],
+      ['133','외모체크'],
+      ['135','마니마니'],
+      ['142','LSD'],
+      ['143','스마트'],
+      ['144','나랑사귈래'],
+      ['148','이게사랑이지'],
+      ['149','핑크레이디'],
+      ['155','제로투'],
+      ['161','벌룬인러브'],
+      ['171','왜요왜요'],
+      ['202','큐티스트리트'],
+      ['208','킥드베'],
+      ['212','뱅뱅'],
+      ['230','간바레'],
+      ['257','터미널'],
+      ['288','바우치'],
+      ['335','빛을따라서'],
+      ['355','대추노노'],
+      ['383','스텝'],
+      ['454','겐또'],
+      ['532','신호탄']
     ];
 
     const PAGE_2 = [
-      ["1등","카톡, 예리가 주는 특별한선물"],
-      ["2등","모닝콜/손편지/영상편지"],
-      ["3등","정성방셀or댄스릴레이(10곡)"],
-      ["4등","다시+원하는리액션"],
+      ["1등","식데"],
+      ["2등","카톡"],
+      ["3등","방셀"],
+      ["4등","다시뽑기"],
       ["5등","꽝"]
     ];
 
     const FIXED_PAGE_KEY = 'page-2'; 
     // 'page-1', 'page-2', 'page-3', 'page-4' 로 변경 가능    
 
-    const FONT = 'SchoolSafetyRoundedSmile, Arial, sans-serif';
+    const FONT = 'KyoboHandwriting2019, Arial, sans-serif';
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
@@ -447,7 +418,7 @@
     );
 
     /* 단가 */
-    function makeNumberSVG(num, variant = 'pink') {
+    function makeNumberSVG(num, variant = 'blue') {
       const width = FIXED_NUM_WIDTH;
       const cx = width / 2;
       const t = esc(num);
@@ -456,6 +427,7 @@
       /* 글꼴색 */
       const fillColor =
         variant === 'blue' ? '#8fd0ff' :
+        variant === 'blue2' ? '#99ccfe' :
         variant === 'yellow' ? '#F6E58D' :
         '#FDA6E8';
 
@@ -567,9 +539,9 @@
 
     function makeSequenceHTML() { 
       return `
-        ${makePage('시그니처', 'title-pink', PAGE_1, 'pink', 'page-1')}
+        ${makePage('시그니처', 'title-blue', PAGE_1, 'blue', 'page-1')}
         <div class="page-gap" aria-hidden="true"> </div>
-        ${makePage('100개 뽑기', 'title-yellow', PAGE_2, 'yellow', 'page-2')}
+        ${makePage('100개 뽑기', 'title-blue2', PAGE_2, 'blue2', 'page-2')}
         <div class="page-gap" aria-hidden="true"> </div>
       `;
     }
