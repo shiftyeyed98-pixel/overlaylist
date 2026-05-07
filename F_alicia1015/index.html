@@ -25,7 +25,7 @@
     :root {
       --w: 380px;
       --h: 1080px;
-      --row-gap: 4px;
+      --row-gap: 14px;
       --num-col: 72px;
       --svg-h: 30px;
       --page-gap: 10px;     /*페이지사이공백*/
@@ -441,7 +441,7 @@
           <text x="${cx}" y="25"
             text-anchor="middle"
             font-family="${FONT}"
-            font-size="28"
+            font-size="36"
             font-weight="500"
             stroke="#000000"
             stroke-width="${STROKE}"
@@ -453,7 +453,7 @@
         </svg>`;
     }
     /* 텍스트 */
-    function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 500) {
+    function measureTextWidth(text, fontSize = 36, fontFamily = FONT, fontWeight = 500) {
       const canvas = measureTextWidth.canvas || (measureTextWidth.canvas = document.createElement('canvas'));
       const ctx = canvas.getContext('2d');
       ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
@@ -462,7 +462,7 @@
 
     function makeLabelSVG(label) {
       const t = esc(label);
-      const measured = measureTextWidth(label, 28, FONT, 500);
+      const measured = measureTextWidth(label, 36, FONT, 500);
       const w = Math.max(40, measured + 10); // 여백 10 정도
       const filterId = `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
 
@@ -476,7 +476,7 @@
             <text x="4" y="26"
               text-anchor="start"
               font-family="${FONT}"
-              font-size="30"
+              font-size="36"
               font-weight="500"
               stroke="#26080B"
               stroke-width="${STROKE}"
