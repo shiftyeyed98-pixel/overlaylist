@@ -396,7 +396,7 @@
   <div class="overlay">
     <!-- 타이틀은 스크롤 트랙 밖에 배치해서 항상 상단에 고정 -->
     <div class="fixed-title-wrap">
-      <div class="page-title title-pink"> Toona. Menu </div>
+      <div class="page-title title-blue"> Toona. Menu </div>
     </div>
 
     <!-- 숫자 / 텍스트 / 아이콘만 이 영역 안에서 무한 순환 -->
@@ -484,16 +484,11 @@
       const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //트위치(빨강)
       const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //투네이션(파랑)
 
-
-
     const PAGE_ICON_MAP = {
-        'page1': ICON_PUNG_P5,
-        'page2': ICON_PUNG_P5,
+        'page1': ICON_PUNG_P6,
+        'page2': ICON_PUNG_P6,
         'page3': ICON_PUNG_P5,
-        'page4': ICON_PUNG_P5,
-        'page5': ICON_PUNG_P6,
-        'page6': ICON_PUNG_P5
-
+        'page4': ICON_PUNG_P5
     };
 
     const ICON_NEW = 'https://i.imgur.com/a5s2iUL.png';
@@ -502,7 +497,7 @@
     const FIXED_PAGE_KEY = null; 
     // 'page1', 'page2', 'page3', 'page4' , null 
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwSEm3molnHh1SInUqgiptI9MyIEo3iqf7bTA9W4JdLacXW3F4hOPNAi9Q_ejr-g_o8/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzh8cIoRnHYfA-yfQRe7P5bk1EQ_qVV63Dp9xvDEd4AWZQeAuhIwIWUPUmc9stllm8K/exec';
 
     async function loadSheetData() {
 
@@ -511,7 +506,9 @@
 
       PAGE_DATA = Object.fromEntries(
         Object.entries(data).filter(([_, pageObj]) =>
-          pageObj.rows && pageObj.rows.length > 0
+          pageObj.rows &&
+          pageObj.rows.length > 0 &&
+          pageObj.enabled !== false
         )
       );
 
@@ -546,13 +543,17 @@
       const t = esc(num);
       const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
 
-      const fillColor =
-        variant === 'gray' ? '#bfbfbf' :
-        variant === 'pink' ? '#FAB0C1' :
-        variant === 'orange' ? '#EF9573' :
-        variant === 'yellow' ? '#FEFA94' :
-        variant === 'blue' ? '#4A90E2' : 
-        '#DCAEF8';
+    const COLOR_MAP = {
+      gray: '#bfbfbf',
+      pink: '#FAB0C1',
+      orange: '#EF9573',
+      yellow: '#FEFA94',
+      blue: '#4A90E2',
+      purple: '#DCAEF8',
+      red: '#ff6b6b'
+    };
+
+    const fillColor = COLOR_MAP[variant] || COLOR_MAP.blue;
 
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
@@ -619,7 +620,7 @@
 
           <g transform="scale(0.9 1)">
             <text
-              x="40"
+              x="50"
               y="28"
               text-anchor="start"
               font-family="${FONT}"
@@ -649,7 +650,7 @@
             preserveAspectRatio="xMinYMid meet">
           ${makeShadowFilter(filterId)}
           <g transform="scale(0.9 1)">
-            <text x="122" y="10"
+            <text x="132" y="10"
               text-anchor="start"
               font-family="${FONT}"
               font-size="20"
@@ -742,17 +743,23 @@
     }
 
     function makeSequenceHTML() {
+
       return Object.entries(PAGE_DATA)
-        .map(([pageKey, pageObj]) => `
-          ${makePage(
-            pageObj.title,
-            'title-pink',
-            pageObj.rows,
-            'pink',
-            pageKey
-          )}
-          <div class="page-gap" aria-hidden="true"></div>
-        `)
+        .map(([pageKey, pageObj]) => {
+
+          const color = pageObj.color || 'blue';
+
+          return `
+            ${makePage(
+              pageObj.title,
+              `title-${color}`,
+              pageObj.rows,
+              color,
+              pageKey
+            )}
+            <div class="page-gap" aria-hidden="true"></div>
+          `;
+        })
         .join('');
     }
 
