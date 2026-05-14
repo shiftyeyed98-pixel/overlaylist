@@ -471,17 +471,6 @@
 
       });
 
-      // DevTools 열림 감지
-      setInterval(() => {
-        const devtoolsOpen =
-          window.outerWidth - window.innerWidth > 160 ||
-          window.outerHeight - window.innerHeight > 160;
-
-        if (devtoolsOpen) {
-          document.body.innerHTML = '';
-        }
-      }, 1000);
-
     let PAGE_DATA = {};
 
     const FONT = 'CookieRun, Arial, sans-serif';
@@ -511,33 +500,18 @@
     const FIXED_PAGE_KEY = 'page3'; 
     // 'page1', 'page2', 'page3', 'page4' , null 
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxpC4Xf0_Sj5FTBFugnCSQ6j_H2tjifH2Ky0_dR-SEuzzWVtVn-mxO3O37uwE9MAGoTKQ/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbw1CPSp9athwWwLN3_se1jzZhX7KhoPuwBonMGuBQUIq9aCmqAEEs67BLdooko8NPSXsA/exec';
 
     async function loadSheetData() {
 
       const res = await fetch(GAS_URL);
       const data = await res.json();
 
-      PAGE_DATA = {};
-
-      Object.entries(data)
-
-        // 빈 페이지 제거
-        .filter(([_, rows]) => rows.length > 0)
-
-        .forEach(([pageKey, rows]) => {
-
-          PAGE_DATA[pageKey] = {
-            title:
-              pageKey === 'page1' ? '시그니처⋰˚☆' :
-              pageKey === 'page2' ? '미션⋰˚☆' :
-              pageKey === 'page3' ? '방셀⋰˚☆' :
-              pageKey,
-
-            rows: rows
-          };
-
-        });
+      PAGE_DATA = Object.fromEntries(
+        Object.entries(data).filter(([_, pageObj]) =>
+          pageObj.rows && pageObj.rows.length > 0
+        )
+      );
 
     }
 
@@ -597,11 +571,29 @@
         </svg>`;
     }
     /* 텍스트 */
+    const textWidthCache = {};
+
     function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 300) {
-      const canvas = measureTextWidth.canvas || (measureTextWidth.canvas = document.createElement('canvas'));
+
+      const key = `${text}_${fontSize}_${fontWeight}`;
+
+      if (textWidthCache[key]) {
+        return textWidthCache[key];
+      }
+
+      const canvas =
+        measureTextWidth.canvas ||
+        (measureTextWidth.canvas = document.createElement('canvas'));
+
       const ctx = canvas.getContext('2d');
+
       ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-      return Math.ceil(ctx.measureText(text).width);
+
+      const width = Math.ceil(ctx.measureText(text).width);
+
+      textWidthCache[key] = width;
+
+      return width;
     }
 
     function makeLabelSVG(label, effect = '') {
@@ -610,7 +602,7 @@
       const w = Math.max(40, measured + 10);
 
       const filterId =
-        `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+        `numShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
 
       return `
         <svg
