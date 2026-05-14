@@ -481,15 +481,18 @@
 //    const ICON_PUNG_P2 = 'https://i.imgur.com/D0ldyfG.png'; //미션판 (주황)
 //    const ICON_PUNG_P3 = 'https://i.imgur.com/12lhyTv.png'; //운동 (노랑)
 //    const ICON_PUNG_P4 = 'https://i.imgur.com/IijYbRn.png'; //라이브 보라
-      const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //시그리액션(빨강)
-//    const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //열혈시그
+      const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //트위치(빨강)
+      const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //투네이션(파랑)
+
+
 
     const PAGE_ICON_MAP = {
         'page1': ICON_PUNG_P5,
         'page2': ICON_PUNG_P5,
         'page3': ICON_PUNG_P5,
         'page4': ICON_PUNG_P5,
-        'page5': ICON_PUNG_P5
+        'page5': ICON_PUNG_P6,
+        'page6': ICON_PUNG_P5
 
     };
 
@@ -555,7 +558,7 @@
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           ${makeShadowFilter(filterId)}
           <g transform="scale(1.0 1)">
-          <text x="14" y="25"
+          <text x="20" y="25"
             text-anchor="start"
             font-family="${FONT}"
             font-size="28"
@@ -616,7 +619,7 @@
 
           <g transform="scale(0.9 1)">
             <text
-              x="20"
+              x="40"
               y="28"
               text-anchor="start"
               font-family="${FONT}"
@@ -646,7 +649,7 @@
             preserveAspectRatio="xMinYMid meet">
           ${makeShadowFilter(filterId)}
           <g transform="scale(0.9 1)">
-            <text x="102" y="10"
+            <text x="122" y="10"
               text-anchor="start"
               font-family="${FONT}"
               font-size="20"
