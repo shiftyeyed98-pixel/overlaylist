@@ -40,11 +40,14 @@ function getTodayDate() {
   return new Date().toISOString().split('T')[0];
 }
 
-const folders = fs
-  .readdirSync(overlayRoot)
-  .filter(folder =>
-    fs.statSync(path.join(overlayRoot, folder)).isDirectory()
-  );
+const folders = fs.readdirSync(overlayRoot).filter(folder => {
+  const fullPath = path.join(overlayRoot, folder);
+  if (!fs.statSync(fullPath).isDirectory()) {
+    return false;
+  }
+  
+  return /^[FPST]_/.test(folder);
+});
 
 let overlays = [];
 
@@ -89,7 +92,7 @@ const activeOverlays = overlays.filter(
 
 const rewrites = activeOverlays.map(item => ({
   source: `/o/${item.slug}`,
-  destination: `/${item.path}/index.html`
+  destination: `/${item.path}`
 }));
 
 const redirects = [
