@@ -132,12 +132,5 @@
       "source": "/o/CpS8JUOrYLY3",
       "destination": "/scripts/index.html"
     }
-  ],
-  "redirects": [
-    {
-      "source": "/overlaylist/:path*",
-      "destination": "/404",
-      "permanent": false
-    }
   ]
 }
