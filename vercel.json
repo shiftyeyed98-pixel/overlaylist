@@ -1,10 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/o/TmcAktHiBXtV",
-      "destination": "/.git/index.html"
-    },
-    {
       "source": "/o/bTkvHvCDMHW0",
       "destination": "/F_aina2na/index.html"
     },
