@@ -1,8 +1,143 @@
 {
   "rewrites": [
     {
+      "source": "/o/TmcAktHiBXtV",
+      "destination": "/.git/index.html"
+    },
+    {
       "source": "/o/bTkvHvCDMHW0",
       "destination": "/F_aina2na/index.html"
+    },
+    {
+      "source": "/o/Ptw2I3w3dZN9",
+      "destination": "/F_aj0720/index.html"
+    },
+    {
+      "source": "/o/tMqQqNJijaX5",
+      "destination": "/F_aldus115/index.html"
+    },
+    {
+      "source": "/o/yROJWiy1EBbT",
+      "destination": "/F_alicia1015/index.html"
+    },
+    {
+      "source": "/o/R4gOqLhGlq7G",
+      "destination": "/F_bbaruux/index.html"
+    },
+    {
+      "source": "/o/AX2O8MQjqFO7",
+      "destination": "/F_k001120/index.html"
+    },
+    {
+      "source": "/o/qTbb0LbMmDLZ",
+      "destination": "/F_k19g61mkfe6y91/index.html"
+    },
+    {
+      "source": "/o/tTsRyjyokcGZ",
+      "destination": "/F_k1lfukfnln/index.html"
+    },
+    {
+      "source": "/o/9Yh3rWDdCYq2",
+      "destination": "/F_lovinit28/index.html"
+    },
+    {
+      "source": "/o/vE7eJyY6do7P",
+      "destination": "/F_n19g61mg8heq8e/index.html"
+    },
+    {
+      "source": "/o/KzTk8nmiotbQ",
+      "destination": "/F_n19g61mga6ewvm/index.html"
+    },
+    {
+      "source": "/o/SrOLi3VVZmxD",
+      "destination": "/F_n19g61mmlvk5ei/index.html"
+    },
+    {
+      "source": "/o/Uz8NNQ1HbnV4",
+      "destination": "/F_nimo000/index.html"
+    },
+    {
+      "source": "/o/J9mVMK3MI9LN",
+      "destination": "/F_pqf1207/index.html"
+    },
+    {
+      "source": "/o/HK3nwGu6GA77",
+      "destination": "/F_qmffnqpfl/index.html"
+    },
+    {
+      "source": "/o/sfpVtTAJEnSb",
+      "destination": "/F_rmfody9/index.html"
+    },
+    {
+      "source": "/o/OQf0pm1fTmKa",
+      "destination": "/F_ththth99955/index.html"
+    },
+    {
+      "source": "/o/cqAEHARHlJgy",
+      "destination": "/F_winter06/index.html"
+    },
+    {
+      "source": "/o/RaJ8YnCsCOqk",
+      "destination": "/F_xxoxxoxx/index.html"
+    },
+    {
+      "source": "/o/e0Vj2LmS0MoN",
+      "destination": "/F_yeri1022/index.html"
+    },
+    {
+      "source": "/o/Bo8cNm5kaMxl",
+      "destination": "/F_ymjy99961/index.html"
+    },
+    {
+      "source": "/o/8I6JZ3zQgZil",
+      "destination": "/F_zkemzl1tp/index.html"
+    },
+    {
+      "source": "/o/Btlwy5DHvtoV",
+      "destination": "/P_gabi0327/index.html"
+    },
+    {
+      "source": "/o/I5EWowyHNNT4",
+      "destination": "/P_ssozu99/index.html"
+    },
+    {
+      "source": "/o/xf1rjVZORLgS",
+      "destination": "/P_xailyn00/index.html"
+    },
+    {
+      "source": "/o/Jce0D3E3yDaR",
+      "destination": "/S_dain9804/index.html"
+    },
+    {
+      "source": "/o/Q27Zb8S5QDUi",
+      "destination": "/S_kxxm1uu/index.html"
+    },
+    {
+      "source": "/o/2Gw79pRBQfNi",
+      "destination": "/ldb000dbl/index.html"
+    },
+    {
+      "source": "/o/xx3eAFExK0IN",
+      "destination": "/starhaa/index.html"
+    },
+    {
+      "source": "/o/SCnqn6kV7uzj",
+      "destination": "/T_beatberry_314/index.html"
+    },
+    {
+      "source": "/o/acOymrx3veoJ",
+      "destination": "/public/index.html"
+    },
+    {
+      "source": "/o/CpS8JUOrYLY3",
+      "destination": "/scripts/index.html"
     }
- ]
+  ],
+  "redirects": [
+    {
+      "source": "/overlaylist/:path*",
+      "destination": "/404",
+      "permanent": false
+    }
+  ]
 }
