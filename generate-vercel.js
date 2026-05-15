@@ -55,7 +55,7 @@ if (fs.existsSync('./overlays.json')) {
 }
 
 folders.forEach(folder => {
-  const overlayPath = `${folder}`;
+  const overlayPath = `folder`;
 
   const exists = overlays.find(
     item => item.path === overlayPath
