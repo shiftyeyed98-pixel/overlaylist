@@ -134,8 +134,8 @@
 
     .page-gap {
       width: 100%;
-      height: var(--page-gap);
-      flex: 0 0 var(--page-gap);
+      height: 10px;
+      flex: 0 0 32px;
     }
 
     table {
@@ -407,22 +407,6 @@
   </style>
 </head>
 <body>
-  <svg width="0" height="0" style="position:absolute">
-    <defs>
-      <filter id="globalShadow"
-              x="-30%"
-              y="-30%"
-              width="160%"
-              height="160%">
-        <feDropShadow
-          dx="0"
-          dy="0"
-          stdDeviation="0.0"
-          flood-color="#ffffff"
-          flood-opacity="0"/>
-      </filter>
-    </defs>
-  </svg>
   <div class="overlay">
     <!-- 타이틀은 스크롤 트랙 밖에 배치해서 항상 상단에 고정 -->
     <div class="fixed-title-wrap">
@@ -511,8 +495,8 @@
 //    const ICON_PUNG_P2 = 'https://i.imgur.com/D0ldyfG.png'; //미션판 (주황)
 //    const ICON_PUNG_P3 = 'https://i.imgur.com/12lhyTv.png'; //운동 (노랑)
 //    const ICON_PUNG_P4 = 'https://i.imgur.com/IijYbRn.png'; //라이브 보라
-    const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //빨강
-    const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //파랑
+      const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //빨강
+      const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //파랑
 
     const PAGE_ICON_MAP = {
         'page1': ICON_PUNG_P5,
@@ -522,32 +506,16 @@
     const FIXED_PAGE_KEY = 'page4'; 
     // 'page1', 'page2', 'page3', 'page4' , null 
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxiw0lJI-tK-xle-jJvR7E5HSY5u8cvbrqK3AvxUwOnLz6UTnaIQ0XNhhfWblPZdAZS/exec';
-    // GAS Ver 0.7 사용, 속도제어 기능 추가
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzgvFNXESd_WugYTQ8T2GRU9Nn5t31mhXK18i3wAnX2sGCUmEnUZ5o-ZtimNdM4KqJH/exec';
+    // GAS Ver 0.3 사용
 
     async function loadSheetData() {
 
       const res = await fetch(GAS_URL);
-
       const data = await res.json();
 
-      /* =========================
-        스크롤 속도 적용
-      ========================= */
-
-      const scrollSeconds = Number(data.scrollSeconds || 60);
-
-      document.documentElement.style.setProperty(
-        '--loop-seconds',
-        `${scrollSeconds}s`
-      );
-
-      /* =========================
-        페이지 데이터
-      ========================= */
-
       PAGE_DATA = Object.fromEntries(
-        Object.entries(data.pages).filter(([_, pageObj]) =>
+        Object.entries(data).filter(([_, pageObj]) =>
           pageObj.rows &&
           pageObj.rows.length > 0 &&
           pageObj.enabled !== false
@@ -570,26 +538,37 @@
       return 58;
     }
 
+    function makeShadowFilter(id) {
+      return `
+        <defs>
+          <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="0.0" flood-color="#ffffff" flood-opacity="0"/>
+          </filter>
+        </defs>`;
+    }
+
     /* 단가 */
     function makeNumberSVG(num, variant = 'purple') {
       const width = numWidth(num.length);
       const t = esc(num);
+      const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
 
-      const COLOR_MAP = {
-        gray: '#bfbfbf',
-        pink: '#FAB0C1',
-        orange: '#EF9573',
-        yellow: '#FEFA94',
-        blue: '#4A90E2',
-        purple: '#DCAEF8',
-        green: '#8acf6d',
-        red: '#ff6b6b'
-      };
+    const COLOR_MAP = {
+      gray: '#bfbfbf',
+      pink: '#FAB0C1',
+      orange: '#EF9573',
+      yellow: '#FEFA94',
+      blue: '#4A90E2',
+      purple: '#DCAEF8',
+      green: '#8acf6d',
+      red: '#ff6b6b'
+    };
 
     const fillColor = COLOR_MAP[variant] || COLOR_MAP.blue;
 
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          ${makeShadowFilter(filterId)}
           <g transform="scale(1.0 1)">
           <text x="10" y="25"
             text-anchor="start"
@@ -600,7 +579,7 @@
             stroke-width="${STROKE}"
             stroke-linejoin="round"
             paint-order="stroke fill"
-            filter="url(#globalShadow)"
+            filter="url(#${filterId})"
             fill="${fillColor}">${t}</text>
           </g>
         </svg>`;
@@ -636,6 +615,9 @@
       const measured = measureTextWidth(label, 28, FONT, 300);
       const w = Math.max(40, measured + 10);
 
+      const filterId =
+        `numShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
       return `
         <svg
           class="label-svg ${effect === 'e_colorshift' ? 'e-colorshift' : ''}"
@@ -644,6 +626,8 @@
           aria-label="${t}"
           role="img"
           preserveAspectRatio="xMinYMid meet">
+
+          ${makeShadowFilter(filterId)}
 
           <g transform="scale(0.9 1)">
             <text
@@ -657,7 +641,7 @@
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
-              filter="url(#globalShadow)"
+              filter="url(#${filterId})"
               fill="#ffffff">${t}</text>
           </g>
         </svg>`;
@@ -668,12 +652,14 @@
       const t = esc(footnote);
       const measured = measureTextWidth(footnote, 20, FONT, 300);
       const w = Math.max(40, measured + 10);
+      const filterId = `footnoteShadow-${Math.random().toString(36).slice(2, 9)}`;
 
       return `
         <svg class="footnote-svg" viewBox="0 0 ${w} 30"
             xmlns="http://www.w3.org/2000/svg"
             aria-label="${t}" role="img"
             preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
           <g transform="scale(0.9 1)">
             <text x="120" y="18"
               text-anchor="start"
@@ -684,7 +670,7 @@
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
-              filter="url(#globalShadow)"
+              filter="url(#${filterId})"
               fill="#ffffff">${t}</text>
           </g>
         </svg>`;
@@ -839,7 +825,6 @@
                 <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel, effect) : ''}</div>
                 <div class="label-icon">${makeLabelIcon(iconType)}</div>
               </div>
-            </td>
           </tr>`;
 
         const footnoteRow = safeFootnote
@@ -959,9 +944,6 @@
 
       await loadSheetData();
 
-      /* 웹폰트 로딩 완료 대기 */
-      await document.fonts.ready;
-
       sequenceA.innerHTML = makeSequenceHTML();
       sequenceB.innerHTML = makeSequenceHTML();
 
@@ -975,13 +957,7 @@
         document.getElementById('fixedPage').style.display = 'none';
       }
 
-      /* 렌더 완료 후 한번 더 보정 */
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          adjustViewportHeight();
-          updateLoopHeight();
-        });
-      });
+      updateLoopHeight();
     }
 
     init();
@@ -991,17 +967,13 @@
     }
 
     function updateLoopHeight() {
-      const h = sequenceA.scrollHeight;
+      const h = sequenceA.offsetHeight;
       document.documentElement.style.setProperty('--sequence-height', `${h}px`);
     }
 
-      window.addEventListener('load', () => {
-        updateLoopHeight();
-
-        setTimeout(updateLoopHeight, 300);
-        setTimeout(updateLoopHeight, 1000);
-      });
-
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
   </script>
 </body>
 </html>
