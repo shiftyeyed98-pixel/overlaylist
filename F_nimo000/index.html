@@ -300,7 +300,14 @@
       flex: 0 0 28px;
       object-fit: contain;
       display: block;
-      margin-left: 10px; /* 텍스트 왼쪽에 생성되는 SVG 아이콘과의 간격 조절값  */
+    }
+
+    .label-icon-warp {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      object-fit: contain;      
+      margin-left: 20px; /* 텍스트 오른쪽에 생성되는 SVG 아이콘과의 간격 조절값  */
     }
 
     .label-text {
@@ -792,19 +799,19 @@
 
     function makeLabelIcon(type) {
       if (type === 'new') {
-        return `<span class="label-icon" aria-label="NEW">${makeNewIconSVG()}</span>`;
+        return `<span class="label-icon-warp" aria-label="NEW">${makeNewIconSVG()}</span>`;
       }
 
       if (type === 'best') {
-        return `<span class="label-icon" aria-label="BEST">${makeBestIconSVG()}</span>`;
+        return `<span class="label-icon-warp" aria-label="BEST">${makeBestIconSVG()}</span>`;
       }
 
       if (type === 'rullet') {
-        return `<span class="label-icon" aria-label="RULLET">${makeRulletIconSVG()}</span>`;
+        return `<span class="label-icon-warp" aria-label="RULLET">${makeRulletIconSVG()}</span>`;
       }
 
       if (type === 'warning') {
-        return `<span class="label-icon" aria-label="WARNING">${makeWarningIconSVG()}</span>`;
+        return `<span class="label-icon-warp" aria-label="WARNING">${makeWarningIconSVG()}</span>`;
       }
 
       return '';
