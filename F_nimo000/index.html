@@ -519,11 +519,11 @@
         'page2': ICON_PUNG_P6
     };
 
-    const FIXED_PAGE_KEY = 'page4'; 
-    // 'page1', 'page2', 'page3', 'page4' , null 
+    let FIXED_PAGE_KEY = null;
+    // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxiw0lJI-tK-xle-jJvR7E5HSY5u8cvbrqK3AvxUwOnLz6UTnaIQ0XNhhfWblPZdAZS/exec';
-    // GAS Ver 0.7 사용, 속도제어 기능 추가
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbw9bvkm-JQ2-j6UoVf9YSyNJEtxCfoLRzpQQViRnZrbDvB_lNWHcfQqaqJdk9sWnMZ9/exec';
+    // GAS Ver 0.8 사용, 속도제어 기능 추가
 
     async function loadSheetData() {
 
@@ -541,6 +541,16 @@
         '--loop-seconds',
         `${scrollSeconds}s`
       );
+
+      /* =========================
+        고정 페이지 처리
+      ========================= */
+
+      if (Array.isArray(data.fixedPages) && data.fixedPages.length > 0) {
+        FIXED_PAGE_KEY = data.fixedPages[0];
+      } else {
+        FIXED_PAGE_KEY = null;
+      }
 
       /* =========================
         페이지 데이터
@@ -939,7 +949,6 @@
     }
 
     function adjustViewportHeight() {
-      const vh = document.querySelector('.viewport');
 
       if (!FIXED_PAGE_KEY) {
         document.documentElement.style.setProperty('--fixed-page-h', `0px`);
@@ -947,7 +956,7 @@
       }
 
       const fixed = document.getElementById('fixedPage');
-      const h = fixed.offsetHeight || 0;
+      const h = Math.ceil(fixed.getBoundingClientRect().height || 0);
 
       document.documentElement.style.setProperty('--fixed-page-h', `${h}px`);
     }
@@ -967,13 +976,17 @@
 
       extractFixedPage();
 
+      const fixedPage = document.getElementById('fixedPage');
+
+      if (FIXED_PAGE_KEY) {
+        fixedPage.style.display = 'block';
+      } else {
+        fixedPage.style.display = 'none';
+      }
+
       applyWaveToFixedTitle();
 
       adjustViewportHeight();
-
-      if (!FIXED_PAGE_KEY) {
-        document.getElementById('fixedPage').style.display = 'none';
-      }
 
       /* 렌더 완료 후 한번 더 보정 */
       requestAnimationFrame(() => {
