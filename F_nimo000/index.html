@@ -384,6 +384,10 @@
       box-sizing: border-box;
     }
 
+    .fixed-bottom-page .page + .page {
+      margin-top: 8px;
+    }
+
     /* 지원되는 환경에서만 blur 적용 */
     @supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
       .fixed-bottom-page {
@@ -519,7 +523,7 @@
         'page2': ICON_PUNG_P6
     };
 
-    let FIXED_PAGE_KEY = null;
+    let FIXED_PAGE_KEYS = [];
     // 고정 페이지 설정
 
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbw9bvkm-JQ2-j6UoVf9YSyNJEtxCfoLRzpQQViRnZrbDvB_lNWHcfQqaqJdk9sWnMZ9/exec';
@@ -546,10 +550,10 @@
         고정 페이지 처리
       ========================= */
 
-      if (Array.isArray(data.fixedPages) && data.fixedPages.length > 0) {
-        FIXED_PAGE_KEY = data.fixedPages[0];
+      if (Array.isArray(data.fixedPages)) {
+        FIXED_PAGE_KEYS = data.fixedPages;
       } else {
-        FIXED_PAGE_KEY = null;
+        FIXED_PAGE_KEYS = [];
       }
 
       /* =========================
@@ -905,52 +909,69 @@
     }
 
     function extractFixedPage() {
-      if (!FIXED_PAGE_KEY) return; // ← 추가
+
+      if (!FIXED_PAGE_KEYS.length) return;
+
       const fixedContainer = document.getElementById('fixedPage');
 
-      // sequenceA 기준으로 찾기
-      const target = sequenceA.querySelector(`[data-page="${FIXED_PAGE_KEY}"]`);
+      let html = '';
 
-      if (!target) return;
+      FIXED_PAGE_KEYS.forEach(pageKey => {
 
-      // 복제해서 고정 영역으로 이동
-      fixedContainer.innerHTML = target.outerHTML;
+        const target = sequenceA.querySelector(
+          `[data-page="${pageKey}"]`
+        );
 
-      // 스크롤에서 제거 (A/B 둘 다 제거)
-      [sequenceA, sequenceB].forEach(seq => {
-        const el = seq.querySelector(`[data-page="${FIXED_PAGE_KEY}"]`);
-        if (!el) return;
+        if (!target) return;
 
-        const next = el.nextElementSibling;
+        html += target.outerHTML;
 
-        el.remove();
+        // 스크롤 영역에서 제거
+        [sequenceA, sequenceB].forEach(seq => {
 
-        // 바로 다음이 gap이면 그것만 제거
-        if (next && next.classList.contains('page-gap')) {
-          next.remove();
-        }
+          const el = seq.querySelector(
+            `[data-page="${pageKey}"]`
+          );
+
+          if (!el) return;
+
+          const next = el.nextElementSibling;
+
+          el.remove();
+
+          if (next && next.classList.contains('page-gap')) {
+            next.remove();
+          }
+        });
+
       });
+
+      fixedContainer.innerHTML = html;
     }
 
     function applyWaveToFixedTitle() {
-      if (!FIXED_PAGE_KEY) return;
+
+      if (!FIXED_PAGE_KEYS.length) return;
 
       const fixedContainer = document.getElementById('fixedPage');
-      const titleEl = fixedContainer.querySelector('.page-title');
 
-      if (!titleEl) return;
+      const titles = fixedContainer.querySelectorAll('.page-title');
 
-      const text = titleEl.textContent.trim();
+      titles.forEach(titleEl => {
 
-      // 글자 단위로 쪼개서 span 적용
-      titleEl.innerHTML = [...text].map((c, i) =>
-        `<span class="waveChar" style="animation-delay:${i * 0.08}s">${c}</span>`
-      ).join('');
+        const text = titleEl.textContent.trim();
+
+        titleEl.innerHTML = Array.from(text).map((c, i) =>
+          `<span class="waveChar"
+            style="animation-delay:${i * 0.08}s">${c}</span>`
+        ).join('');
+
+      });
     }
 
     function adjustViewportHeight() {
 
-      if (!FIXED_PAGE_KEY) {
+      if (!FIXED_PAGE_KEYS.length) {
         document.documentElement.style.setProperty('--fixed-page-h', `0px`);
         return;
       }
@@ -978,7 +999,7 @@
 
       const fixedPage = document.getElementById('fixedPage');
 
-      if (FIXED_PAGE_KEY) {
+      if (FIXED_PAGE_KEYS.length) {
         fixedPage.style.display = 'block';
       } else {
         fixedPage.style.display = 'none';
