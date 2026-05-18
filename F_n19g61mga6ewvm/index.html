@@ -202,6 +202,67 @@
   </div>
 
   <script>
+
+      /* =========================
+        우클릭 / 개발자도구 차단
+      ========================= */
+
+      // 우클릭 차단
+      document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+      });
+
+      // 드래그 선택 차단
+      document.addEventListener('selectstart', e => {
+        e.preventDefault();
+      });
+
+      // 드래그 차단
+      document.addEventListener('dragstart', e => {
+        e.preventDefault();
+      });
+
+      // 개발자도구 단축키 차단
+      document.addEventListener('keydown', e => {
+
+        // F12
+        if (e.key === 'F12') {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+Shift+I
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+Shift+J
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'j') {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+Shift+C
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+U
+        if (e.ctrlKey && e.key.toLowerCase() === 'u') {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+S
+        if (e.ctrlKey && e.key.toLowerCase() === 's') {
+          e.preventDefault();
+          return false;
+        }
+
+      });
+          
     const PAGE_1 = [
       ["10","와라와라왕"],
       ["15","삐삐"],
