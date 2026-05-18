@@ -223,66 +223,31 @@
   </div>
 
   <script>
-    const PAGE_1 = [
-      ['55','뽁뽁이'],
-      ['70','귀여워서 미안해'],
-      ['80','외모체크'],
-      ['85','캐치캐치','new'],
-      ['93','역도'],
-      ['106','오빠바이러스'],
-      ['107','나랑 사귈래'],
-      ['118','바람피면 D지는거야'],
-      ['131','뱅뱅뱅'],
-      ['135','카리나닮았대'],
-      ['143','내얘길 들어봐'],
-      ['149','너와의 모든 지금'],
-      ['151','바니바니'],
-      ['153','트월킹덕','new'],
-      ['155','아이스크림'],
-      ['157','마티니'],
-      ['158','라라리라라','best'],
-      ['161','핑크레이디'],
-      ['163','업'],
-      ['165','러브쉐이크'],
-      ['168','모시모시'],
-      ['171','쌔끈빠끈'],
-      ['175','너뿐이야'],
-      ['181','날라리'],
-      ['188','자기야 화풀어'],
-      ['191','이머전시'],
-      ['221','뚜뚜뚜뚜'],
-      ['235','빛을 따라서'],
-      ['241','럽미모어'],
-      ['245','바우치','new'],
-      ['251','NANANA'],
-      ['257','WHF'],
-      ['258','로드잭'],
-      ['272','간바레센빠이'],
-      ['273','바비걸'],
-      ['281','야메떼'],
-      ['282','예쁜게죄','best'],
-      ['284','센세'],
-      ['305','제로투'],
-      ['306','L.S.D'],
-      ['313','퀸즈'],
-      ['325','그래비티'],
-      ['344','우유'],
-      ['351','RICH MAN'],
-      ['355','터미널','best'],
-      ['364','섹시퀸'],
-      ['365','물개'],
-      ['369','계엄령'],
-      ['373','BEGGIN`','best'],
-      ['375','사탄들렸어'],
-      ['393','I WANT YOU'],
-      ['411','겐또'],
-      ['414','달빛에 그려지는'],
-      ['417','헨타이'],
-      ['418','오빠하앙','best'],
-      ['420','리듬타'],
-      ['555','누나가 알려줄게'],
-      ['588','니 엉덩이에ㅎ']
-    ];
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwLRD97pMdNugcNE9QsP6rYfY6AX1-C77-5kv0gkCNMKIHDlK8AWYWz1cEwIbTn9AHE/exec';
+
+  async function fetchSheet(sheetName) {
+    const url = `${API_URL}?sheet=${encodeURIComponent(sheetName)}`;
+
+    try {
+      const res = await fetch(url);
+      const json = await res.json();
+
+      if (!json.ok) {
+        console.error('API ERROR:', json.error);
+        return [];
+      }
+
+      return json.data.map(row => [
+        String(row.price),
+        row.label,
+        row.icon || ''
+      ]);
+
+    } catch (e) {
+      console.error('FETCH ERROR:', e);
+      return [];
+    }
+  }
 
     const FONT = 'YeogiOttaeJalnan, Arial, sans-serif';
     const STROKE = getComputedStyle(document.documentElement)
@@ -432,17 +397,24 @@
         </div>`;
     }
 
-    function makeSequenceHTML() { 
-      return `
-        ${makePage(PAGE_1, 'pink', 'page-1')}
-        <div class="page-gap" aria-hidden="true"></div>
-      `;
-    }
+    init();
 
     const sequenceA = document.getElementById('sequenceA');
     const sequenceB = document.getElementById('sequenceB');
-    sequenceA.innerHTML = makeSequenceHTML();
-    sequenceB.innerHTML = makeSequenceHTML();
+
+    async function init() {
+      const rows = await fetchSheet('F_starhaa');
+
+      const html = `
+        ${makePage(rows, 'pink', 'page-1')}
+        <div class="page-gap"></div>
+      `;
+
+      sequenceA.innerHTML = html;
+      sequenceB.innerHTML = html;
+
+      updateLoopHeight();
+    }
 
     function updateLoopHeight() {
       const h = sequenceA.offsetHeight;
