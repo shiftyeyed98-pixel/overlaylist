@@ -149,8 +149,7 @@
 
 
     col.num-col { width: var(--num-col); }
-    col.icon-col { width: var(--icon-col); }
-
+    
     td {
       padding-left: 2px;
       vertical-align: middle;
@@ -191,12 +190,6 @@
 
     td.label {
       padding-left: 4px;
-    }
-
-    td.icon-cell {
-      width: 34px;
-      text-align: left;
-      vertical-align: middle;
     }
 
     td.footnote {
@@ -267,7 +260,7 @@
     .label-wrap {
       display: inline-flex;
       align-items: center;
-      gap: 0;
+      gap: 2px;
       width: auto;
     }
     
@@ -281,12 +274,12 @@
     }
 
     .label-icon {
-      width: 28px;
-      height: 28px;
-      flex: 0 0 28px;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
       object-fit: contain;
       display: block;
-      margin-left: -6px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+      margin-left: -2px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
     }
 
     .label-text {
@@ -702,10 +695,11 @@
             </td>
             <td class="label">
               <div class="label-wrap">
-                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel, effect) : ''}</div>
+                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel, effect) : ''}
+                </div>
+                ${makeLabelIcon(iconType)}
               </div>
             </td>
-            <td class="icon-cell">${makeLabelIcon(iconType)}</td>
           </tr>`;
 
         const footnoteRow = safeFootnote
@@ -723,7 +717,6 @@
           <colgroup>
             <col class="num-col" />
             <col />
-            <col class="icon-col" />
           </colgroup>
           <tbody>
             ${bodyHTML}
