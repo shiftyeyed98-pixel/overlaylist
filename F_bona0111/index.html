@@ -33,6 +33,7 @@
       --loop-seconds: 60s;
       --sequence-height: 1000px;
       --outline: 5;
+      --scale: 1.5;
 
       /* ===== 고정 타이틀 영역 ===== */
       --fixed-title-h: 36px;
@@ -90,7 +91,7 @@
       position: absolute;
       left: 4px;
       top: calc(var(--fixed-title-h) + var(--fixed-title-mb));
-      width: calc(100% - 4px);
+      width: calc(100% - 8px);
       height: calc(
         100%
         - var(--fixed-title-h)
@@ -364,7 +365,7 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom) + 0px);
-      width: calc(63% - (var(--fixed-page-side-gap) * 2));  /* 고정 페이지 유리효과 가로 폭사이즈 */
+      width: calc(93% - (var(--fixed-page-side-gap) * 2));  /* 고정 페이지 유리효과 가로 폭사이즈 */
 
       z-index: 40;
 
@@ -381,7 +382,7 @@
       margin-top: 8px;
     }
 
-    /* 지원되는 환경에서만 blur 적용 */
+    /* 지원되는 환경에서만 blur 적용 (스케일업할 경우 blur 2px 값 조정)*/
     @supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
       .fixed-bottom-page {
         background: rgba(120, 120, 120, 0.18);
@@ -402,14 +403,10 @@
     }
 
     .content-scale {
-      position: absolute;
-      left: 0;
-      top: 0;
+      width: calc(100% / var(--scale));
+      height: calc(100% / var(--scale));
 
-      width: calc(100% / 1.50);
-      height: calc(100% / 1.50);
-
-      transform: scale(1.50);
+      transform: scale(var(--scale));
       transform-origin: top left;
     }
 
@@ -965,6 +962,17 @@
       fixedContainer.innerHTML = html;
     }
 
+    /* 추가 */
+    function removeLeadingGap(seq) {
+
+      const first = seq.firstElementChild;
+
+      if (first && first.classList.contains('page-gap')) {
+        first.remove();
+      }
+    }
+
+
     function applyWaveToFixedTitle() {
 
       if (!FIXED_PAGE_KEYS.length) return;
@@ -988,14 +996,26 @@
     function adjustViewportHeight() {
 
       if (!FIXED_PAGE_KEYS.length) {
-        document.documentElement.style.setProperty('--fixed-page-h', `0px`);
+        document.documentElement.style.setProperty(
+          '--fixed-page-h',
+          '0px'
+        );
         return;
       }
 
       const fixed = document.getElementById('fixedPage');
-      const h = Math.ceil(fixed.getBoundingClientRect().height || 0);
 
-      document.documentElement.style.setProperty('--fixed-page-h', `${h}px`);
+      const scale = getScale();
+
+      const h =
+        Math.ceil(
+          fixed.getBoundingClientRect().height / scale
+        ) + 12;
+
+      document.documentElement.style.setProperty(
+        '--fixed-page-h',
+        `${h}px`
+      );
     }
 
     const sequenceA = document.getElementById('sequenceA');
@@ -1012,6 +1032,10 @@
       sequenceB.innerHTML = makeSequenceHTML();
 
       extractFixedPage();
+
+      /* 추가 */
+      removeLeadingGap(sequenceA);
+      removeLeadingGap(sequenceB);
 
       const fixedPage = document.getElementById('fixedPage');
 
@@ -1034,15 +1058,30 @@
       });
     }
 
+    function getScale() {
+      return parseFloat(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--scale')
+      ) || 1;
+    }
+
     init();
 
-    if (!FIXED_PAGE_KEY) {
+    if (!FIXED_PAGE_KEYS.length) {
       document.getElementById('fixedPage').style.display = 'none';
     }
 
     function updateLoopHeight() {
-      const h = sequenceA.scrollHeight;
-      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+
+      const scale = getScale();
+
+      const h =
+        sequenceA.getBoundingClientRect().height / scale;
+
+      document.documentElement.style.setProperty(
+        '--sequence-height',
+        `${Math.ceil(h)}px`
+      );
     }
 
       window.addEventListener('load', () => {
