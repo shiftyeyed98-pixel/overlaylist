@@ -401,6 +401,18 @@
       }
     }
 
+    .content-scale {
+      position: absolute;
+      left: 0;
+      top: 0;
+
+      width: calc(100% / 1.25);
+      height: calc(100% / 1.25);
+
+      transform: scale(1.25);
+      transform-origin: top left;
+    }
+
   </style>
 </head>
 <body>
@@ -421,20 +433,28 @@
     </defs>
   </svg>
   <div class="overlay">
-    <!-- 타이틀은 스크롤 트랙 밖에 배치해서 항상 상단에 고정 -->
-    <div class="fixed-title-wrap">
-      <div class="page-title title-orange"> ᐢ보나ᐢ 메뉴판 </div>
+
+    <div class="content-scale">
+
+      <div class="fixed-title-wrap">
+        <div class="page-title title-orange"> ᐢ보나ᐢ 메뉴판 </div>
+      </div>
+
+      <div class="viewport">
+        <div class="track" id="track">
+          <div class="sequence" id="sequenceA"></div>
+          <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div id="fixedPage" class="fixed-bottom-page"></div>
+
+      <div class="fixed-bottom-label">
+        Designed by 시프티♻️
+      </div>
+
     </div>
 
-    <!-- 숫자 / 텍스트 / 아이콘만 이 영역 안에서 무한 순환 -->
-    <div class="viewport">
-      <div class="track" id="track">
-        <div class="sequence" id="sequenceA"></div>
-        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
-      </div>
-    </div>
-    <div id="fixedPage" class="fixed-bottom-page"></div>
-    <div class="fixed-bottom-label">Designed by 시프티♻️</div>
   </div>
 
   <script>
