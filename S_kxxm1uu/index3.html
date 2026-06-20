@@ -26,10 +26,10 @@
       --w: 350px;
       --h: 1080px;
       --row-gap: 4px;
-      --num-col: 94px;
+      --num-col: 74px;
       --svg-h: 30px;
       --page-gap: 10px;     /*페이지사이공백*/
-      --loop-seconds: 70s;  /*속도*/
+      --loop-seconds: 100s;  /*속도*/
       --sequence-height: 1000px;
       --outline: 5;
     }
@@ -348,6 +348,8 @@
 */
 
     const PAGE_4 = [
+     ["","계속 업데이트 됩니다"],
+     ["",""],
      ["88","마라탕후루"],
      ["89","솜사탕"],
      ["90","아이스크림"],
@@ -782,7 +784,7 @@
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           ${makeShadowFilter(filterId)}
-          <g transform="scale(0.9 1)">
+          <g transform="scale(1.0 1)">
           <text x="14" y="25"
             text-anchor="start"
             font-family="${FONT}"
