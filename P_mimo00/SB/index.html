@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>스코어보드</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Han+Sans&family=Noto+Sans+KR:wght@700;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.sb {
+  width: 720px;
+  position: relative;
+}
+
+/* ══════════════════════════════════
+   HP바 행
+══════════════════════════════════ */
+.hprow {
+  display: flex;
+  align-items: center;
+  height: 46px;
+  position: relative;
+  background: #000;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #111;
+}
+
+.hp-left {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+}
+.hp-right {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+}
+
+/* 바 채움 */
+.hp-fill-l {
+  position: absolute;
+  left: 0; top: 0;
+  width: 50%; height: 100%;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.22) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.3) 100%),
+    linear-gradient(90deg, #aa0028 0%, #d4003a 25%, #ff1a55 55%, #ff4570 75%, #ff6685 100%);
+  transition: width 0.5s cubic-bezier(0.25,0.8,0.25,1);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+}
+.hp-fill-l::after {
+  content:'';
+  position: absolute;
+  top: 3px; left:0; right:0;
+  height: 7px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.1) 100%);
+}
+/* 지는 쪽: 오른쪽으로 갈수록 페이드 */
+.hp-left.losing .hp-fill-l {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 40%, rgba(0,0,0,0.2) 100%),
+    linear-gradient(90deg, #660018 0%, #880022 40%, #aa2244 70%, rgba(180,60,90,0.3) 100%);
+}
+
+.hp-fill-r {
+  position: absolute;
+  right: 0; top: 0;
+  width: 50%; height: 100%;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.22) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.3) 100%),
+    linear-gradient(270deg, #0028aa 0%, #0044d4 25%, #1a66ff 55%, #4088ff 75%, #66aaff 100%);
+  transition: width 0.5s cubic-bezier(0.25,0.8,0.25,1);
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%);
+}
+.hp-fill-r::after {
+  content:'';
+  position: absolute;
+  top: 3px; left:0; right:0;
+  height: 7px;
+  background: linear-gradient(270deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.1) 100%);
+}
+/* 지는 쪽: 왼쪽으로 갈수록 페이드 */
+.hp-right.losing .hp-fill-r {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 40%, rgba(0,0,0,0.2) 100%),
+    linear-gradient(270deg, #001466 0%, #001e88 40%, #1a3aaa 70%, rgba(50,90,180,0.3) 100%);
+}
+
+/* 스캔라인 */
+.hprow::after, .namerow::after {
+  content:'';
+  position: absolute; inset:0;
+  background: repeating-linear-gradient(180deg, transparent 0px, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 3px);
+  pointer-events: none; z-index: 50;
+}
+
+/* 점수 숫자 — 사선 처리 */
+.snum {
+  position: relative; z-index: 10;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px; color: #fff;
+  letter-spacing: 1px;
+  cursor: pointer; padding: 2px 6px; border-radius: 2px;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+  user-select: none; transition: background 0.1s;
+  font-style: italic;
+  transform: skewX(-6deg);
+  display: inline-block;
+}
+.snum:hover { background: rgba(255,255,255,0.15); }
+
+/* LEX 단위 — 사선, 작게 */
+.sunit {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px; color: rgba(255,255,255,0.6);
+  letter-spacing: 1px;
+  font-style: italic;
+  transform: skewX(-6deg);
+  display: inline-block;
+  position: relative; z-index: 10;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  margin-left: -2px;
+}
+
+@keyframes scorePop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.7); color: #ffe000; text-shadow: 0 0 14px #ffd700; }
+  100% { transform: scale(1); }
+}
+.snum.pop { animation: scorePop 0.38s ease-out; }
+
+/* ── 흐르는 광줄기 ── */
+.shine {
+  display: none; position: absolute;
+  top: 0; width: 55px; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  transform: skewX(-18deg); pointer-events: none; z-index: 8;
+}
+@keyframes shineL { 0%{left:-60px;opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{left:110%;opacity:0} }
+@keyframes shineR { 0%{right:-60px;opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{right:110%;opacity:0} }
+.hp-left.winning  .shine { display:block; animation: shineL 2.0s linear infinite; }
+.hp-right.winning .shine { display:block; animation: shineR 2.0s linear infinite; }
+
+/* ── 이기는 쪽: 테두리 효과 없음, 불꽃 캔버스만 ── */
+.hp-left.winning  { animation: none; }
+.hp-right.winning { animation: none; }
+
+/* hprow는 overflow visible — 불꽃이 위로 튀어나와야 함 */
+.hprow { overflow: visible; z-index: 10; }
+
+/* ── 스파크 SVG ── */
+.spark-svg {
+  position: absolute; top: 50%;
+  width: 100px; height: 80px;
+  pointer-events: none; z-index: 26; display: none;
+}
+.hp-left.winning  .spark-svg { display:block; right:-14px; transform:translateY(-50%); }
+.hp-right.winning .spark-svg { display:block; left:-14px;  transform:translateY(-50%); }
+
+@keyframes sparkBurst {
+  0%   { transform:translateY(-50%) scale(0.65) rotate(0deg);   opacity:0.5; }
+  20%  { transform:translateY(-50%) scale(1.15) rotate(18deg);  opacity:1; }
+  50%  { transform:translateY(-50%) scale(0.9)  rotate(-10deg); opacity:0.85; }
+  75%  { transform:translateY(-50%) scale(1.05) rotate(8deg);   opacity:1; }
+  100% { transform:translateY(-50%) scale(0.65) rotate(0deg);   opacity:0.5; }
+}
+.hp-left.winning  .spark-svg { animation: sparkBurst 1.0s ease-in-out infinite; }
+.hp-right.winning .spark-svg { animation: sparkBurst 1.0s ease-in-out infinite 0.15s; }
+
+/* ── 중앙 타이머 ── */
+.timer-cap {
+  position: absolute; left:50%; top:50%;
+  transform: translate(-50%,-50%);
+  z-index: 30; display:flex; align-items:center; justify-content:center;
+}
+
+/* 외곽 골드 프레임 */
+.timer-outer {
+  position: relative;
+  /* 깊이감 있는 다층 배경 */
+  background:
+    linear-gradient(180deg,
+      #1e2040 0%,
+      #0e1028 40%,
+      #080a18 60%,
+      #0e1028 100%
+    );
+  border: 1px solid #6a6040;
+  border-radius: 4px;
+  padding: 0 22px;
+  height: 38px;
+  min-width: 150px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  /* 3중 외곽 */
+  box-shadow:
+    0 0 0 1px #2a2418,        /* 내측 어두운 테두리 */
+    0 0 0 2.5px #a08840,      /* 골드 라인 */
+    0 0 0 3.5px #3a3020,      /* 외측 어두운 테두리 */
+    0 0 12px rgba(0,0,0,0.8), /* 외부 그림자 */
+    inset 0 1px 0 rgba(255,220,100,0.12), /* 상단 내부 광택 */
+    inset 0 -1px 0 rgba(0,0,0,0.5);      /* 하단 내부 그림자 */
+}
+.timer-outer:hover {
+  border-color: #c8a840;
+  box-shadow:
+    0 0 0 1px #2a2418,
+    0 0 0 2.5px #d4a820,
+    0 0 0 3.5px #3a3020,
+    0 0 16px rgba(200,160,0,0.25),
+    inset 0 1px 0 rgba(255,220,100,0.18),
+    inset 0 -1px 0 rgba(0,0,0,0.5);
+}
+
+/* 좌우 골드 장식 — 다이아몬드 포인트 */
+.timer-outer::before,
+.timer-outer::after {
+  content: '';
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  width: 8px; height: 8px;
+  background: linear-gradient(135deg, #c8a030 0%, #6a5010 50%, #c8a030 100%);
+  border: 1px solid #a08030;
+  transform: translateY(-50%) rotate(45deg);
+  box-shadow: 0 0 4px rgba(200,160,0,0.4);
+}
+.timer-outer::before { left: -14px; }
+.timer-outer::after  { right: -14px; }
+
+/* 상단 골드 라인 */
+.timer-outer .t-topline {
+  position: absolute;
+  top: 0; left: 8px; right: 8px;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(200,160,40,0.6) 20%,
+    rgba(255,220,100,0.9) 50%,
+    rgba(200,160,40,0.6) 80%,
+    transparent 100%
+  );
+}
+/* 하단 라인 */
+.timer-outer .t-botline {
+  position: absolute;
+  bottom: 0; left: 8px; right: 8px;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(100,80,20,0.4) 30%,
+    rgba(150,120,40,0.6) 50%,
+    rgba(100,80,20,0.4) 70%,
+    transparent 100%
+  );
+}
+
+.timer-txt {
+  font-family: 'Bebas Neue','Courier New',monospace;
+  font-size: 23px;
+  color: #e8d8a0;
+  letter-spacing: 3.5px;
+  white-space: nowrap;
+  text-shadow:
+    0 0 12px rgba(200,160,50,0.5),
+    0 1px 0 rgba(0,0,0,0.8);
+  position: relative; z-index: 1;
+}
+
+@keyframes timerWarn {
+  0%,100% { color:#e8d8a0; text-shadow:0 0 12px rgba(200,160,50,0.5), 0 1px 0 rgba(0,0,0,0.8); }
+  50%     { color:#ff3333; text-shadow:0 0 18px rgba(255,30,30,1), 0 0 35px rgba(255,0,0,0.5); }
+}
+.timer-txt.warn { animation: timerWarn 0.5s ease-in-out infinite; }
+
+/* ══════════════════════════════════
+   이름 행
+══════════════════════════════════ */
+.namerow {
+  display:flex; height:34px;
+  position:relative; margin-top:2px;
+  background:#000;
+}
+.nl {
+  flex:1;
+  background: linear-gradient(180deg, #880020 0%, #660018 100%);
+  display:flex; align-items:center; padding-left:14px; gap:6px;
+  position:relative; overflow:hidden;
+}
+.nr {
+  flex:1;
+  background: linear-gradient(180deg, #001c88 0%, #001460 100%);
+  display:flex; align-items:center; justify-content:flex-end; padding-right:14px; gap:6px;
+  position:relative; overflow:hidden;
+}
+
+/* ══════════════════════════════════
+   철권 스타일 전체 테두리 프레임
+══════════════════════════════════ */
+.sb-frame {
+  position: relative;
+  border: 3px solid #111;
+  box-shadow:
+    0 0 0 1px #555,
+    0 0 0 2px #222,
+    inset 0 1px 0 rgba(255,255,255,0.12);
+}
+/* 상단 하이라이트 라인 */
+.sb-frame::before {
+  content:'';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.08) 15%,
+    rgba(255,255,255,0.35) 50%,
+    rgba(255,255,255,0.08) 85%,
+    transparent 100%
+  );
+  z-index: 60;
+  pointer-events: none;
+}
+/* 하단 그림자 라인 */
+.sb-frame::after {
+  content:'';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0,0,0,0.6) 30%,
+    rgba(0,0,0,0.8) 50%,
+    rgba(0,0,0,0.6) 70%,
+    transparent 100%
+  );
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* hprow 상하 철 테두리 */
+.hprow {
+  border-top: 2px solid #555;
+  border-bottom: 2px solid #333;
+}
+/* hprow 좌우 측면 금속 엣지 */
+.hp-left::before {
+  content:'';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #666 0%, #333 50%, #555 100%);
+  z-index: 20;
+}
+.hp-right::after {
+  content:'';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #666 0%, #333 50%, #555 100%);
+  z-index: 20;
+}
+
+/* 이름 행 테두리 */
+.namerow {
+  border-bottom: 2px solid #333;
+  border-left: 3px solid #444;
+  border-right: 3px solid #444;
+}
+/* 이름 행 좌우 내측 엣지 */
+.nl::before {
+  content:'';
+  position: absolute;
+  left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, #552010 0%, #331008 100%);
+  z-index: 5;
+}
+.nr::after {
+  content:'';
+  position: absolute;
+  right: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, #101844 0%, #080e2a 100%);
+  z-index: 5;
+}
+
+/* 이름 클릭 가능 스타일 */
+.nametxt {
+  cursor: pointer;
+  transition: opacity 0.1s;
+}
+.nametxt:hover { opacity: 0.75; }
+
+/* 전기 이펙트 — 항상 숨김 */
+.elec { display: none; }
+
+/* 우세 텍스트 */
+.advantage {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255,255,160,0.85);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  display: inline-block;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  flex-shrink: 0;
+}
+
+/* 이름 텍스트 기본 스타일 */
+.nametxt {
+  font-family: 'Black Han Sans', 'Noto Sans KR', sans-serif;
+  font-size: 28px; color:#fff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-style: italic;
+  transform: skewX(-6deg);
+  display: inline-block;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5);
+  cursor: pointer;
+  transition: opacity 0.1s;
+}
+.nametxt:hover { opacity: 0.7; }
+
+/* ── 중앙 합산 점수 — 타이머처럼 박스 처리 ── */
+.cscore-wrap {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20; pointer-events: none;
+  /* 타이머와 동일한 금속 박스 */
+  background: linear-gradient(180deg, #1a1c2e 0%, #0c0e1c 100%);
+  border: 2px solid #44475a;
+  border-radius: 5px;
+  padding: 0 18px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 1px #000, inset 0 1px 0 rgba(255,255,255,0.07);
+  /* 좌우 화살표 장식 */
+}
+.cscore-wrap::before {
+  content: '';
+  position: absolute;
+  left: -10px; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-right: 10px solid #44475a;
+}
+.cscore-wrap::after {
+  content: '';
+  position: absolute;
+  right: -10px; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 10px solid #44475a;
+}
+@keyframes goldPulse {
+  0%,100% { text-shadow:0 0 8px rgba(220,150,0,0.6), 2px 2px 0 #7a4000; }
+  50%     { text-shadow:0 0 22px rgba(255,210,0,1), 0 0 44px rgba(255,150,0,0.7), 0 0 60px rgba(255,100,0,0.3), 2px 2px 0 #7a4000; }
+}
+.cscore-txt {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px; color:#ffe000; letter-spacing:2px; white-space:nowrap;
+  animation: goldPulse 1.8s ease-in-out infinite;
+  font-style: italic;
+  transform: skewX(-6deg);
+  display: inline-block;
+}
+.cscore-unit {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px; color: rgba(255,210,0,0.7);
+  letter-spacing: 1px;
+  font-style: italic;
+  transform: skewX(-6deg);
+  display: inline-block;
+  margin-left: 2px;
+  text-shadow: 0 0 8px rgba(200,130,0,0.5);
+}
+@keyframes goldPop {
+  0%   { transform:scale(1) rotate(0); }
+  25%  { transform:scale(1.8) rotate(-4deg); color:#fff; }
+  60%  { transform:scale(1.2) rotate(2deg); }
+  100% { transform:scale(1) rotate(0); }
+}
+.cscore-txt.pop { animation: goldPop 0.4s ease-out forwards; }
+
+/* ══════════════════════════════════
+   컨트롤
+══════════════════════════════════ */
+.controls {
+  margin-top:22px; display:flex; gap:10px; justify-content:center;
+}
+.cbtn {
+  padding:8px 22px; border:none; border-radius:6px;
+  font-size:13px; font-weight:700;
+  font-family:'Noto Sans KR',sans-serif; cursor:pointer;
+  transition: filter 0.1s, transform 0.1s;
+}
+.cbtn:hover { filter:brightness(1.15); transform:translateY(-1px); }
+.cbtn:active { transform:scale(0.97); }
+.c-start { background:#22c55e; color:#fff; }
+.c-pause { background:#f59e0b; color:#fff; }
+.c-reset { background:#6b7280; color:#fff; }
+.hint { margin-top:9px; font-size:11px; color:#888; text-align:center; font-family:'Noto Sans KR',sans-serif; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+
+/* ══════════════════════════════════
+   공용 모달
+══════════════════════════════════ */
+.overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.82); z-index:200;
+  align-items:center; justify-content:center;
+}
+.overlay.on { display:flex; }
+.modal {
+  background:#10122a; border:1.5px solid #3a3d60;
+  border-radius:12px; padding:26px 36px; text-align:center;
+  box-shadow:0 0 50px rgba(0,0,0,0.95);
+  min-width:240px;
+}
+.modal h3 {
+  font-size:14px; font-weight:700; color:#aaa;
+  margin-bottom:14px; font-family:'Noto Sans KR',sans-serif;
+}
+.modal input {
+  font-family:'Bebas Neue','Courier New',monospace;
+  font-size:34px; font-weight:900; width:100%; text-align:center;
+  background:#080910; border:2px solid #444; border-radius:8px;
+  color:#ffe000; padding:5px 10px; outline:none;
+}
+.modal input:focus { border-color:#ffe000; }
+.modal .sub {
+  font-size:11px; color:#555; margin-top:6px;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.mbns { display:flex; gap:10px; justify-content:center; margin-top:16px; }
+.mb {
+  padding:8px 28px; border:none; border-radius:6px;
+  font-size:13px; font-weight:700; cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.mb-ok { background:#ffe000; color:#111; }
+.mb-ok:hover { background:#f5d400; }
+.mb-no { background:#404050; color:#ccc; }
+.mb-no:hover { background:#505060; }
+</style>
+</head>
+<body>
+
+<div class="sb sb-frame">
+  <!-- HP바 행 -->
+  <div class="hprow" id="hprow">
+    <div class="hp-left" id="hpL">
+      <div class="hp-fill-l" id="fillL"></div>
+      <div class="shine"></div>
+      <span class="snum" id="sL">0</span><span class="sunit">LEX</span>
+    </div>
+
+    <!-- 타이머 캡슐 (클릭 가능) -->
+    <div class="timer-cap">
+      <div class="timer-outer" onclick="openTimer()" title="클릭하여 시간 변경">
+        <div class="t-topline"></div>
+        <div class="t-botline"></div>
+        <span class="timer-txt" id="tEl">05:00:00</span>
+      </div>
+    </div>
+
+    <div class="hp-right" id="hpR">
+      <div class="hp-fill-r" id="fillR"></div>
+      <div class="shine"></div>
+      <span class="snum" id="sR">0</span><span class="sunit">LEX</span>
+    </div>
+
+    <!-- 불꽃 캔버스 — hprow 직속, JS로 위치 제어 -->
+    <canvas id="fireL" style="position:absolute;top:50%;transform:translateY(-50%);width:120px;height:60px;pointer-events:none;z-index:100;display:none;"></canvas>
+    <canvas id="fireR" style="position:absolute;top:50%;transform:translateY(-50%);width:120px;height:60px;pointer-events:none;z-index:100;display:none;"></canvas>
+  </div>
+
+  <!-- 이름 행 -->
+  <div class="namerow">
+    <div class="nl" id="nL">
+      <span class="nametxt" id="nameL" onclick="openName('left')">감자</span>
+      <span class="advantage" id="advL"></span>
+      <svg class="elec" viewBox="0 0 50 34" fill="none">
+        <polyline points="25,0 33,12 22,16 34,34" stroke="#55ccff" stroke-width="2" stroke-opacity="0.95" fill="none" stroke-linejoin="round"/>
+        <polyline points="30,0 38,11 27,15 39,32" stroke="#aaeeff" stroke-width="1.2" stroke-opacity="0.65" fill="none"/>
+        <polyline points="20,1 28,13 17,17 29,34" stroke="#ffffff" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+        <circle cx="25" cy="17" r="2.5" fill="#fff" fill-opacity="0.6"/>
+      </svg>
+    </div>
+
+    <div class="cscore-wrap">
+      <span class="cscore-txt" id="cs">0</span><span class="cscore-unit">LEX</span>
+    </div>
+
+    <div class="nr" id="nR">
+      <span class="advantage" id="advR"></span>
+      <span class="nametxt" id="nameR" onclick="openName('right')">핑핑</span>
+      <svg class="elec" viewBox="0 0 50 34" fill="none">
+        <polyline points="25,0 33,12 22,16 34,34" stroke="#ffaa22" stroke-width="2" stroke-opacity="0.95" fill="none" stroke-linejoin="round"/>
+        <polyline points="30,0 38,11 27,15 39,32" stroke="#ffcc66" stroke-width="1.2" stroke-opacity="0.65" fill="none"/>
+        <polyline points="20,1 28,13 17,17 29,34" stroke="#ffffff" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+        <circle cx="25" cy="17" r="2.5" fill="#fff" fill-opacity="0.6"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="cbtn c-start" onclick="startT()">▶ 시작</button>
+  <button class="cbtn c-pause" onclick="pauseT()">⏸ 정지</button>
+  <button class="cbtn c-reset" onclick="resetT()">↺ 리셋</button>
+</div>
+<p class="hint">※ 점수·타이머·이름 클릭 시 직접 입력 가능 &nbsp;|&nbsp; 타이머: 카운트다운</p>
+
+<!-- 이름 변경 모달 -->
+<div class="overlay" id="ovName">
+  <div class="modal">
+    <h3 id="nameMttl">이름 변경</h3>
+    <input type="text" id="nameInp" maxlength="12"
+      style="font-family:'Black Han Sans','Noto Sans KR',sans-serif;font-size:28px;font-weight:900;width:100%;text-align:center;background:#080910;border:2px solid #444;border-radius:8px;color:#fff;padding:8px 10px;outline:none;letter-spacing:2px;"
+      onkeydown="if(event.key==='Enter')confirmName()">
+    <div class="mbns">
+      <button class="mb mb-ok" onclick="confirmName()">확인</button>
+      <button class="mb mb-no" onclick="closeName()">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- 점수 모달 -->
+<div class="overlay" id="ovScore">
+  <div class="modal">
+    <h3 id="scoreMttl">점수 입력</h3>
+    <input type="number" id="scoreInp" min="0" onkeydown="if(event.key==='Enter')confirmScore()">
+    <div class="mbns">
+      <button class="mb mb-ok" onclick="confirmScore()">확인</button>
+      <button class="mb mb-no" onclick="closeScore()">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- 타이머 모달 -->
+<div class="overlay" id="ovTimer">
+  <div class="modal">
+    <h3>타이머 설정</h3>
+    <div style="display:flex;gap:8px;justify-content:center;align-items:center;">
+      <div style="text-align:center">
+        <div style="font-size:11px;color:#666;margin-bottom:4px;font-family:'Noto Sans KR'">시간</div>
+        <input type="number" id="tH" min="0" max="99" value="5"
+          style="font-family:'Bebas Neue','Courier New',monospace;font-size:34px;font-weight:900;width:80px;text-align:center;background:#080910;border:2px solid #444;border-radius:8px;color:#ffe000;padding:5px 4px;outline:none;">
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:#666;padding-top:16px">:</div>
+      <div style="text-align:center">
+        <div style="font-size:11px;color:#666;margin-bottom:4px;font-family:'Noto Sans KR'">분</div>
+        <input type="number" id="tM" min="0" max="59" value="0"
+          style="font-family:'Bebas Neue','Courier New',monospace;font-size:34px;font-weight:900;width:80px;text-align:center;background:#080910;border:2px solid #444;border-radius:8px;color:#ffe000;padding:5px 4px;outline:none;">
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:#666;padding-top:16px">:</div>
+      <div style="text-align:center">
+        <div style="font-size:11px;color:#666;margin-bottom:4px;font-family:'Noto Sans KR'">초</div>
+        <input type="number" id="tS" min="0" max="59" value="0"
+          style="font-family:'Bebas Neue','Courier New',monospace;font-size:34px;font-weight:900;width:80px;text-align:center;background:#080910;border:2px solid #444;border-radius:8px;color:#ffe000;padding:5px 4px;outline:none;">
+      </div>
+    </div>
+    <p class="sub">타이머가 정지 중일 때만 변경됩니다</p>
+    <div class="mbns">
+      <button class="mb mb-ok" onclick="confirmTimer()">적용</button>
+      <button class="mb mb-no" onclick="closeTimer()">취소</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let lS=0, rS=0, scoreSide=null;
+let secs=5*3600, tid=null, running=false;
+const pad=n=>String(n).padStart(2,'0');
+
+/* ── 타이머 ── */
+function renderTimer(){
+  const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60;
+  const el=document.getElementById('tEl');
+  el.textContent=`${pad(h)}:${pad(m)}:${pad(s)}`;
+  if(secs<=60) el.classList.add('warn'); else el.classList.remove('warn');
+}
+function startT(){
+  if(running)return; running=true;
+  tid=setInterval(()=>{
+    if(secs<=0){
+      clearInterval(tid); running=false;
+      onTimeEnd();
+      return;
+    }
+    secs--;
+    renderTimer();
+  },1000);
+}
+function pauseT(){ clearInterval(tid); running=false; }
+function resetT(){ pauseT(); secs=5*3600; renderTimer(); }
+
+/* ── 0초 종료 연출 ── */
+function onTimeEnd(){
+  if(lS === rS) return; // 동점은 그대로
+  // 이긴 쪽 100%, 진 쪽 0%로 0.8초 트랜지션
+  const fL = document.getElementById('fillL');
+  const fR = document.getElementById('fillR');
+  fL.style.transition = 'width 0.8s cubic-bezier(0.25,0.8,0.25,1)';
+  fR.style.transition = 'width 0.8s cubic-bezier(0.25,0.8,0.25,1)';
+  if(lS > rS){
+    fL.style.width = '100%';
+    fR.style.width = '0%';
+  } else {
+    fL.style.width = '0%';
+    fR.style.width = '100%';
+  }
+}
+
+/* ── 타이머 모달 ── */
+function openTimer(){
+  if(running){ alert('타이머를 먼저 정지해주세요!'); return; }
+  const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60;
+  document.getElementById('tH').value=h;
+  document.getElementById('tM').value=m;
+  document.getElementById('tS').value=s;
+  document.getElementById('ovTimer').classList.add('on');
+  setTimeout(()=>document.getElementById('tH').focus(),40);
+}
+function closeTimer(){ document.getElementById('ovTimer').classList.remove('on'); }
+function confirmTimer(){
+  const h=parseInt(document.getElementById('tH').value)||0;
+  const m=parseInt(document.getElementById('tM').value)||0;
+  const s=parseInt(document.getElementById('tS').value)||0;
+  secs = h*3600 + m*60 + s;
+  renderTimer();
+  closeTimer();
+}
+
+/* ── 점수 ── */
+function popEl(id){
+  const el=document.getElementById(id);
+  el.classList.remove('pop'); void el.offsetWidth;
+  el.classList.add('pop');
+  el.addEventListener('animationend',()=>el.classList.remove('pop'),{once:true});
+}
+
+function renderScores(){
+  document.getElementById('sL').textContent=lS;
+  document.getElementById('sR').textContent=rS;
+  document.getElementById('cs').textContent=lS+rS;
+  popEl('cs');
+
+  const total=lS+rS;
+  const lPct = total===0 ? 50 : Math.max(5, Math.round(lS/total*100));
+  const rPct = total===0 ? 50 : Math.max(5, Math.round(rS/total*100));
+  document.getElementById('fillL').style.width=lPct+'%';
+  document.getElementById('fillR').style.width=rPct+'%';
+
+  ['hpL','hpR'].forEach(id=>document.getElementById(id).classList.remove('winning','losing'));
+  winState.L = false; winState.R = false;
+
+  // 우세 텍스트 업데이트
+  const diff = Math.abs(lS - rS);
+  const advL = document.getElementById('advL');
+  const advR = document.getElementById('advR');
+  if (lS > rS) {
+    advL.textContent = `[ ${diff} LEX 우세 ]`;
+    advR.textContent = '';
+  } else if (rS > lS) {
+    advR.textContent = `[ ${diff} LEX 우세 ]`;
+    advL.textContent = '';
+  } else {
+    advL.textContent = '';
+    advR.textContent = '';
+  }
+
+  if(lS>rS){
+    document.getElementById('hpL').classList.add('winning');
+    document.getElementById('hpR').classList.add('losing');
+    winState.L = true; popEl('sL');
+  } else if(rS>lS){
+    document.getElementById('hpR').classList.add('winning');
+    document.getElementById('hpL').classList.add('losing');
+    winState.R = true; popEl('sR');
+  }
+}
+
+function openScore(s){
+  scoreSide=s;
+  document.getElementById('scoreMttl').textContent=(s==='left'?'감자':'핑핑')+' 점수 입력';
+  document.getElementById('scoreInp').value=s==='left'?lS:rS;
+  document.getElementById('ovScore').classList.add('on');
+  setTimeout(()=>{ const i=document.getElementById('scoreInp'); i.focus(); i.select(); },40);
+}
+function closeScore(){ document.getElementById('ovScore').classList.remove('on'); scoreSide=null; }
+function confirmScore(){
+  const v=parseInt(document.getElementById('scoreInp').value,10);
+  if(!isNaN(v)&&v>=0){ if(scoreSide==='left')lS=v; else rS=v; renderScores(); }
+  closeScore();
+}
+
+/* ── 불꽃 파티클 엔진 ── */
+const CW = 120, CH = 60;
+const cvL = document.getElementById('fireL');
+const cvR = document.getElementById('fireR');
+cvL.width = CW; cvL.height = CH;
+cvR.width = CW; cvR.height = CH;
+const ctxL = cvL.getContext('2d');
+const ctxR = cvR.getContext('2d');
+
+let winState = { L: false, R: false };
+
+// 타이머 경계를 캐시 (매 프레임 BoundingClientRect 최소화)
+let timerBounds = { left: 0, right: 0 };
+function cacheTimerBounds() {
+  const timer   = document.querySelector('.timer-cap');
+  const row     = document.getElementById('hprow');
+  const tr = timer.getBoundingClientRect();
+  const rr = row.getBoundingClientRect();
+  timerBounds.left  = tr.left  - rr.left;
+  timerBounds.right = tr.right - rr.left;
+}
+
+function updateFirePos() {
+  const row  = document.getElementById('hprow');
+  const fL   = document.getElementById('fillL');
+  const fR   = document.getElementById('fillR');
+  const rowW   = row.offsetWidth;
+  const fillLW = fL.offsetWidth;
+  const fillRW = fR.offsetWidth;
+
+  // L: 빨간 fill 오른쪽 사선 끝 — 그냥 거기서 나오게
+  const lx = fillLW - 7 - CW * 0.5;
+  cvL.style.left = lx + 'px';
+  cvL.style.clipPath = 'none';
+  cvL.style.display = winState.L ? 'block' : 'none';
+
+  // R: 파란 fill 왼쪽 사선 끝 — 그냥 거기서 나오게
+  const rx = (rowW - fillRW) + 7 - CW * 0.5;
+  cvR.style.left = rx + 'px';
+  cvR.style.clipPath = 'none';
+  cvR.style.display = winState.R ? 'block' : 'none';
+}
+
+// ── 파티클: 원본처럼 중앙(타이머 방향)으로 튀는 방사형 스파크
+class Spark {
+  constructor(side) { this.side = side; this.reset(); }
+  reset() {
+    const cx = CW * 0.5;
+    const cy = CH * 0.5;
+    // 중심에서 방사형으로 — 원본처럼 위쪽/옆쪽으로 주로 터짐
+    // L은 오른쪽(타이머 방향) 위주, R은 왼쪽 위주
+    const baseAngle = this.side === 'L'
+      ? -90 + (Math.random() - 0.5) * 160   // 주로 위쪽+오른쪽
+      : -90 + (Math.random() - 0.5) * 160;  // 주로 위쪽+왼쪽
+    const rad = baseAngle * Math.PI / 180;
+    const spd = 0.6 + Math.random() * 2.4;
+    this.x  = cx + (Math.random() - 0.5) * 6;
+    this.y  = cy + (Math.random() - 0.5) * 6;
+    this.vx = Math.cos(rad) * spd * (this.side === 'L' ? 1 : -1);
+    this.vy = Math.sin(rad) * spd;
+    this.life    = 0;
+    this.maxLife = 16 + Math.floor(Math.random() * 20);
+    this.size    = 1.0 + Math.random() * 2.5;
+    this.trail   = [];
+    // 별 모양 여부 (일부 파티클은 별로)
+    this.isStar  = Math.random() < 0.25;
+  }
+  update() {
+    this.trail.push({ x: this.x, y: this.y });
+    if (this.trail.length > 5) this.trail.shift();
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += 0.05;
+    this.vx *= 0.975;
+    this.life++;
+    this.size *= 0.962;
+  }
+  drawStar(ctx, x, y, r, a) {
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.fillStyle = `rgba(255,255,180,${a})`;
+    ctx.shadowColor = 'rgba(255,210,0,0.9)';
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    for (let i = 0; i < 4; i++) {
+      const angle = (i / 4) * Math.PI * 2;
+      const ox = Math.cos(angle) * r * 2.5;
+      const oy = Math.sin(angle) * r * 2.5;
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + ox, y + oy);
+    }
+    ctx.strokeStyle = `rgba(255,230,80,${a * 0.8})`;
+    ctx.lineWidth = r * 0.7;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    ctx.restore();
+  }
+  draw(ctx) {
+    const t = this.life / this.maxLife;
+    if (t >= 1 || this.size < 0.2) return;
+    let r, g, b;
+    if      (t < 0.2)  { r=255; g=255; b=230; }
+    else if (t < 0.5)  { r=255; g=220; b=40; }
+    else               { r=255; g=140; b=10; }
+    const a = Math.max(0, 1 - t * 1.1);
+
+    if (this.isStar && t < 0.6) {
+      this.drawStar(ctx, this.x, this.y, this.size, a);
+      return;
+    }
+
+    // 잔상 꼬리
+    if (this.trail.length >= 2) {
+      ctx.save();
+      ctx.strokeStyle = `rgba(255,200,20,${a * 0.3})`;
+      ctx.lineWidth = this.size * 0.5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(this.trail[0].x, this.trail[0].y);
+      this.trail.forEach(p => ctx.lineTo(p.x, p.y));
+      ctx.stroke();
+      ctx.restore();
+    }
+    // 코어 원
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.shadowColor = `rgba(255,200,0,${a * 0.8})`;
+    ctx.shadowBlur = 8;
+    const g2 = ctx.createRadialGradient(this.x,this.y,0, this.x,this.y,this.size*1.8);
+    g2.addColorStop(0,   `rgba(255,255,240,${a})`);
+    g2.addColorStop(0.45,`rgba(${r},${g},${b},${a})`);
+    g2.addColorStop(1,   `rgba(${r},30,0,0)`);
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = g2;
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+const sparks = {
+  L: Array.from({length:45}, ()=>{ const s=new Spark('L'); s.life=Math.floor(Math.random()*s.maxLife); return s; }),
+  R: Array.from({length:45}, ()=>{ const s=new Spark('R'); s.life=Math.floor(Math.random()*s.maxLife); return s; })
+};
+
+// ── 중앙 코어 글로우 + 방사형 광선 (원본의 별빛 코어)
+function drawCore(ctx, side, phase) {
+  const cx = CW * 0.5;
+  const cy = CH * 0.5;
+  const pulse = 0.7 + Math.sin(phase) * 0.3;
+
+  // 외곽 소프트 글로우
+  ctx.save();
+  const outer = ctx.createRadialGradient(cx,cy,0, cx,cy,28*pulse);
+  outer.addColorStop(0,   `rgba(255,240,120,${0.55*pulse})`);
+  outer.addColorStop(0.4, `rgba(255,180,0,${0.3*pulse})`);
+  outer.addColorStop(0.75,`rgba(255,100,0,${0.1*pulse})`);
+  outer.addColorStop(1,   'rgba(255,50,0,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, 28*pulse, 0, Math.PI*2);
+  ctx.fillStyle = outer;
+  ctx.fill();
+  ctx.restore();
+
+  // 밝은 코어
+  ctx.save();
+  const inner = ctx.createRadialGradient(cx,cy,0, cx,cy,8*pulse);
+  inner.addColorStop(0,   `rgba(255,255,230,${0.95})`);
+  inner.addColorStop(0.5, `rgba(255,220,60,${0.8})`);
+  inner.addColorStop(1,   `rgba(255,150,0,0)`);
+  ctx.beginPath();
+  ctx.arc(cx, cy, 8*pulse, 0, Math.PI*2);
+  ctx.fillStyle = inner;
+  ctx.shadowColor = 'rgba(255,220,80,1)';
+  ctx.shadowBlur = 14;
+  ctx.fill();
+  ctx.restore();
+
+  // 십자 광선 (원본의 그 반짝임)
+  const rayLen = 18 + Math.sin(phase * 1.3) * 6;
+  const angles = [0, Math.PI/2, Math.PI, Math.PI*1.5,
+                  Math.PI*0.25, Math.PI*0.75, Math.PI*1.25, Math.PI*1.75];
+  ctx.save();
+  ctx.shadowColor = 'rgba(255,220,50,0.9)';
+  ctx.shadowBlur = 8;
+  angles.forEach((angle, i) => {
+    const len = i < 4 ? rayLen : rayLen * 0.55; // 대각선은 짧게
+    const alpha = i < 4 ? 0.85*pulse : 0.5*pulse;
+    const grad = ctx.createLinearGradient(cx, cy,
+      cx + Math.cos(angle)*len, cy + Math.sin(angle)*len);
+    grad.addColorStop(0,   `rgba(255,255,200,${alpha})`);
+    grad.addColorStop(0.6, `rgba(255,200,30,${alpha*0.5})`);
+    grad.addColorStop(1,   'rgba(255,150,0,0)');
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(angle)*len, cy + Math.sin(angle)*len);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = i < 4 ? 2.5 : 1.2;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  });
+  ctx.restore();
+}
+
+let glowPhase = 0;
+
+function fireLoop() {
+  updateFirePos();
+  glowPhase += 0.07;
+
+  ['L','R'].forEach(side => {
+    const ctx = side==='L' ? ctxL : ctxR;
+    ctx.clearRect(0, 0, CW, CH);
+    if (!winState[side]) return;
+
+    // 코어 + 광선
+    drawCore(ctx, side, glowPhase + (side==='R' ? Math.PI : 0));
+
+    // 스파크 파티클
+    sparks[side].forEach(s => {
+      s.update();
+      if (s.life >= s.maxLife) s.reset();
+      s.draw(ctx);
+    });
+  });
+  requestAnimationFrame(fireLoop);
+}
+fireLoop();
+
+// ===== 구글시트 연동 =====
+async function loadScoresFromSheet() {
+  try {
+    const res = await fetch("https://script.google.com/macros/s/AKfycbwrjCzsDIhR9Bmnhx6x_00QBoRnpdGoam-EFs4dbFzy_fNHoBANy5MZHGUA69jRsxT9/exec"); // ← 반드시 교체
+    const data = await res.json();
+
+    const newL = data.감자 || 0;
+    const newR = data.핑핑 || 0;
+
+    // 값이 바뀐 경우만 업데이트 (불필요 애니메이션 방지)
+    if (newL !== lS || newR !== rS) {
+      lS = newL;
+      rS = newR;
+      renderScores();
+    }
+
+  } catch (e) {
+    console.error("시트 로드 실패", e);
+  }
+}
+
+document.getElementById('ovScore').addEventListener('click',e=>{ if(e.target===document.getElementById('ovScore'))closeScore(); });
+document.getElementById('ovTimer').addEventListener('click',e=>{ if(e.target===document.getElementById('ovTimer'))closeTimer(); });
+document.getElementById('ovName').addEventListener('click',e=>{ if(e.target===document.getElementById('ovName'))closeName(); });
+
+// 최초 1회
+loadScoresFromSheet();
+
+// 주기 갱신 (5초)
+setInterval(loadScoresFromSheet, 5000);
+
+renderScores();
+renderTimer();
+
+/* ── 이름 변경 ── */
+let nameSide = null;
+function openName(s) {
+  nameSide = s;
+  const cur = s==='left'
+    ? document.getElementById('nameL').textContent
+    : document.getElementById('nameR').textContent;
+  document.getElementById('nameMttl').textContent = (s==='left'?'왼쪽':'오른쪽') + ' 이름 변경';
+  document.getElementById('nameInp').value = cur;
+  document.getElementById('ovName').classList.add('on');
+  setTimeout(()=>{ const i=document.getElementById('nameInp'); i.focus(); i.select(); }, 40);
+}
+function closeName() { document.getElementById('ovName').classList.remove('on'); nameSide=null; }
+function confirmName() {
+  const v = document.getElementById('nameInp').value.trim();
+  if (v) {
+    if (nameSide==='left')  document.getElementById('nameL').textContent = v;
+    if (nameSide==='right') document.getElementById('nameR').textContent = v;
+  }
+  closeName();
+}
+
+/* 타이머 input 포커스 시 테두리 색 */
+['tH','tM','tS'].forEach(id=>{
+  const el=document.getElementById(id);
+  el.addEventListener('focus',()=>el.style.borderColor='#ffe000');
+  el.addEventListener('blur', ()=>el.style.borderColor='#444');
+});
+
+</script>
+</body>
+</html>
