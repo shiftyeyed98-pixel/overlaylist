@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=350, height=1080, initial-scale=1.0" />
+  <title>숲 단하나_♥ 리액션 리스트</title>
+  <style>
+
+    @font-face {
+        font-family: 'OneStoreMobilePop';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff') format('woff');
+        font-weight: normal;
+        font-display: swap;
+    }
+
+      @font-face {
+        font-family: 'GmarketSansBold';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }    
+
+    :root {
+      --w: 350px;
+      --h: 1080px;
+      --row-gap: 4px;
+      --num-col: 74px;
+      --svg-h: 30px;
+      --page-gap: 10px;     /*페이지사이공백*/
+      --loop-seconds: 180s;  /*속도*/
+      --sequence-height: 1000px;
+      --outline: 5;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'OneStoreMobilePop', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 4px 4px;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: 10px;
+      flex: 0 0 32px;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 var(--row-gap);
+    }
+
+    col.num-col { width: var(--num-col); }
+    col.icon-col { width: 34px; }
+
+    td {
+      padding: 0;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num {
+      text-align: left;
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    td.icon-cell {
+      width: 34px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    td.footnote {
+      padding: 0 0 0 6px;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .page-title {
+      width: 240px;
+      height: 36px;
+      line-height: 36px;
+      margin: 0 0 6px 0;
+      text-align: center;
+      font-family: 'OneStoreMobilePop', Arial, sans-serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: #ffffff;
+      border: 2px solid currentColor;
+      border-radius: 10px;
+      box-sizing: border-box;
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+    }
+
+    .title-gray {
+      background: #bfbfbf;
+      border-color: #262525;
+    }
+
+    .title-pink {
+      background: #FAB0C1;
+      border-color: #D36C86;
+      font-size: 22px !important;
+    }
+
+    .title-orange {
+      background: #EF9573;
+      border-color: #C96541;
+    }
+
+    .title-yellow {
+      background: #FEFA94;
+      border-color: #D4BE36;
+    }
+
+    .title-purple {
+      background: #DCAEF8;
+      border-color: #9F67C3;
+    }
+
+    .title-blue {
+      background: #4A90E2;
+      border-color: #1F5EA6;
+    }
+
+    .label-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      width: auto;
+    }
+    
+    .num-svg,
+    .label-svg,
+    .footnote-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      overflow: visible;
+    }
+
+    .label-icon {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      object-fit: contain;
+      display: block;
+      margin-left: -6px; /* 더 붙이고 싶으면 -3px ~ -6px 정도 조절 */
+    }
+
+    .label-text {
+      flex: 0 0 auto;
+      min-width: auto;
+    }
+
+    .fixed-bottom-label {
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      width: 240px;
+      height: 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: 'GmarketSansBold', Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 100;
+      color: #ffffff;
+
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid #ffffff;
+      border-radius: 10px;
+
+      box-sizing: border-box;
+      z-index: 50;
+
+      text-shadow:
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px  2px 0 #000,
+        2px  2px 0 #000;
+    }
+
+    @keyframes riseLoop {
+      from {
+        transform: translate3d(0, 0, 0);
+      }
+      to {
+        transform: translate3d(0, calc(-1 * var(--sequence-height)), 0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="viewport">
+      <div class="track" id="track">
+        <div class="sequence" id="sequenceA"></div>
+        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+      </div>
+    </div>
+    <div class="fixed-bottom-label">designed by 시프티</div>
+  </div>
+
+  <script>
+
+      /* =========================
+        우클릭 / 개발자도구 차단
+      ========================= */
+
+      // 우클릭 차단
+      document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+      });
+
+      // 드래그 선택 차단
+      document.addEventListener('selectstart', e => {
+        e.preventDefault();
+      });
+
+      // 드래그 차단
+      document.addEventListener('dragstart', e => {
+        e.preventDefault();
+      });
+
+      // 개발자도구 단축키 차단
+      document.addEventListener('keydown', e => {
+
+        // F12
+        if (e.key === 'F12') {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+Shift+I
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+Shift+J
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'j') {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+Shift+C
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+U
+        if (e.ctrlKey && e.key.toLowerCase() === 'u') {
+          e.preventDefault();
+          return false;
+        }
+
+        // Ctrl+S
+        if (e.ctrlKey && e.key.toLowerCase() === 's') {
+          e.preventDefault();
+          return false;
+        }
+
+      });
+
+/*    const PAGE_1 = [
+      ["12484","한방카톡"],
+      ["20982","방종권"],
+      ["40000","한방식데"]
+    ];
+
+    const PAGE_2 = [
+      ["2884","정성방셀","","(움짤+사진 10장)"],
+      ["5000","정성방셀 2개","","(전신포함)"]
+    ];
+
+    const PAGE_3 = [
+      ["1등","식데","","열혈(1)/일반(2)"],
+      ["2등","카톡"],
+      ["3등","간단방셀"],
+      ["4등","시그댄스"],
+      ["5등","쪽~ 사랑해❤️"]
+    ];
+*/
+
+    const PAGE_4 = [
+     ["계속 업데이트 됩니다",""],
+     ["",""],
+     ["88","마라탕후루"],
+     ["89","솜사탕"],
+     ["90","아이스크림"],
+     ["91","이안챌린지"],
+     ["92","딱풀"],
+     ["93","오버드라이브"],
+     ["94","귀여워서 미안해"],
+     ["95","먀옹"],
+     ["96","모찌송"],
+     ["97","카리나닮았대"],
+     ["98","외모체크"],
+     ["99","모시모시"],
+     ["",""],
+     ["100","첫눈"],
+     ["101","핫해"],
+     ["102","너와의 모든 지금"],
+     ["103","괜찮아 딩딩딩"],
+     ["104","사랑받을 준비완료"],
+     ["105","힙사사돈"],
+     ["106","팬서비스"],
+     ["107","Tick Tack"],
+     ["108","핑크레이디"],
+     ["109","레디올낫"],
+     ["110","주차금지"],
+     ["111","복고댄스"],
+     ["112","진압해"],
+     ["113","컴온"],
+     ["114","푸른산호초"],
+     ["115","XXL"],
+     ["116","옴브리뉴"],
+     ["117","짧은치마"],
+     ["118","으르렁"],
+     ["119","이머전시"],
+     ["120","빌려온고양이"],
+     ["121","테디베어"],
+     ["122","따따블"],
+     ["123","홀드업"],
+     ["124","REDRED"],
+     ["125","it's me"],
+     ["126","눈물참기"],
+     ["127","이뻐이뻐"],
+     ["128","푱푱"],
+     ["129","펌업더볼륨"],
+     ["",""],
+     ["130","트월킹덕"],
+     ["131","버터플라이"],
+     ["132","자기야 화풀어"],
+     ["133","live it up"],
+     ["134","무아"],
+     ["135","여름이였다"],
+     ["136","지금,우리"],
+     ["137","붐붐베이스"],
+     ["138","짠쿵쾅"],
+     ["139","종소리"],
+     ["140","먹어"],
+     ["141","슈퍼그럼요"],
+     ["142","제로투"],
+     ["143","배추보쌈"],
+     ["144","풍덩"],
+     ["145","팅커벨"],
+     ["146","반해"],
+     ["147","아로아로"],
+     ["148","나랑사귈래"],
+     ["149","벌룬인럽"],
+     ["150","먹지마"],
+     ["151","어마어마해"],
+     ["152","러브어택"],
+     ["153","음파음파"],
+     ["154","빛을따라서"],
+     ["155","낫큐트애니모어"],
+     ["156","고민중독"],
+     ["157","슈파도파"],
+     ["158","오빠 바이러스"],
+     ["159","스티키"],
+     ["",""],
+     ["160","러브119"],
+     ["161","잇츠섹시"],
+     ["162","언포기븐"],
+     ["163","킥드럼베이스"],
+     ["164","아무래도난"],
+     ["165","팁토"],
+     ["166","따봉쇼"],
+     ["168","네모네모"],
+     ["169","내가S면넌나의N이되어줘"],
+     ["170","NO BATIDAO"],
+     ["171","매니악"],
+     ["172","색소폰매직"],
+     ["173","슈퍼노바"],
+     ["175","STYLE"],
+     ["177","바니바니"],
+     ["180","스택잇업"],
+     ["181","뛰어"],
+     ["182","그래비티"],
+     ["185","오빠달려붕붕"],
+     ["188","소다팝"],
+     ["189","미국가있어"],
+     ["191","스모크"],
+     ["195","웃어"],
+     ["196","Like JeNNIE"],
+     ["197","포커스"],
+     ["198","홈스윗홈"],
+     ["199","페드로"],
+     ["",""],
+     ["200","거짓말"],
+     ["201","간바레센빠이"],
+     ["202","루드"],
+     ["203","너뿐이야"],
+     ["204","첫만남"],
+     ["205","러브쉐이크"],
+     ["206","왜요왜요"],
+     ["207","캐치캐치"],
+     ["209","오빠하앙"],
+     ["210","가솔린 바운스"],
+     ["211","최애의아이"],
+     ["212","마그네틱"],
+     ["220","잭슨"],
+     ["221","뱅뱅"],
+     ["222","코카인"],
+     ["225","왠지"],
+     ["228","LEVITATING"],
+     ["229","이쿠욧"],
+     ["",""],
+     ["232","SMART"],
+     ["233","HYPE BOY"],
+     ["243","댓츠노노"],
+     ["244","EDM"],
+     ["245","새드썸타임"],
+     ["247","마이퍼스트키스"],
+     ["252","DITTO"],
+     ["257","센세"],
+     ["264","아헤가오"],
+     ["280","뻑킹뱅어"],
+     ["282","한발짝 두발짝"],
+     ["292","우치다"],
+     ["",""],
+     ["300","너라면 좋겠어"],
+     ["302","로열티"],
+     ["303","우유"],
+     ["304","샤카보"],
+     ["305","니코틴"],
+     ["306","GMM"],
+     ["307","잭팟"],
+     ["308","LSD"],
+     ["309","헨타이"],
+     ["312","사이코"],
+     ["313","진행시켜"],
+     ["321","댄스컨트롤"],
+     ["322","톡식"],
+     ["323","쏘리쏘리"],
+     ["325","새드보이"],
+     ["",""],
+     ["330","어폴로지"],
+     ["332","Comethru"],
+     ["333","키스"],
+     ["334","인더클럽"],
+     ["336","UP!"],
+     ["337","청신호"],
+     ["339","홀리몰리"],
+     ["345","공주들아"],
+     ["347","지멘지멘"],
+     ["350","Without you"],
+     ["352","꼬마선장"],
+     ["360","촉촉착착"],
+     ["363","나루토"],
+     ["383","Not like us"],
+     ["",""],
+     ["400","원앤온리"],
+     ["402","타투"],
+     ["404","브링방방봉"],
+     ["406","라타타"],
+     ["411","밤을달리다"],
+     ["412","루니솔라"],
+     ["424","아빠와크레파스"],
+     ["434","위아레전드"],
+     ["444","광징어게임"],
+     ["447","다과치 광우업"],
+     ["452","Firestone"],
+     ["",""],
+     ["500","잘할게"],
+     ["502","Love is gone"],
+     ["505","에브리타임위터치"],
+     ["506","베긴"],
+     ["507","슈퍼삐끼"],
+     ["512","숏상한가"],
+     ["522","숏뚜꾸개"],
+     ["552","원기옥"],
+     ["555","디오션"],
+     ["584","오프더레코드"],
+     ["585","슈퍼오빠달려붕붕"],
+     ["595","웨이백홈"],
+     ["",""],
+     ["600","WOP"],
+     ["606","Like A G6"],
+     ["666","STAY"],
+     ["696","1995"],
+     ["697","음탕한폭맨"],
+     ["700","킵유마인"],
+     ["727","체인드투더리듬"],
+     ["778","파티트레인"],
+     ["822","숏세멘"],
+     ["828","쁘띠당마"],
+     ["888","파파파"],
+     ["919","숏페이커"],
+     ["992","개굴개"],
+     ["999","숏예맨"],
+     ["",""],
+     ["1000","지코토닉"],
+     ["1001","태양S"],
+     ["1002","예술이야"],
+     ["1003","시드니형님"],
+     ["1004","셀레스티얼"],
+     ["1005","천오랑"],
+     ["1006","김가을 커튼남"],
+     ["1007","이타치"],
+     ["1008","반야심경"],
+     ["1010","이그나이트"],
+     ["",""],
+     ["1011","웬아이겟올드"],
+     ["1012","업타운펑크"],
+     ["1014","감나무"],
+     ["1017","류키쿠"],
+     ["1018","빠땀빠땀"],
+     ["1019","기억을지워주는병원"],
+     ["1020","러너광이"],
+     ["1021","백돌"],
+     ["1022","에스더케이리"],
+     ["1023","파라다이스"],
+     ["1024","김떡락"],
+     ["1025","시대를 초월한 마음"],
+     ["1026","타코야끼"],
+     ["1027","뉴까멘"],
+     ["1028","요기내자리"],
+     ["1029","김뚜꾸"],
+     ["",""],
+     ["1030","물당번"],
+     ["1031","퓨처캔디"],
+     ["1032","데킬라"],
+     ["1033","한남동이순신"],
+     ["1034","양치기물소"],
+     ["1035","25세백수형"],
+     ["1037","오승환"],
+     ["1038","MONEY"],
+     ["1040","추니업"],
+     ["1042","터미널"],
+     ["1044","라네트"],
+     ["1045","립V"],
+     ["1047","루피L"],
+     ["",""],
+     ["1050","무한성"],
+     ["1051","김신영"],
+     ["1052","Happiness_24"],
+     ["1054","방송볼거없Na"],
+     ["1055","조조페이"],
+     ["1062","파이널러브송"],
+     ["1066","룰루"],
+     ["1069","앵무새69"],
+     ["1070","크레이지지아"],
+     ["1072","함지아아줌마"],
+     ["1077","테이크올리브미"],
+     ["1078","뉴철박이"],
+     ["",""],
+     ["1080","본디지"],
+     ["1081","풍맛달달"],
+     ["1082","패딩개"],
+     ["1083","Hey mama"],
+     ["1084","빳따킹"],
+     ["1085","PYRO"],
+     ["1086","만개화"],
+     ["1087","반조흐개"],
+     ["1088","이너프"],
+     ["1089","소년개"],
+     ["1092","악마스님"],
+     ["1098","인터스텔라"],
+     ["1099","퉁퉁이개"],
+     ["",""],
+     ["1100","반포대교"],
+     ["1106","진격의거인"],
+     ["1110","불금"],
+     ["1111","바코드"],
+     ["1112","휘슬"],
+     ["1117","최코"],
+     ["1120","토끼페이"],
+     ["1122","슈퍼따따블"],
+     ["1123","토마스열차"],
+     ["1125","럼블"],
+     ["1127","그녀가 웃잖아"],
+     ["1133","슈퍼노바"],
+     ["1134","아툰무신"],
+     ["",""],
+     ["1147","분수쇼박광우"],
+     ["1158","도파민"],
+     ["1167","apm"],
+     ["1170","히소리"],
+     ["1171","iceteashot"],
+     ["1172","J12"],
+     ["1173","뉴곰드루"],
+     ["1180","슈퍼솜사탕"],
+     ["1182","82011"],
+     ["1187","패기"],
+     ["1188","STONE대가리"],
+     ["1191","슈퍼스모크"],
+     ["1199","강태풍"],
+     ["",""],
+     ["1222","마르지엘라이"],
+     ["1225","교도소"],
+     ["1233","언제나 상한가"],
+     ["1234","돌아온 김손절"],
+     ["1247","사랑해 박광우"],
+     ["1262","킴리뉴"],
+     ["1275","리츄얼"],
+     ["1280","슈퍼 뻑킹뱅어"],
+     ["1282","라이즈"],
+     ["1288","쀼"],
+     ["",""],
+     ["1300","토니슥타크"],
+     ["1309","슈퍼헨타이"],
+     ["1323","슈퍼 쏘리쏘리"],
+     ["1333","래드까팻"],
+     ["1373","스타워킨"],
+     ["1402","슈퍼제로투"],
+     ["1442","살아있네"],
+     ["1444","세비지"],
+     ["1472","분수쇼 박광우"],
+     ["1474","작은스키스키"],
+     ["",""],
+     ["1515","오너개"],
+     ["1555","시그니엘스"],
+     ["1575","댄스몽키"],
+     ["1595","호구련개"],
+     ["1666","작은예비업"],
+     ["1696","작은 골타69"],
+     ["1727","까멘"],
+     ["1777","삼성동김유신"],
+     ["1818","계집신조"],
+     ["1878","덴멘"],
+     ["1919","작은페이커"],
+     ["1999","큰폭스나인"],
+     ["",""],
+     ["2000","슈퍼클라스"],
+     ["2002","피파"],
+     ["2005","큰천오랑"],
+     ["2007","사기캐"],
+     ["2022","마티니"],
+     ["2024","큰김떡락"],
+     ["2029","큰김뚜꾸"],
+     ["2032","셀럽"],
+     ["2044","큰라네트"],
+     ["2047","큰루피L"],
+     ["2072","큰줌마"],
+     ["2077","UP"],
+     ["2078","디스코테카"],
+     ["2082","갓팔멘개"],
+     ["2088","붕가댄스"],
+     ["2089","큰소년개"],
+     ["2092","청담개"],
+     ["",""],
+     ["2104","Angel"],
+     ["2112","계엄령"],
+     ["2123","큰상한가"],
+     ["2222","큰마르지엘라이"],
+     ["2226","큰킴리뉴개"],
+     ["2300","큰토니슥타크"],
+     ["2424","레전드페이커"],
+     ["2442","라네트"],
+     ["2444","큰세비지"],
+     ["2447","큰루피L"],
+     ["2474","큰스키스키"],
+     ["",""],
+     ["2696","골타69"],
+     ["2727","큰까멘"],
+     ["2777","클라노이드"],
+     ["2878","슈퍼핵펀치"],
+     ["2888","티미시아나"],
+     ["2927","슈퍼까멘"],
+     ["2929","큰페이커개"],
+     ["2999","큰예비업"],
+     ["",""],
+     ["3000","킹제네럴갓"],
+     ["5000","Still Fight"]
+          ];
+      
+    const FONT = 'OneStoreMobilePop, Arial, sans-serif';
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+    const ICON_NEW = 'https://i.imgur.com/a5s2iUL.png';
+    const ICON_BEST = 'https://i.imgur.com/1Z3VEON.png';
+    const ICON_Rullet = 'https://i.imgur.com/hVpuiwV.png';
+
+    function esc(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
+
+    function makeShadowFilter(id) {
+      return `
+        <defs>
+          <filter id="${id}" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="0.0" flood-color="#ffffff" flood-opacity="0"/>
+          </filter>
+        </defs>`;
+    }
+
+    /* 단가 */
+    function makeNumberSVG(num, variant = 'pink') {
+      const width = numWidth(num.length);
+      const t = esc(num);
+      const filterId = `numShadow-${variant}-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      const fillColor =
+        variant === 'gray' ? '#bfbfbf' :
+        variant === 'pink' ? '#FAB0C1' :
+        variant === 'orange' ? '#EF9573' :
+        variant === 'yellow' ? '#FEFA94' :
+        variant === 'purple' ? '#DCAEF8' :
+        '#4A90E2';
+
+      return `
+        <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(1.0 1)">
+          <text x="14" y="25"
+            text-anchor="start"
+            font-family="${FONT}"
+            font-size="28"
+            font-weight="400"
+            stroke="#000000"
+            stroke-width="${STROKE}"
+            stroke-linejoin="round"
+            paint-order="stroke fill"
+            filter="url(#${filterId})"
+            fill="${fillColor}">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 텍스트 */
+    function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 500) {
+      const canvas = measureTextWidth.canvas || (measureTextWidth.canvas = document.createElement('canvas'));
+      const ctx = canvas.getContext('2d');
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      return Math.ceil(ctx.measureText(text).width);
+    }
+
+    function makeLabelSVG(label) {
+      const t = esc(label);
+      const measured = measureTextWidth(label, 28, FONT, 500);
+      const w = Math.max(40, measured + 10); // 여백 10 정도
+      const filterId = `labelShadow-${t}-${Math.random().toString(36).slice(2, 9)}`;
+
+      return `
+        <svg class="label-svg" viewBox="0 0 ${w} 34"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(1.0 1)">
+            <text x="14" y="25"
+              text-anchor="start"
+              font-family="${FONT}"
+              font-size="28"
+              font-weight="400"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="#ffffff">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 각주 */
+    function makeFootnoteSVG(footnote) {
+      const t = esc(footnote);
+      const measured = measureTextWidth(footnote, 20, FONT, 500);
+      const w = Math.max(40, measured + 10);
+      const filterId = `footnoteShadow-${Math.random().toString(36).slice(2, 9)}`;
+
+      return `
+        <svg class="footnote-svg" viewBox="0 0 ${w} 30"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
+          ${makeShadowFilter(filterId)}
+          <g transform="scale(0.9 1)">
+            <text x="114" y="10"
+              text-anchor="start"
+              font-family="${FONT}"
+              font-size="20"
+              font-weight="500"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              filter="url(#${filterId})"
+              fill="#ffffff">${t}</text>
+          </g>
+        </svg>`;
+    }
+    /* 아이콘 */
+    function makeLabelIcon(type) {
+      let src = '';
+      let alt = '';
+
+      if (type === 'new') {
+        src = ICON_NEW;
+        alt = 'NEW';
+      } else if (type === 'best') {
+        src = ICON_BEST;
+        alt = 'BEST';
+      } else if (type === 'rullet') {
+        src = ICON_Rullet;
+        alt = 'RULLET';
+      } else {
+        return '';
+      }
+
+      return `<img class="label-icon" src="${src}" alt="${alt}">`;
+    }
+
+    /* 테이블 */
+    function makeTable(rows, numberVariant = 'pink') {
+      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '']) => {
+        const safeNum = String(num ?? '').trim();
+        const safeLabel = String(label ?? '').trim();
+        const safeFootnote = String(footnote ?? '').trim();
+
+        const mainRow = `
+          <tr>
+            <td class="num">${safeNum ? makeNumberSVG(safeNum, numberVariant) : ''}</td>
+            <td class="label">
+              <div class="label-wrap">
+                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel) : ''}</div>
+              </div>
+            </td>
+            <td class="icon-cell">${makeLabelIcon(iconType)}</td>
+          </tr>`;
+
+        const footnoteRow = safeFootnote
+          ? `
+          <tr class="footnote-row">
+            <td class="footnote" colspan="3">${makeFootnoteSVG(safeFootnote)}</td>
+          </tr>`
+          : '';
+
+        return mainRow + footnoteRow;
+      }).join('');
+
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col />
+            <col class="icon-col" />
+          </colgroup>
+          <tbody>
+            ${bodyHTML}
+          </tbody>
+        </table>`;
+    }
+
+    function makePage(title, titleClass, rows, variant, pageClass) {
+      return `
+        <div class="page ${pageClass}">
+          <div class="page-title ${titleClass}">${title}</div>
+          ${makeTable(rows, variant)}
+        </div>`;
+    }
+
+    function makeSequenceHTML() { /*페이지 정리*/
+      return `
+        ${makePage('♥시그/리액션♥', 'title-purple', PAGE_4, 'purple', 'page-4')}
+        <div class="page-gap" aria-hidden="true"></div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
+
+    function updateLoopHeight() {
+      const h = sequenceA.offsetHeight;
+      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+    }
+
+    updateLoopHeight();
+    window.addEventListener('load', updateLoopHeight);
+    window.addEventListener('resize', updateLoopHeight);
+  </script>
+</body>
+</html>
