@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=400, height=1080, initial-scale=1.0" />
-  <title> 한로아 :::: (너비400, 높이1080) </title>
+  <title> 숲 단하나* :::: (너비400, 높이1080) </title>
   <style>
 
     @font-face {
-        font-family: 'YeogiOttaeJalnan';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
-        font-weight: normal;
+        font-family: 'CookieRun';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.0/CookieRunOTF-Bold00.woff') format('woff');
+        font-weight: 700;
         font-display: swap;
     }
 
@@ -26,13 +26,14 @@
       --h: 1080px;
       --row-gap: 4px;
       --icon-col: 34px;
-      --num-col: 80px;
+      --num-col: 100px;
       --num-icon-size: 22px;
       --svg-h: 30px;
       --page-gap: 10px;
       --loop-seconds: 60s;
       --sequence-height: 1000px;
       --outline: 5;
+      --scale: 1.0;
 
       /* ===== 고정 타이틀 영역 ===== */
       --fixed-title-h: 36px;
@@ -59,7 +60,7 @@
     }
 
     body {
-      font-family: 'YeogiOttaeJalnan', Arial, sans-serif;
+      font-family: 'CookieRun', 'GMarketSans', Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       background: transparent !important;
@@ -90,7 +91,7 @@
       position: absolute;
       left: 4px;
       top: calc(var(--fixed-title-h) + var(--fixed-title-mb));
-      width: calc(100% - 4px);
+      width: calc(100% - 8px);
       height: calc(
         100%
         - var(--fixed-title-h)
@@ -218,7 +219,7 @@
       margin: 0 0 6px 0;
       text-align: center;
 
-      font-family: 'YeogiOttaeJalnan', Arial, sans-serif;
+      font-family: 'CookieRun', 'GMarketSans', Arial, sans-serif;
       font-size: 28px;
       font-weight: 500;
       color: #ffffff;
@@ -312,7 +313,7 @@
       align-items: center;
       justify-content: center;
 
-      font-family: 'GMarketSans', Arial, sans-serif;
+      font-family: 'CookieRun', 'GMarketSans', Arial, sans-serif;
       font-size: 10px;
       font-weight: 100;
       color: #ffffff;
@@ -364,7 +365,7 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom) + 0px);
-      width: calc(78% - (var(--fixed-page-side-gap) * 2));  /* 고정 페이지 유리효과 가로 폭사이즈 */
+      width: calc(63% - (var(--fixed-page-side-gap) * 1));  /* 고정 페이지 유리효과 가로 폭사이즈 */
 
       z-index: 40;
 
@@ -381,7 +382,7 @@
       margin-top: 8px;
     }
 
-    /* 지원되는 환경에서만 blur 적용 */
+    /* 지원되는 환경에서만 blur 적용 (스케일업할 경우 blur 2px 값 조정)*/
     @supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
       .fixed-bottom-page {
         background: rgba(120, 120, 120, 0.18);
@@ -399,6 +400,14 @@
       50% {
         transform: translateY(-6px);
       }
+    }
+
+    .content-scale {
+      width: calc(100% / var(--scale));
+      height: calc(100% / var(--scale));
+
+      transform: scale(var(--scale));
+      transform-origin: top left;
     }
 
   </style>
@@ -421,20 +430,28 @@
     </defs>
   </svg>
   <div class="overlay">
-    <!-- 타이틀은 스크롤 트랙 밖에 배치해서 항상 상단에 고정 -->
-    <div class="fixed-title-wrap">
-      <div id="mainTitle" class="page-title title-green"></div>
+
+    <div class="content-scale">
+
+      <div class="fixed-title-wrap">
+        <div class="page-title title-purple"> 단하나* </div>
+      </div>
+
+      <div class="viewport">
+        <div class="track" id="track">
+          <div class="sequence" id="sequenceA"></div>
+          <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div id="fixedPage" class="fixed-bottom-page"></div>
+
+      <div class="fixed-bottom-label">
+        Designed by 쉬프티
+      </div>
+
     </div>
 
-    <!-- 숫자 / 텍스트 / 아이콘만 이 영역 안에서 무한 순환 -->
-    <div class="viewport">
-      <div class="track" id="track">
-        <div class="sequence" id="sequenceA"></div>
-        <div class="sequence" id="sequenceB" aria-hidden="true"></div>
-      </div>
-    </div>
-    <div id="fixedPage" class="fixed-bottom-page"></div>
-    <div class="fixed-bottom-label">Designed by 시프티™⭐</div>
   </div>
 
   <script>
@@ -500,28 +517,30 @@
 
     let PAGE_DATA = {};
 
-    const FONT = 'YeogiOttaeJalnan, Arial, sans-serif';
+    const FONT = 'CookieRun, GMarketSans, Arial, sans-serif';
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
-//    const ICON_PUNG_P1 = 'https://i.imgur.com/qGz1W0y.png'; //프로필 (회색)
-//    const ICON_PUNG_P2 = 'https://i.imgur.com/D0ldyfG.png'; //미션판 (주황)
-//    const ICON_PUNG_P3 = 'https://i.imgur.com/12lhyTv.png'; //운동 (노랑)
-    const ICON_PUNG_P4 = 'https://i.imgur.com/3i8eoNA.png'; //라이브 보라
-    const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //빨강
-    const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //파랑
+    const ICON_PUNG_P1 = 'https://i.imgur.com/vSePi5U.png'; //핑크하트...색감 수정 필요
+    const ICON_PUNG_P2 = 'https://i.imgur.com/3rJuKfa.png'; //별
+    const ICON_PUNG_P3 = 'https://i.imgur.com/sXd3AwN.png'; //불
+    const ICON_PUNG_P4 = 'https://i.imgur.com/z8ppDzl.png'; //듀얼하트
+ // const ICON_PUNG_P4 = 'https://i.imgur.com/IijYbRn.png'; //라이브 보라
+ // const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //빨강
+ // const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //파랑
+ // const ICON_PUNG_P7 = 'https://i.imgur.com/CQ0nhqJ.png'; //주황(플렉스아이콘)
+
 
     const PAGE_ICON_MAP = {
-        'page1': ICON_PUNG_P4,
-        'page2': ICON_PUNG_P4,
-        'page3': ICON_PUNG_P5,
-        'page4': ICON_PUNG_P5
+        'page1': ICON_PUNG_P1,
+        'page2': ICON_PUNG_P1,
+        'page3': ICON_PUNG_P1
     };
 
     let FIXED_PAGE_KEYS = [];
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzrZvFdpgwhsIOFp-BqiAnmtRbiDswYjrgi3cjk0n7rTD0at3qUoPOQv6zr1_NaY2pP/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxrbZ0n96yuM8hnBLKqLjiMjlEDXc0I51CoYCG_vc1BxoYsoTTk8j3-HVn3iOdnDBgv/exec';
     // GAS Ver 0.1 사용, 속도제어 기능 추가
 
     async function loadSheetData() {
@@ -529,32 +548,6 @@
       const res = await fetch(GAS_URL);
 
       const data = await res.json();
-
-      /* =========================
-        메인 타이틀 적용
-      ========================= */
-
-      const titleEl = document.getElementById('mainTitle');
-
-      if (titleEl) {
-
-        titleEl.textContent = data.mainTitle || '';
-
-        /* 기존 title-* 제거 */
-        titleEl.classList.forEach(cls => {
-
-          if (cls.startsWith('title-')) {
-            titleEl.classList.remove(cls);
-          }
-
-        });
-
-        /* 새 색상 적용 */
-        titleEl.classList.add(
-          `title-${data.mainTitleColor || 'green'}`
-        );
-
-      }
 
       /* =========================
         스크롤 속도 적용
@@ -606,7 +599,7 @@
     }
 
     /* 단가 */
-    function makeNumberSVG(num, variant = 'purple') {
+    function makeNumberSVG(num, variant = 'pink') {
       const width = numWidth(num.length);
       const t = esc(num);
 
@@ -626,7 +619,7 @@
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           <g transform="scale(1.0 1)">
-          <text x="10" y="25"
+          <text x="10" y="21"
             text-anchor="start"
             font-family="${FONT}"
             font-size="28"
@@ -680,10 +673,8 @@
           role="img"
           preserveAspectRatio="xMinYMid meet">
 
-          <g transform="scale(0.9 1)">
-            <text
-              x="40"
-              y="28"
+          <g transform="scale(1.0 1)">
+            <text x="15" y="23"
               text-anchor="start"
               font-family="${FONT}"
               font-size="28"
@@ -710,7 +701,7 @@
             aria-label="${t}" role="img"
             preserveAspectRatio="xMinYMid meet">
           <g transform="scale(0.9 1)">
-            <text x="120" y="18"
+            <text x="120" y="8"
               text-anchor="start"
               font-family="${FONT}"
               font-size="22"
@@ -970,6 +961,17 @@
       fixedContainer.innerHTML = html;
     }
 
+    /* 추가 */
+    function removeLeadingGap(seq) {
+
+      const first = seq.firstElementChild;
+
+      if (first && first.classList.contains('page-gap')) {
+        first.remove();
+      }
+    }
+
+
     function applyWaveToFixedTitle() {
 
       if (!FIXED_PAGE_KEYS.length) return;
@@ -993,14 +995,26 @@
     function adjustViewportHeight() {
 
       if (!FIXED_PAGE_KEYS.length) {
-        document.documentElement.style.setProperty('--fixed-page-h', `0px`);
+        document.documentElement.style.setProperty(
+          '--fixed-page-h',
+          '0px'
+        );
         return;
       }
 
       const fixed = document.getElementById('fixedPage');
-      const h = Math.ceil(fixed.getBoundingClientRect().height || 0);
 
-      document.documentElement.style.setProperty('--fixed-page-h', `${h}px`);
+      const scale = getScale();
+
+      const h =
+        Math.ceil(
+          fixed.getBoundingClientRect().height / scale
+        ) + 12;
+
+      document.documentElement.style.setProperty(
+        '--fixed-page-h',
+        `${h}px`
+      );
     }
 
     const sequenceA = document.getElementById('sequenceA');
@@ -1017,6 +1031,10 @@
       sequenceB.innerHTML = makeSequenceHTML();
 
       extractFixedPage();
+
+      /* 추가 */
+      removeLeadingGap(sequenceA);
+      removeLeadingGap(sequenceB);
 
       const fixedPage = document.getElementById('fixedPage');
 
@@ -1039,11 +1057,30 @@
       });
     }
 
+    function getScale() {
+      return parseFloat(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--scale')
+      ) || 1;
+    }
+
     init();
 
+    if (!FIXED_PAGE_KEYS.length) {
+      document.getElementById('fixedPage').style.display = 'none';
+    }
+
     function updateLoopHeight() {
-      const h = sequenceA.scrollHeight;
-      document.documentElement.style.setProperty('--sequence-height', `${h}px`);
+
+      const scale = getScale();
+
+      const h =
+        sequenceA.getBoundingClientRect().height / scale;
+
+      document.documentElement.style.setProperty(
+        '--sequence-height',
+        `${Math.ceil(h)}px`
+      );
     }
 
       window.addEventListener('load', () => {
