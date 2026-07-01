@@ -543,9 +543,10 @@
     };
 
     let FIXED_PAGE_KEYS = [];
+    let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyeGBb8YcEp4sXyBihOCHwjJw8zcYxJLHPEgsM0J6uu3GSgB75k6rb70mLdT1zlRtX-/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxFfcMfIr07thYuj6MWxqWmlCe60cd-6KgTAEKxYVur6u07SUEKlAvG2vCH4TBI6w9C/exec';
     // GAS Ver 0.1 사용, 속도제어 기능 추가
 
     async function loadSheetData() {
@@ -576,6 +577,16 @@
       }
 
       /* =========================
+        PAGE_ICON_MAP 좌측 이미지 ON/OFF
+      ========================= */
+
+      if (data.pageIconEnabled && typeof data.pageIconEnabled === 'object') {
+        PAGE_ICON_ENABLED_MAP = data.pageIconEnabled;
+      } else {
+        PAGE_ICON_ENABLED_MAP = {};
+      }
+
+      /* =========================
         페이지 데이터
       ========================= */
 
@@ -603,11 +614,8 @@
       return 58;
     }
 
-    /* 단가 */
-    function makeNumberSVG(num, variant = 'pink') {
-      const width = numWidth(num.length);
-      const t = esc(num);
-
+    /* 컬러맵 */
+    function getFillColor(variant = 'blue') {
       const COLOR_MAP = {
         gray: '#bfbfbf',
         pink: '#FAB0C1',
@@ -616,10 +624,21 @@
         blue: '#4A90E2',
         purple: '#DCAEF8',
         green: '#8acf6d',
-        red: '#ff6b6b'
+        red: '#ff6b6b',
+        white: '#ffffff',
+        navy: '#5E4C9D',
+        sky_blue: '#73FBFD'
       };
 
-    const fillColor = COLOR_MAP[variant] || COLOR_MAP.blue;
+      return COLOR_MAP[variant] || COLOR_MAP.blue;
+    }
+
+    /* 단가 */
+    function makeNumberSVG(num, variant = 'blue') {
+      const width = numWidth(num.length);
+      const t = esc(num);
+
+      const fillColor = getFillColor(variant);
 
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
@@ -671,7 +690,7 @@
 
       return `
         <svg
-          class="label-svg ${effect === 'e_colorshift' ? 'e-colorshift' : ''}"
+          class="label-svg ${effect === 'e_colorshift' || effect === 'e-colorshift' ? 'e-colorshift' : ''}"
           viewBox="0 0 ${w} 34"
           xmlns="http://www.w3.org/2000/svg"
           aria-label="${t}"
@@ -722,10 +741,21 @@
     }
     /* 숫자 좌측 하트 이미지 */
     function makeNumberIcon(pageClass) {
+
+      /*
+        PAGE_ICON_ENABLED_MAP 값이 false이면 숨김.
+        값이 없는 경우는 기존 HTML 호환을 위해 true로 처리.
+      */
+      const enabled = PAGE_ICON_ENABLED_MAP[pageClass] !== false;
+
+      if (!enabled) {
+        return '';
+      }
+
       const src = PAGE_ICON_MAP[pageClass] || '';
+
       return src ? `<img class="num-left-icon" src="${src}" alt="풍">` : '';
     }
-
     /* 아이콘 SVG 이미지 내장*/
 
     const SVG_ICONS = {
@@ -854,8 +884,8 @@
 
 
     /* 테이블 */
-    function makeTable(rows, numberVariant = 'purple', pageClass = '') {
-      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '', effect = '']) => {
+    function makeTable(rows, pageClass = '') {
+      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '', effect = '', rowColor = 'blue']) => {
         const safeNum = String(num ?? '').trim();
         const safeLabel = String(label ?? '').trim();
         const safeFootnote = String(footnote ?? '').trim();
@@ -863,7 +893,7 @@
         const mainRow = `
           <tr>
             <td class="num">
-              ${safeNum ? `<div class="num-wrap">${makeNumberIcon(pageClass)}${makeNumberSVG(safeNum, numberVariant)}</div>` : ''}
+              ${safeNum ? `<div class="num-wrap">${makeNumberIcon(pageClass)}${makeNumberSVG(safeNum, rowColor)}</div>` : ''}
             </td>
             <td class="label">
               <div class="label-wrap">
@@ -896,11 +926,11 @@
         </table>`;
     }
 
-    function makePage(title, titleClass, rows, variant, pageClass) {
+    function makePage(title, titleClass, rows, pageClass) {
       return `
         <div class="page ${pageClass}" data-page="${pageClass}">
           <div class="page-title ${titleClass}">${title}</div>
-          ${makeTable(rows, variant, pageClass)}
+          ${makeTable(rows, pageClass)}
         </div>`;
     }
 
@@ -909,14 +939,17 @@
       return Object.entries(PAGE_DATA)
         .map(([pageKey, pageObj]) => {
 
-          const color = pageObj.color || 'blue';
+          /*
+            CODE C6:N6 기준
+            카테고리 분류 박스 색상
+          */
+          const titleColor = pageObj.titleColor || 'blue';
 
           return `
             ${makePage(
               pageObj.title,
-              `title-${color}`,
+              `title-${titleColor}`,
               pageObj.rows,
-              color,
               pageKey
             )}
             <div class="page-gap" aria-hidden="true"></div>
