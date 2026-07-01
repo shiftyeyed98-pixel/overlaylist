@@ -562,13 +562,18 @@
         스크롤 속도 적용
       ========================= */
 
-      const scrollSeconds = Number(data.scrollSeconds || 60);
+      const scrollSeconds = parseFloat(data.scrollSeconds);
+
+      const safeScrollSeconds =
+        !isNaN(scrollSeconds) && scrollSeconds > 0
+          ? scrollSeconds
+          : 60;
 
       document.documentElement.style.setProperty(
         '--loop-seconds',
-        `${scrollSeconds}s`
+        `${safeScrollSeconds}s`
       );
-
+1
       /* =========================
         고정 페이지 처리
       ========================= */
