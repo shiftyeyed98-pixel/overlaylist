@@ -681,12 +681,10 @@
       return width;
     }
 
-    function makeLabelSVG(label, effect = '', variant = 'white') {
+    function makeLabelSVG(label, effect = '') {
       const t = esc(label);
       const measured = measureTextWidth(label, 28, FONT, 300);
       const w = Math.max(40, measured + 10);
-
-      const fillColor = getFillColor(variant);
 
       return `
         <svg
@@ -708,18 +706,16 @@
               stroke-linejoin="round"
               paint-order="stroke fill"
               filter="url(#globalShadow)"
-              fill="${fillColor}">${t}</text>
+              fill="#ffffff">${t}</text>
           </g>
         </svg>`;
     }
 
     /* 각주 */
-    function makeFootnoteSVG(footnote, variant = 'white') {
+    function makeFootnoteSVG(footnote) {
       const t = esc(footnote);
       const measured = measureTextWidth(footnote, 20, FONT, 300);
       const w = Math.max(40, measured + 10);
-
-      const fillColor = getFillColor(variant);
 
       return `
         <svg class="footnote-svg" viewBox="0 0 ${w} 30"
@@ -737,7 +733,7 @@
               stroke-linejoin="round"
               paint-order="stroke fill"
               filter="url(#globalShadow)"
-              fill="${fillColor}">${t}</text>
+              fill="#ffffff">${t}</text>
           </g>
         </svg>`;
     }
@@ -899,7 +895,7 @@
             </td>
             <td class="label">
               <div class="label-wrap">
-                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel, effect, rowColor) : ''}</div>
+                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel, effect) : ''}</div>
                 <div class="label-icon">${makeLabelIcon(iconType)}</div>
               </div>
             </td>
@@ -908,7 +904,7 @@
         const footnoteRow = safeFootnote
           ? `
           <tr class="footnote-row">
-            <td class="footnote" colspan="3">${makeFootnoteSVG(safeFootnote, rowColor)}</td>
+            <td class="footnote" colspan="3">${makeFootnoteSVG(safeFootnote)}</td>
           </tr>`
           : '';
 
