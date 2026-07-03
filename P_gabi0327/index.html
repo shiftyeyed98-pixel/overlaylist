@@ -293,14 +293,17 @@
       overflow: visible;
     }
 
-    .label-icon {
-      width: 28px;
-      height: 28px;
-      flex: 0 0 28px;
-      object-fit: contain;
-      display: block;
-      margin-left: 12px; /* 텍스트와 아이콘 사이간격 */
-    }
+.label-icon {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 12px; /* 텍스트와 아이콘의 간격 */
+  position: relative;
+  top: -2px;  /* 아이콘을 위로 2px 올림 */
+}
 
     .label-icon svg {
       width: 100%;
