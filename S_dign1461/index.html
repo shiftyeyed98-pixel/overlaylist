@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=400, height=1080, initial-scale=1.0" />
+  <meta name="viewport" content="width=400, height=970, initial-scale=1.0" />
   <title> 숲 ♡혜밍 :::: (너비400, 높이1080) </title>
   <style>
 
@@ -23,7 +23,7 @@
 
     :root {
       --w: 400px;
-      --h: 1080px;
+      --h: 970px;
       --row-gap: 4px;
       --icon-col: 34px;
       --num-col: 100px;
@@ -47,6 +47,9 @@
       --fixed-bottom-h: 20px;
       --fixed-bottom-bottom: 4px;
       --fixed-bottom-mt: 0px;
+
+      --fixed-top-page-h: 0px;
+      --fixed-bottom-page-h: 0px;
     }
 
 
@@ -90,7 +93,11 @@
     .viewport {
       position: absolute;
       left: 4px;
-      top: calc(var(--fixed-title-h) + var(--fixed-title-mb));
+      top: calc(
+        var(--fixed-title-h)
+        + var(--fixed-title-mb)
+        + var(--fixed-top-page-h)
+      );
       width: calc(100% - 8px);
       height: calc(
         100%
@@ -98,7 +105,8 @@
         - var(--fixed-title-mb)
         - var(--fixed-bottom-h)
         - var(--fixed-bottom-bottom)
-        - var(--fixed-page-h)
+        - var(--fixed-top-page-h)
+        - var(--fixed-bottom-page-h)
       );
       overflow: hidden;
       z-index: 1;
@@ -375,6 +383,23 @@
       }
     }
 
+    .fixed-top-page {
+      position: absolute;
+      left: var(--fixed-page-side-gap);
+      top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + 4px);
+      width: calc(85% - (var(--fixed-page-side-gap) * 1));
+
+      z-index: 40;
+
+      padding: 4px;
+
+      border-radius: 14px;
+
+      background: rgba(60, 60, 60, 0.35);
+      border: 1px solid rgba(255,255,255,0.4);
+      box-sizing: border-box;
+    }
+
     .fixed-bottom-page {
       position: absolute;
       left: var(--fixed-page-side-gap);
@@ -392,18 +417,20 @@
       box-sizing: border-box;
     }
 
+    .fixed-top-page .page + .page,
     .fixed-bottom-page .page + .page {
-      margin-top: 8px;
+      margin-top: 1px;
     }
 
     /* 지원되는 환경에서만 blur 적용 (스케일업할 경우 blur 2px 값 조정)*/
     @supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
+      .fixed-top-page,
       .fixed-bottom-page {
         background: rgba(120, 120, 120, 0.18);
         backdrop-filter: blur(2px);
         -webkit-backdrop-filter: blur(2px);
+      }
     }
-  }
 
     .waveChar {
       display: inline-block;
@@ -458,7 +485,8 @@
         </div>
       </div>
 
-      <div id="fixedPage" class="fixed-bottom-page"></div>
+      <div id="fixedTopPage" class="fixed-top-page"></div>
+      <div id="fixedBottomPage" class="fixed-bottom-page"></div>
 
       <div class="fixed-bottom-label">
         Designed by 쉬프티
@@ -552,11 +580,12 @@
     };
 
     let FIXED_PAGE_KEYS = [];
+    let FIXED_PAGE_POSITION_MAP = {};
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxFfcMfIr07thYuj6MWxqWmlCe60cd-6KgTAEKxYVur6u07SUEKlAvG2vCH4TBI6w9C/exec';
-    // GAS Ver 0.1 사용, 속도제어 기능 추가
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwIlSqj1MZpNGYSmjA22chxOgt_nO4Z0ySNdkV6cXtVBebx3mKtukjd_qpbg9O9IR1Y/exec';
+    // GAS Ver 0.2 사용, 고정페이지 상하단 선택
 
     async function loadSheetData() {
 
@@ -583,6 +612,18 @@
         FIXED_PAGE_KEYS = data.fixedPages;
       } else {
         FIXED_PAGE_KEYS = [];
+      }
+
+      /* =========================
+        고정 페이지 상단/하단
+      ========================= */
+      if (
+        data.fixedPagePositions &&
+        typeof data.fixedPagePositions === 'object'
+      ) {
+        FIXED_PAGE_POSITION_MAP = data.fixedPagePositions;
+      } else {
+        FIXED_PAGE_POSITION_MAP = {};
       }
 
       /* =========================
@@ -998,9 +1039,11 @@
 
       if (!FIXED_PAGE_KEYS.length) return;
 
-      const fixedContainer = document.getElementById('fixedPage');
+      const fixedTopContainer = document.getElementById('fixedTopPage');
+      const fixedBottomContainer = document.getElementById('fixedBottomPage');
 
-      let html = '';
+      let topHTML = '';
+      let bottomHTML = '';
 
       FIXED_PAGE_KEYS.forEach(pageKey => {
 
@@ -1010,7 +1053,20 @@
 
         if (!target) return;
 
-        html += target.outerHTML;
+        const rawPosition = String(
+          FIXED_PAGE_POSITION_MAP[pageKey] || 'bottom'
+        ).trim();
+
+        const position =
+          rawPosition === '상단' ? 'top' :
+          rawPosition === '하단' ? 'bottom' :
+          rawPosition.toLowerCase();
+
+        if (position === 'top') {
+          topHTML += target.outerHTML;
+        } else {
+          bottomHTML += target.outerHTML;
+        }
 
         // 스크롤 영역에서 제거
         [sequenceA, sequenceB].forEach(seq => {
@@ -1032,7 +1088,8 @@
 
       });
 
-      fixedContainer.innerHTML = html;
+      fixedTopContainer.innerHTML = topHTML;
+      fixedBottomContainer.innerHTML = bottomHTML;
     }
 
     /* 추가 */
@@ -1050,44 +1107,61 @@
 
       if (!FIXED_PAGE_KEYS.length) return;
 
-      const fixedContainer = document.getElementById('fixedPage');
+      const containers = [
+        document.getElementById('fixedTopPage'),
+        document.getElementById('fixedBottomPage')
+      ];
 
-      const titles = fixedContainer.querySelectorAll('.page-title');
+      containers.forEach(fixedContainer => {
 
-      titles.forEach(titleEl => {
+        if (!fixedContainer) return;
 
-        const text = titleEl.textContent.trim();
+        const titles = fixedContainer.querySelectorAll('.page-title');
 
-        titleEl.innerHTML = Array.from(text).map((c, i) =>
-          `<span class="waveChar"
-            style="animation-delay:${i * 0.08}s">${c}</span>`
-        ).join('');
+        titles.forEach(titleEl => {
+
+          const text = titleEl.textContent.trim();
+
+          titleEl.innerHTML = Array.from(text).map((c, i) =>
+            `<span class="waveChar"
+              style="animation-delay:${i * 0.08}s">${c}</span>`
+          ).join('');
+
+        });
 
       });
     }
 
     function adjustViewportHeight() {
 
-      if (!FIXED_PAGE_KEYS.length) {
-        document.documentElement.style.setProperty(
-          '--fixed-page-h',
-          '0px'
-        );
-        return;
-      }
-
-      const fixed = document.getElementById('fixedPage');
-
       const scale = getScale();
 
-      const h =
-        Math.ceil(
-          fixed.getBoundingClientRect().height / scale
+      const fixedTop = document.getElementById('fixedTopPage');
+      const fixedBottom = document.getElementById('fixedBottomPage');
+
+      let topH = 0;
+      let bottomH = 0;
+
+      if (fixedTop && fixedTop.innerHTML.trim()) {
+        topH = Math.ceil(
+          fixedTop.getBoundingClientRect().height / scale
         ) + 12;
+      }
+
+      if (fixedBottom && fixedBottom.innerHTML.trim()) {
+        bottomH = Math.ceil(
+          fixedBottom.getBoundingClientRect().height / scale
+        ) + 12;
+      }
 
       document.documentElement.style.setProperty(
-        '--fixed-page-h',
-        `${h}px`
+        '--fixed-top-page-h',
+        `${topH}px`
+      );
+
+      document.documentElement.style.setProperty(
+        '--fixed-bottom-page-h',
+        `${bottomH}px`
       );
     }
 
@@ -1110,13 +1184,14 @@
       removeLeadingGap(sequenceA);
       removeLeadingGap(sequenceB);
 
-      const fixedPage = document.getElementById('fixedPage');
+      const fixedTopPage = document.getElementById('fixedTopPage');
+      const fixedBottomPage = document.getElementById('fixedBottomPage');
 
-      if (FIXED_PAGE_KEYS.length) {
-        fixedPage.style.display = 'block';
-      } else {
-        fixedPage.style.display = 'none';
-      }
+      fixedTopPage.style.display =
+        fixedTopPage.innerHTML.trim() ? 'block' : 'none';
+
+      fixedBottomPage.style.display =
+        fixedBottomPage.innerHTML.trim() ? 'block' : 'none';
 
       applyWaveToFixedTitle();
 
@@ -1141,7 +1216,8 @@
     init();
 
     if (!FIXED_PAGE_KEYS.length) {
-      document.getElementById('fixedPage').style.display = 'none';
+      document.getElementById('fixedTopPage').style.display = 'none';
+      document.getElementById('fixedBottomPage').style.display = 'none';
     }
 
     function updateLoopHeight() {
