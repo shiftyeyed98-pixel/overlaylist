@@ -1040,10 +1040,6 @@
 
     init();
 
-    if (!FIXED_PAGE_KEY) {
-      document.getElementById('fixedPage').style.display = 'none';
-    }
-
     function updateLoopHeight() {
       const h = sequenceA.scrollHeight;
       document.documentElement.style.setProperty('--sequence-height', `${h}px`);
