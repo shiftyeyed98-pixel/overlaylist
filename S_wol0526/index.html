@@ -827,6 +827,9 @@
       return SVG_ICONS.rullet;
     }
 
+    function makeRulletIconSVG() {
+      return SVG_ICONS.adult19;
+    }    
 
     function makeLabelIcon(type) {
       if (type === 'new') {
@@ -843,6 +846,10 @@
 
       if (type === 'warning') {
         return `<span class="label-icon" aria-label="WARNING">${makeWarningIconSVG()}</span>`;
+      }
+
+      if (type === 'adult19') {
+        return `<span class="label-icon" aria-label="ADULT19">${makeAdult19IconSVG()}</span>`;
       }
 
       return '';
