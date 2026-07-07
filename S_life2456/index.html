@@ -50,6 +50,10 @@
 
       --fixed-top-page-h: 0px;
       --fixed-bottom-page-h: 0px;
+
+        /* ===== 고정 페이지 유리효과 폭 ===== */
+      --fixed-top-page-w: 85%;
+      --fixed-bottom-page-w: 30%;
     }
 
 
@@ -393,14 +397,11 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + 4px);
-      width: calc(85% - (var(--fixed-page-side-gap) * 1));
+      width: calc(var(--fixed-top-page-w) - (var(--fixed-page-side-gap) * 1));
 
       z-index: 40;
-
       padding: 4px;
-
       border-radius: 14px;
-
       background: rgba(60, 60, 60, 0.35);
       border: 1px solid rgba(255,255,255,0.4);
       box-sizing: border-box;
@@ -410,15 +411,12 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom) + 0px);
-      width: calc(30% - (var(--fixed-page-side-gap) * 1));  /* 고정 페이지 유리효과 가로 폭사이즈 */
+      width: calc(var(--fixed-bottom-page-w) - (var(--fixed-page-side-gap) * 1));
 
       z-index: 40;
-
-      padding: 4px 4px 4px 4px;
-
+      padding: 4px;
       border-radius: 14px;
-
-      background: rgba(60, 60, 60, 0.35); /* 안정적인 값 */
+      background: rgba(60, 60, 60, 0.35);
       border: 1px solid rgba(255,255,255,0.4);
       box-sizing: border-box;
     }
