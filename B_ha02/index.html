@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=400, height=970, initial-scale=1.0" />
+  <meta name="viewport" content="width=400, height=1080, initial-scale=1.0" />
   <title> 부비 윤하영 :::: (너비400, 높이1080) </title>
   <style>
 
     @font-face {
-        font-family: 'Pretendard';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2') format('woff2');
-        font-weight: 600;
+        font-family: 'OneStoreMobilePop';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff') format('woff');
+        font-weight: normal;
         font-display: swap;
     }
 
     @font-face {
         font-family: 'GMarketSans';
         src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
-        font-weight: 500;
+        font-weight: 400;
         font-display: swap;
     }
 
@@ -26,7 +26,7 @@
       --h: 1080px;
       --row-gap: 4px;
       --icon-col: 34px;
-      --num-col: 90px;
+      --num-col: 96px;
       --num-icon-size: 22px;
       --svg-h: 30px;
       --page-gap: 10px;
@@ -50,6 +50,10 @@
 
       --fixed-top-page-h: 0px;
       --fixed-bottom-page-h: 0px;
+
+        /* ===== 고정 페이지 유리효과 폭 ===== */
+      --fixed-top-page-w: 70%;
+      --fixed-bottom-page-w: 65%;
     }
 
 
@@ -63,7 +67,7 @@
     }
 
     body {
-      font-family: 'Pretendard', 'GMarketSans', Arial, sans-serif;
+      font-family: 'OneStoreMobilePop', 'GMarketSans', Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       background: transparent !important;
@@ -227,9 +231,9 @@
       margin: 0 0 6px 0;
       text-align: center;
 
-      font-family: 'Pretendard', 'GMarketSans', Arial, sans-serif;
+      font-family: 'OneStoreMobilePop', 'GMarketSans', Arial, sans-serif;
       font-size: 28px;
-      font-weight: 600;
+      font-weight: 500;
       color: #ffffff;
 
       border: 2px solid currentColor;
@@ -286,7 +290,7 @@
     }
 
     .title-skyblue {
-      background: #8acf6d;
+      background: #73FBFD;
       border-color: #016fff;
     }
 
@@ -325,6 +329,13 @@
       display: block;
     }
 
+    .label-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
     .label-text {
       flex: 0 0 auto;
       min-width: auto;
@@ -341,7 +352,7 @@
       align-items: center;
       justify-content: center;
 
-      font-family: 'Pretendard', 'GMarketSans', Arial, sans-serif;
+      font-family: 'OneStoreMobilePop', 'GMarketSans', Arial, sans-serif;
       font-size: 10px;
       font-weight: 100;
       color: #ffffff;
@@ -393,14 +404,11 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + 4px);
-      width: calc(85% - (var(--fixed-page-side-gap) * 1));
+      width: calc(var(--fixed-top-page-w) - (var(--fixed-page-side-gap) * 1));
 
       z-index: 40;
-
       padding: 4px;
-
       border-radius: 14px;
-
       background: rgba(60, 60, 60, 0.35);
       border: 1px solid rgba(255,255,255,0.4);
       box-sizing: border-box;
@@ -410,15 +418,12 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom) + 0px);
-      width: calc(85% - (var(--fixed-page-side-gap) * 1));  /* 고정 페이지 유리효과 가로 폭사이즈 */
+      width: calc(var(--fixed-bottom-page-w) - (var(--fixed-page-side-gap) * 1));
 
       z-index: 40;
-
-      padding: 4px 4px 4px 4px;
-
+      padding: 4px;
       border-radius: 14px;
-
-      background: rgba(60, 60, 60, 0.35); /* 안정적인 값 */
+      background: rgba(60, 60, 60, 0.35);
       border: 1px solid rgba(255,255,255,0.4);
       box-sizing: border-box;
     }
@@ -481,7 +486,7 @@
     <div class="content-scale">
 
       <div class="fixed-title-wrap">
-        <div class="page-title title-pink"> 하영이 메뉴 </div>
+        <div class="page-title title-pink"> 윤하영 메뉴판 </div>
       </div>
 
       <div class="viewport">
@@ -565,27 +570,17 @@
 
     let PAGE_DATA = {};
 
-    const FONT = 'Pretendard, GMarketSans, Arial, sans-serif';
+    const FONT = 'OneStoreMobilePop, GMarketSans, Arial, sans-serif';
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
-    const ICON_PUNG_P1 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P2 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P3 = 'https://i.imgur.com/D0ldyfG.png'; //주황하트
-    const ICON_PUNG_P4 = 'https://i.imgur.com/12lhyTv.png'; //노랑하트
-    const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
- // const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //빨강
- // const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //파랑
- // const ICON_PUNG_P7 = 'https://i.imgur.com/CQ0nhqJ.png'; //주황(플렉스아이콘)
+    const ICON_PUNG_P1 = 'https://i.imgur.com/2PvVhKn.png'; //레드
+    const ICON_PUNG_P2 = 'https://i.imgur.com/D0ldyfG.png'; //오렌지
 
- // 'https://i.imgur.com/DLqjxNt.png'; //하늘하트
 
     const PAGE_ICON_MAP = {
         'page1': ICON_PUNG_P1,
-        'page2': ICON_PUNG_P2,
-        'page3': ICON_PUNG_P3,
-        'page4': ICON_PUNG_P4,
-        'page5': ICON_PUNG_P5
+        'page2': ICON_PUNG_P2
     };
 
     let FIXED_PAGE_KEYS = [];
@@ -593,7 +588,7 @@
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwmGqcZSAGzxVTI3XtP5wTUWp9Uo8NcFR8ts1uA_nazVdEUWvZst4GkwNO5EZStYMPPUw/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyYXWLo46VRgQ9MDYAou3j3gGfh28YvjuZjO-RZXQv-AEfaUYcThEXt5OQV-V-_g2nM/exec';
     // GAS Ver 0.2 사용
 
     async function loadSheetData() {
@@ -921,7 +916,8 @@
             <path d="m199.49321,123.3041l0,264.33269l-62.81315,0l0,-198.25107l-1.32469,0l-50.62137,34.58721l0,-60.87456l56.93033,-39.79428l57.82888,0zm131.47916,-3.57509c13.51646,0 26.23783,2.42384 38.32205,7.26997c12.03384,4.84613 22.68718,12.47704 32.01718,22.89583c9.27555,10.41724 16.59197,23.98485 21.89209,40.7635c5.29876,16.71643 8.00259,36.94883 8.05841,60.69253c0.10483,21.68391 -2.28179,41.1291 -7.05094,58.39004c-4.77052,17.26405 -11.60907,31.92223 -20.40811,44.09901c-8.85214,12.11144 -19.50683,21.38054 -31.85789,27.79952c-12.40416,6.4221 -26.18474,9.63159 -41.39756,9.63159c-17.12158,0 -32.12201,-3.75556 -45.05577,-11.26511c-12.98686,-7.45044 -23.26988,-17.50674 -30.95525,-30.1658c-7.68538,-12.6575 -12.19313,-26.71206 -13.46472,-42.21812l61.91187,0c1.48534,7.9965 4.82361,13.81031 9.91134,17.38384c5.14355,3.57509 11.02773,5.33152 17.65254,5.33152c13.25098,0 22.9513,-6.54344 29.0465,-19.68634c6.14966,-13.14289 9.27827,-30.64964 9.33137,-52.57624l-1.32605,0c-2.96796,8.05562 -7.41989,15.02067 -13.35717,20.77691c-5.93728,5.75313 -12.88066,10.17454 -20.77979,13.26424c-7.89776,3.0897 -16.27339,4.66566 -25.07243,4.66566c-13.94123,0 -26.13164,-3.57509 -36.57395,-10.78283c-10.49541,-7.2093 -18.65865,-17.0198 -24.54147,-29.56062c-5.83108,-12.53771 -8.8004,-26.77273 -8.9066,-42.76107c-0.0531,-18.77934 3.8175,-35.1924 11.66353,-49.30607c7.79157,-14.11367 18.71039,-25.07542 32.59852,-32.8899c13.93987,-7.87516 30.05397,-11.75206 48.34231,-11.75206zm0.47651,54.21132c-6.25449,0 -11.8201,1.63508 -16.64371,4.9068c-4.87671,3.27172 -8.69285,7.69313 -11.44978,13.2658c-2.70384,5.57266 -4.08162,11.93253 -3.97407,18.95825c0.05174,7.08795 1.48126,13.38714 4.23819,18.9598c2.70384,5.63178 6.46688,10.05475 11.29049,13.32336c4.77188,3.27328 10.28438,4.9068 16.53888,4.9068c4.55813,0 8.85214,-0.907 12.77447,-2.78477a29.82117,34.07693 0 0 0 10.17683,-7.87516a31.22482,35.6809 0 0 0 6.7841,-11.87185c1.64327,-4.54121 2.38662,-9.38734 2.33352,-14.65818c-0.0531,-7.02572 -1.48398,-13.38559 -4.29265,-18.95825c-2.80867,-5.57266 -6.57307,-9.99407 -11.39668,-13.2658c-4.82361,-3.27172 -10.28302,-4.9068 -16.37959,-4.9068z"
               fill="#000000"/>
           </g>
-        </svg>`
+        </svg>`,
+      star:'<img src="https://i.imgur.com/3rJuKfa.png" alt="Star" />'
     };
 
     function makeNewIconSVG() {
@@ -944,6 +940,10 @@
       return SVG_ICONS.adult19;
     }
 
+    function makeStarIconSVG() {
+      return SVG_ICONS.star;
+    }
+
     function makeLabelIcon(type) {
       if (type === 'new') {
         return `<span class="label-icon" aria-label="NEW">${makeNewIconSVG()}</span>`;
@@ -963,6 +963,10 @@
 
       if (type === 'adult19') {
         return `<span class="label-icon" aria-label="19금">${makeAdult19IconSVG()}</span>`;
+      }
+
+      if (type === 'star') {
+        return `<span class="label-icon" aria-label="STAR">${makeStarIconSVG()}</span>`;
       }
 
       return '';
@@ -1012,10 +1016,10 @@
         </table>`;
     }
 
-    function makePage(title, titleClass, rows, pageClass) {
+    function makePage(title, titleClass, rows, pageClass, titleVisible = true) {
       return `
         <div class="page ${pageClass}" data-page="${pageClass}">
-          <div class="page-title ${titleClass}">${title}</div>
+          ${titleVisible ? `<div class="page-title ${titleClass}">${title}</div>` : ''}
           ${makeTable(rows, pageClass)}
         </div>`;
     }
@@ -1036,7 +1040,8 @@
               pageObj.title,
               `title-${titleColor}`,
               pageObj.rows,
-              pageKey
+              pageKey,
+              pageObj.titleVisible === true
             )}
             <div class="page-gap" aria-hidden="true"></div>
           `;
