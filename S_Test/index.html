@@ -1049,10 +1049,21 @@
         </table>`;
     }
 
-    function makePage(title, titleClass, rows, pageClass) {
+    function makePage(
+      title,
+      titleClass,
+      rows,
+      pageClass,
+      titleVisible = true
+    ) {
+
+      const titleHTML = titleVisible
+        ? `<div class="page-title ${titleClass}">${title}</div>`
+        : '';
+
       return `
         <div class="page ${pageClass}" data-page="${pageClass}">
-          <div class="page-title ${titleClass}">${title}</div>
+          ${titleHTML}
           ${makeTable(rows, pageClass)}
         </div>`;
     }
@@ -1073,7 +1084,8 @@
               pageObj.title,
               `title-${titleColor}`,
               pageObj.rows,
-              pageKey
+              pageKey,
+              pageObj.titleVisible !== false
             )}
             <div class="page-gap" aria-hidden="true"></div>
           `;
