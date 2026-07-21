@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=400, height=970, initial-scale=1.0" />
-  <title> 숲 히나_♥ :::: (너비400, 높이1080) </title>
+  <title> 우유연 :::: (너비400, 높이1080) </title>
   <style>
 
     @font-face {
-        font-family: 'Cafe24Surround';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff') format('woff');
+        font-family: 'OneStoreMobilePop';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff') format('woff');
         font-weight: normal;
         font-display: swap;
     }
@@ -85,7 +85,7 @@
     }
 
     body {
-      font-family: 'Cafe24Surround', 'GMarketSans', Arial, sans-serif;
+      font-family: 'OneStoreMobilePop', 'GMarketSans', Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       background: transparent !important;
@@ -169,15 +169,33 @@
       border-spacing: 0 0;
     }
 
-    tbody tr:not(.footnote-row) td {
+    /* =========================
+      시그명칭과 각주 간격 제어
+    ========================= */
+
+    /* 일반 시그 행의 기본 하단 간격 */
+    tbody tr.main-row td {
       padding-bottom: var(--row-gap);
     }
 
-    .footnote-row td {
-      padding-top: 0;
-      padding-bottom: 2px;
+    /*
+      각주가 있는 시그 행은
+      시그명칭 아래 기본 간격 제거
+    */
+    tbody tr.main-row.has-footnote td {
+      padding-bottom: 0;
     }
 
+    /*
+      각주 행 자체는 위쪽 여백 없이 배치하고,
+      아래쪽에는 다음 시그명칭과의 간격 적용
+    */
+    tbody tr.footnote-row td {
+      padding-top: 0;
+      padding-bottom: 2px;
+      height: auto;
+      vertical-align: top;
+    }
 
     col.num-col { width: var(--num-col); }
     col.icon-col { width: var(--icon-col); }
@@ -234,8 +252,10 @@
 
     td.footnote {
       padding: 0 0 0 6px;
-      white-space: nowrap;
+      white-space: normal;
       line-height: 1;
+      height: auto;
+      vertical-align: top;
     }
 
     .page-title {
@@ -249,7 +269,7 @@
       margin: 0 0 6px 0;
       text-align: center;
 
-      font-family: 'Cafe24Surround', 'GMarketSans', Arial, sans-serif;
+      font-family: 'OneStoreMobilePop', 'GMarketSans', Arial, sans-serif;
       font-size: 28px;
       font-weight: 500;
       color: #ffffff;
@@ -320,13 +340,31 @@
       width: auto;
     }
     
+    /* 숫자와 시그명칭은 기본 높이를 고정 */
     .num-svg,
-    .label-svg,
-    .footnote-svg {
+    .label-svg {
       display: block;
       width: auto;
       height: var(--svg-h);
+      min-height: var(--svg-h);
       overflow: visible;
+      flex: 0 0 auto;
+    }
+
+    /* 각주는 줄 수에 따라 높이를 자동 확장 */
+    .footnote-svg {
+      display: block;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      flex: 0 0 auto;
+      /*
+        각주를 자신의 시그명칭 쪽으로 당김.
+        레이아웃 공간은 유지되므로
+        다음 시그명칭과는 더 분리됨.
+      */
+      position: relative;
+      top: -10px;
     }
 
     .label-icon {
@@ -503,7 +541,7 @@
     <div class="content-scale">
 
       <div class="fixed-title-wrap">
-        <div class="page-title title-pink"> 히나 시그 </div>
+        <div class="page-title title-pink"> 부드러운 우유연 </div>
       </div>
 
       <div class="viewport">
@@ -517,7 +555,7 @@
       <div id="fixedBottomPage" class="fixed-bottom-page"></div>
 
       <div class="fixed-bottom-label">
-        Designed by 쉬프티
+        Designed by 시프티™⭐
       </div>
 
     </div>
@@ -598,34 +636,22 @@
       'Netmarble, Arial, sans-serif';
 
     const LABEL_FONT =
-      'Cafe24Surround, Arial, sans-serif';
+      'OneStoreMobilePop, Arial, sans-serif';
 
     const FOOTNOTE_FONT =
-      'Cafe24Surround, Arial, sans-serif';
+      'NanumSquareRound, OneStoreMobilePop, Arial, sans-serif';
       
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
-    const ICON_PUNG_P1 = 'https://i.imgur.com/DLqjxNt.png'; //하늘하트
-    const ICON_PUNG_P2 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P3 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P4 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P6 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P7 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P8 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P9 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
-    const ICON_PUNG_P10 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
-    const ICON_PUNG_P11 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
-    const ICON_PUNG_P12 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
-    const ICON_PUNG_P13 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
-    const ICON_PUNG_P14 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
-//  const ICON_PUNG_P3 = 'https://i.imgur.com/D0ldyfG.png'; //주황하트
-//  const ICON_PUNG_P4 = 'https://i.imgur.com/12lhyTv.png'; //노랑하트
-//  const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
-//  const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //빨강
-//  const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //파랑
-//  const ICON_PUNG_P7 = 'https://i.imgur.com/CQ0nhqJ.png'; //주황(플렉스아이콘)
+    const ICON_PUNG_P1 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
+    const ICON_PUNG_P2 = 'https://i.imgur.com/l0gSwJk.png'; //핑크하트
+    const ICON_PUNG_P3 = 'https://i.imgur.com/D0ldyfG.png'; //주황하트
+    const ICON_PUNG_P4 = 'https://i.imgur.com/12lhyTv.png'; //노랑하트
+    const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
+ // const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //빨강
+ // const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //파랑
+ // const ICON_PUNG_P7 = 'https://i.imgur.com/CQ0nhqJ.png'; //주황(플렉스아이콘)
 
  // 'https://i.imgur.com/DLqjxNt.png'; //하늘하트
 
@@ -634,16 +660,7 @@
         'page2': ICON_PUNG_P2,
         'page3': ICON_PUNG_P3,
         'page4': ICON_PUNG_P4,
-        'page5': ICON_PUNG_P5,
-        'page6': ICON_PUNG_P6,
-        'page7': ICON_PUNG_P7,
-        'page8': ICON_PUNG_P8,
-        'page9': ICON_PUNG_P9,
-        'page10': ICON_PUNG_P10,
-        'page11': ICON_PUNG_P11,
-        'page12': ICON_PUNG_P12,
-        'page13': ICON_PUNG_P13,
-        'page14': ICON_PUNG_P14
+        'page5': ICON_PUNG_P5
     };
 
     let FIXED_PAGE_KEYS = [];
@@ -651,7 +668,7 @@
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxaUGO65vLVIr8LrDPuhnjo504czugdc8I3UUCZr1xcfxj1iUIyUpHOtBp-N_Erm5Qt/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7SudOdYmO3_Khmyw9X5xIRAH_rKu7pPtNTcTWDxg8Mz6r0MG4RuiCo1wglyXLu6VpXg/exec';
     // GAS Ver 0.2 사용
 
     async function loadSheetData() {
@@ -725,6 +742,41 @@
         .replaceAll('"', '&quot;');
     }
 
+    function normalizeLineBreaks(value) {
+      return String(value ?? '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n');
+    }
+
+    function splitLines(value) {
+      return normalizeLineBreaks(value).split('\n');
+    }
+
+    function makeTspans(
+      value,
+      {
+        x = 0,
+        firstY = 24,
+        lineHeight = 28
+      } = {}
+    ) {
+
+      return splitLines(value)
+        .map((line, index) => {
+
+          const safeLine = esc(line);
+
+          const y = firstY + index * lineHeight;
+
+          return `
+            <tspan
+              x="${x}"
+              y="${y}">${safeLine || ' '}</tspan>
+          `;
+        })
+        .join('');
+    }
+
     function numWidth(len) {
       if (len >= 4) return 92;
       if (len === 3) return 76;
@@ -752,7 +804,18 @@
 
     /* 단가 */
     function makeNumberSVG(num, variant = 'blue') {
-      const width = numWidth(num.length);
+      const measured =
+        measureMultilineTextWidth(
+          num,
+          24,
+          NUMBER_FONT,
+          700
+        );
+
+      const width = Math.max(
+        58,
+        measured + 20
+      );
       const t = esc(num);
 
       const fillColor = getFillColor(variant);
@@ -777,7 +840,12 @@
     /* 텍스트 */
     const textWidthCache = {};
 
-    function measureTextWidth(text, fontSize = 28, fontFamily = LABEL_FONT, fontWeight = 300) {
+    function measureTextWidth(
+      text,
+      fontSize = 28,
+      fontFamily = LABEL_FONT,
+      fontWeight = 300
+    ) {
 
       const key = `${text}_${fontSize}_${fontFamily}_${fontWeight}`;
 
@@ -800,9 +868,66 @@
       return width;
     }
 
+      /* =========================
+        여러 줄 텍스트 너비 측정
+
+        구글시트 셀에 줄바꿈이 있으면
+        각 줄의 너비를 따로 측정한 후
+        가장 긴 줄의 너비를 반환
+      ========================= */
+
+      function measureMultilineTextWidth(
+        value,
+        fontSize = 28,
+        fontFamily = LABEL_FONT,
+        fontWeight = 300
+      ) {
+
+        /*
+          Windows 줄바꿈 \r\n,
+          단독 \r을 모두 \n으로 통일
+        */
+        const normalizedValue = String(value ?? '')
+          .replace(/\r\n/g, '\n')
+          .replace(/\r/g, '\n');
+
+        /*
+          줄바꿈을 기준으로 각 줄 분리
+        */
+        const lines = normalizedValue.split('\n');
+
+        /*
+          값이 없으면 너비 0 반환
+        */
+        if (!lines.length) {
+          return 0;
+        }
+
+        /*
+          각 줄의 너비를 측정하고
+          가장 큰 너비를 반환
+        */
+        return Math.max(
+          ...lines.map(line =>
+            measureTextWidth(
+              line || ' ',
+              fontSize,
+              fontFamily,
+              fontWeight
+            )
+          )
+        );
+      }
+
     function makeLabelSVG(label, effect = '') {
       const t = esc(label);
-      const measured = measureTextWidth(label, 28, LABEL_FONT, 300);
+      const measured =
+      measureMultilineTextWidth(
+        label,
+        28,
+        LABEL_FONT,
+        300
+      );
       const w = Math.max(40, measured + 10);
 
       return `
@@ -831,28 +956,94 @@
     }
 
     /* 각주 */
+    /* =========================
+      각주 SVG
+      구글시트 셀 내부 줄바꿈 지원
+    ========================= */
+
     function makeFootnoteSVG(footnote) {
-      const t = esc(footnote);
-      const measured = measureTextWidth(footnote, 20, FOOTNOTE_FONT, 400);
-      const w = Math.max(40, measured + 10);
+
+      const normalizedFootnote =
+        normalizeLineBreaks(footnote);
+
+      const lines =
+        splitLines(normalizedFootnote);
+
+      const lineCount =
+        Math.max(1, lines.length);
+
+      const fontSize = 22;
+      const fontWeight = 400;
+
+      /*
+        각주 줄 사이의 간격
+        값을 키우면 줄 간격이 넓어짐
+      */
+      const lineHeight = 25;
+
+      /*
+        가장 긴 줄을 기준으로 SVG 너비 계산
+      */
+      const measured =
+        measureMultilineTextWidth(
+          normalizedFootnote,
+          fontSize,
+          FOOTNOTE_FONT,
+          fontWeight
+        );
+
+      /*
+        x=110 위치에서 글자가 시작하므로
+        왼쪽 공간을 포함하여 너비 계산
+      */
+      const width =
+        Math.max(150, measured + 125);
+
+      /*
+        1줄은 30px,
+        줄이 늘어날 때마다 lineHeight만큼 높이 추가
+      */
+      const height =
+        30 + (lineCount - 1) * lineHeight;
+
+      const ariaText =
+        esc(normalizedFootnote);
 
       return `
-        <svg class="footnote-svg" viewBox="0 0 ${w} 30"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-label="${t}" role="img"
-            preserveAspectRatio="xMinYMid meet">
+        <svg
+          class="footnote-svg"
+          viewBox="0 0 ${width} ${height}"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="${ariaText}"
+          role="img"
+          preserveAspectRatio="xMinYMin meet"
+          style="height:${height}px">
+
           <g transform="scale(0.9 1)">
-            <text x="110" y="8"
+
+            <text
               text-anchor="start"
               font-family="${FOOTNOTE_FONT}"
-              font-size="22"
-              font-weight="400"
+              font-size="${fontSize}"
+              font-weight="${fontWeight}"
               stroke="#000000"
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
               filter="url(#globalShadow)"
-              fill="#ffffff">${t}</text>
+              fill="#ffffff">
+
+              ${makeTspans(
+                normalizedFootnote,
+                {
+                  x: 110,
+                  firstY: 19,
+                  lineHeight: lineHeight
+                }
+              )}
+
+            </text>
+
           </g>
         </svg>`;
     }
@@ -1034,14 +1225,44 @@
         const safeLabel = String(label ?? '').trim();
         const safeFootnote = String(footnote ?? '').trim();
 
+        /*
+          각주 존재 여부에 따라 행 클래스 분리
+
+          각주 있음:
+          main-row has-footnote
+
+          각주 없음:
+          main-row no-footnote
+        */
+        const mainRowClass = safeFootnote
+          ? 'main-row has-footnote'
+          : 'main-row no-footnote';
+
         const mainRow = `
-          <tr>
+          <tr class="${mainRowClass}">
             <td class="num">
-              ${safeNum ? `<div class="num-wrap">${makeNumberIcon(pageClass)}${makeNumberSVG(safeNum, rowColor)}</div>` : ''}
+              ${
+                safeNum
+                  ? `
+                    <div class="num-wrap">
+                      ${makeNumberIcon(pageClass)}
+                      ${makeNumberSVG(safeNum, rowColor)}
+                    </div>
+                  `
+                  : ''
+              }
             </td>
+
             <td class="label">
               <div class="label-wrap">
-                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel, effect) : ''}</div>
+                <div class="label-text">
+                  ${
+                    safeLabel
+                      ? makeLabelSVG(safeLabel, effect)
+                      : ''
+                  }
+                </div>
+
                 ${makeLabelIcon(iconType)}
               </div>
             </td>
