@@ -48,7 +48,7 @@
       --h: 1080px;
       --row-gap: 4px;
       --icon-col: 34px;
-      --num-col: 90px;
+      --num-col: 70px;
       --num-icon-size: 22px;
       --svg-h: 30px;
       --page-gap: 10px;
@@ -266,7 +266,7 @@
       align-items: center;       /* 세로 중앙 */
       justify-content: center;   /* 가로 중앙 */
 
-      margin: 0 0 6px 0;
+      margin: 0 0 4px 0;
       text-align: center;
 
       font-family: 'GeekbleMalrangiche', 'GMarketSans', Arial, sans-serif;
@@ -807,9 +807,9 @@
       const measured =
         measureMultilineTextWidth(
           num,
-          24,
+          26,
           NUMBER_FONT,
-          700
+          300
         );
 
       const width = Math.max(
@@ -823,11 +823,11 @@
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           <g transform="scale(1.0 1)">
-          <text x="10" y="20"
+          <text x="10" y="17"
             text-anchor="start"
             font-family="${NUMBER_FONT}"
             font-size="24"
-            font-weight="700"
+            font-weight="300"
             stroke="#000000"
             stroke-width="${STROKE}"
             stroke-linejoin="round"
