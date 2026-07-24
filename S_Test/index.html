@@ -287,6 +287,39 @@
       transform: translateY(-1px);
     }
 
+    .page-title-text {
+      display: inline-block;
+      min-width: 0;
+    }
+
+    /*
+      DATA C열 카테고리효과
+      기존 강조 값 e_colorshift / e-colorshift와 동일하게 처리
+    */
+    .page-title.e-colorshift .page-title-text {
+      animation: titleColorShift 1.6s linear infinite;
+    }
+
+    /*
+      DATA D열 카테고리아이콘
+      페이지 타이틀 오른쪽에 표시
+    */
+    .page-title-icon {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+    }
+
+    .page-title-icon svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
     .title-gray {
       background: #bfbfbf;
       border-color: #262525;
@@ -438,6 +471,13 @@
       33%  { fill: #6ff; }
       66%  { fill: #f6f; }
       100% { fill: #ff6; }
+    }
+
+    @keyframes titleColorShift {
+      0%   { color: #ff6; }
+      33%  { color: #6ff; }
+      66%  { color: #f6f; }
+      100% { color: #ff6; }
     }
 
     @keyframes riseLoop {
@@ -668,7 +708,7 @@
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7SudOdYmO3_Khmyw9X5xIRAH_rKu7pPtNTcTWDxg8Mz6r0MG4RuiCo1wglyXLu6VpXg/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxD9xO-gVoF0uxy6sYlgpjmjaM9Q3xX4YAoQsN2xLxqZyJ58a7TcR2-VpyqQfEi4b3Q/exec';
     // GAS Ver 0.2 사용
 
     async function loadSheetData() {
@@ -1217,6 +1257,60 @@
       return '';
     }
 
+    function normalizeEffectClass(effect = '') {
+      const normalizedEffect = String(effect || '')
+        .trim()
+        .toLowerCase()
+        .replaceAll('_', '-');
+
+      return normalizedEffect === 'e-colorshift'
+        ? 'e-colorshift'
+        : '';
+    }
+
+    function makePageTitleIcon(type) {
+      const normalizedType = String(type || '')
+        .trim()
+        .toLowerCase();
+
+      const iconMap = {
+        new: {
+          label: 'NEW',
+          svg: makeNewIconSVG
+        },
+        best: {
+          label: 'BEST',
+          svg: makeBestIconSVG
+        },
+        rullet: {
+          label: 'RULLET',
+          svg: makeRulletIconSVG
+        },
+        warning: {
+          label: 'WARNING',
+          svg: makeWarningIconSVG
+        },
+        adult19: {
+          label: '19금',
+          svg: makeAdult19IconSVG
+        }
+      };
+
+      const icon = iconMap[normalizedType];
+
+      if (!icon) {
+        return '';
+      }
+
+      return `
+        <span
+          class="page-title-icon"
+          aria-label="${icon.label}">
+          ${icon.svg()}
+        </span>
+      `;
+    }
+
 
     /* 테이블 */
     function makeTable(rows, pageClass = '') {
@@ -1296,11 +1390,22 @@
       titleClass,
       rows,
       pageClass,
-      titleVisible = true
+      titleVisible = true,
+      categoryEffect = '',
+      categoryIcon = ''
     ) {
 
+      const safeTitle = esc(title);
+      const categoryEffectClass =
+        normalizeEffectClass(categoryEffect);
+
       const titleHTML = titleVisible
-        ? `<div class="page-title ${titleClass}">${title}</div>`
+        ? `
+          <div class="page-title ${titleClass} ${categoryEffectClass}">
+            <span class="page-title-text">${safeTitle}</span>
+            ${makePageTitleIcon(categoryIcon)}
+          </div>
+        `
         : '';
 
       return `
@@ -1327,7 +1432,9 @@
               `title-${titleColor}`,
               pageObj.rows,
               pageKey,
-              pageObj.titleVisible !== false
+              pageObj.titleVisible !== false,
+              pageObj.categoryEffect || '',
+              pageObj.categoryIcon || ''
             )}
             <div class="page-gap" aria-hidden="true"></div>
           `;
