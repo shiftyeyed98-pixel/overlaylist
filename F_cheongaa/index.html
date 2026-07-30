@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=400, height=970, initial-scale=1.0" />
-  <title> 숲 ♡혜밍 :::: (너비400, 높이1080) </title>
+  <title> 플렉스 청아 :::: (너비400, 높이1080) </title>
   <style>
 
     @font-face {
-        font-family: 'YeogiOttaeJalnan';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+        font-family: 'Juache';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff') format('woff');
         font-weight: normal;
         font-display: swap;
     }
@@ -21,12 +21,27 @@
         font-display: swap;
     }
 
+    @font-face {
+        font-family: 'NanumSquareRound';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/NanumSquareRoundR.woff') format('woff');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+    font-family: 'Pretendard';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-display: swap;
+    }
+    
     :root {
       --w: 400px;
-      --h: 970px;
+      --h: 1080px;
       --row-gap: 4px;
       --icon-col: 34px;
-      --num-col: 100px;
+      --num-col: 90px;
       --num-icon-size: 22px;
       --svg-h: 30px;
       --page-gap: 10px;
@@ -63,7 +78,7 @@
     }
 
     body {
-      font-family: 'YeogiOttaeJalnan', 'GMarketSans', Arial, sans-serif;
+      font-family: 'Juache', 'GMarketSans', Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       background: transparent !important;
@@ -147,15 +162,33 @@
       border-spacing: 0 0;
     }
 
-    tbody tr:not(.footnote-row) td {
+    /* =========================
+      시그명칭과 각주 간격 제어
+    ========================= */
+
+    /* 일반 시그 행의 기본 하단 간격 */
+    tbody tr.main-row td {
       padding-bottom: var(--row-gap);
     }
 
-    .footnote-row td {
-      padding-top: 0;
-      padding-bottom: 2px;
+    /*
+      각주가 있는 시그 행은
+      시그명칭 아래 기본 간격 제거
+    */
+    tbody tr.main-row.has-footnote td {
+      padding-bottom: 0;
     }
 
+    /*
+      각주 행 자체는 위쪽 여백 없이 배치하고,
+      아래쪽에는 다음 시그명칭과의 간격 적용
+    */
+    tbody tr.footnote-row td {
+      padding-top: 0;
+      padding-bottom: 2px;
+      height: auto;
+      vertical-align: top;
+    }
 
     col.num-col { width: var(--num-col); }
     col.icon-col { width: var(--icon-col); }
@@ -186,7 +219,7 @@
       height: var(--num-icon-size);
       flex: 0 0 var(--num-icon-size);
       position: relative;
-      top: -4px;
+      top: -6px;
       object-fit: contain;
       display: block;
       margin: 0;
@@ -212,8 +245,10 @@
 
     td.footnote {
       padding: 0 0 0 6px;
-      white-space: nowrap;
+      white-space: normal;
       line-height: 1;
+      height: auto;
+      vertical-align: top;
     }
 
     .page-title {
@@ -227,7 +262,7 @@
       margin: 0 0 6px 0;
       text-align: center;
 
-      font-family: 'YeogiOttaeJalnan', 'GMarketSans', Arial, sans-serif;
+      font-family: 'Juache', 'GMarketSans', Arial, sans-serif;
       font-size: 28px;
       font-weight: 500;
       color: #ffffff;
@@ -243,6 +278,39 @@
          2px  2px 0 #000;
          
       transform: translateY(-1px);
+    }
+
+    .page-title-text {
+      display: inline-block;
+      min-width: 0;
+    }
+
+    /*
+      DATA C열 카테고리효과
+      기존 강조 값 e_colorshift / e-colorshift와 동일하게 처리
+    */
+    .page-title.e-colorshift .page-title-text {
+      animation: titleColorShift 1.6s linear infinite;
+    }
+
+    /*
+      DATA D열 카테고리아이콘
+      페이지 타이틀 오른쪽에 표시
+    */
+    .page-title-icon {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+    }
+
+    .page-title-icon svg {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
     .title-gray {
@@ -285,6 +353,12 @@
       border-color: #4DAF2A;
     }
 
+    .title-skyblue {
+      background: #6dbbcf;
+      border-color: #016fff;
+    }
+
+
     .label-wrap {
       display: inline-flex;
       align-items: center;
@@ -292,13 +366,33 @@
       width: auto;
     }
     
+    /* 숫자와 시그명칭은 기본 높이를 고정 */
     .num-svg,
-    .label-svg,
-    .footnote-svg {
+    .label-svg {
       display: block;
       width: auto;
       height: var(--svg-h);
+      min-height: var(--svg-h);
       overflow: visible;
+      flex: 0 0 auto;
+    }
+
+    /* 각주는 줄 수에 따라 높이를 자동 확장 */
+    .footnote-svg {
+      display: block;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      flex: 0 0 auto;
+      /*
+        각주를 자신의 시그명칭 쪽으로 당김.
+        레이아웃 공간은 유지되므로
+        다음 시그명칭과는 더 분리됨.
+      */
+      position: relative;
+      top: -14px;
+      left: 0px;
+      margin-bottom: -8px; /* 추가: 각주 아래 공간 축소 */
     }
 
     .label-icon {
@@ -335,7 +429,7 @@
       align-items: center;
       justify-content: center;
 
-      font-family: 'GMarketSans', Arial, sans-serif;
+      font-family: 'Juache', 'GMarketSans', Arial, sans-serif;
       font-size: 10px;
       font-weight: 100;
       color: #ffffff;
@@ -374,6 +468,13 @@
       100% { fill: #ff6; }
     }
 
+    @keyframes titleColorShift {
+      0%   { color: #ff6; }
+      33%  { color: #6ff; }
+      66%  { color: #f6f; }
+      100% { color: #ff6; }
+    }
+
     @keyframes riseLoop {
       from {
         transform: translate3d(0, 0, 0);
@@ -408,7 +509,7 @@
 
       z-index: 40;
 
-      padding: 4px 4px 4px 4px;
+      padding: 2px 2px 2px 2px;
 
       border-radius: 14px;
 
@@ -475,7 +576,7 @@
     <div class="content-scale">
 
       <div class="fixed-title-wrap">
-        <div class="page-title title-purple"> ♡혜밍이꼬 </div>
+        <div class="page-title title-pink"> 청아🐰's Menu </div>
       </div>
 
       <div class="viewport">
@@ -489,7 +590,7 @@
       <div id="fixedBottomPage" class="fixed-bottom-page"></div>
 
       <div class="fixed-bottom-label">
-        Designed by 쉬프티
+        Designed by 시프티™⭐
       </div>
 
     </div>
@@ -559,24 +660,42 @@
 
     let PAGE_DATA = {};
 
-    const FONT = 'YeogiOttaeJalnan, GMarketSans, Arial, sans-serif';
+    /* =========================
+       컬럼별 폰트 설정
+       - 숫자/단가
+       - 일반 텍스트
+       - 각주
+    ========================= */
+
+    const NUMBER_FONT =
+      'Juache, Arial, sans-serif';
+
+    const LABEL_FONT =
+      'Juache, Arial, sans-serif';
+
+    const FOOTNOTE_FONT =
+      'Juache, Arial, sans-serif';
+      
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
-    const ICON_PUNG_P1 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
-    const ICON_PUNG_P2 = 'https://i.imgur.com/cBt4rIi.png'; //파랑하트
-    const ICON_PUNG_P3 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P4 = 'https://i.imgur.com/z8ppDzl.png'; //듀얼하트
- // const ICON_PUNG_P4 = 'https://i.imgur.com/IijYbRn.png'; //라이브 보라
- // const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //빨강
+    const ICON_PUNG_P1 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
+    const ICON_PUNG_P2 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트    
+    const ICON_PUNG_P3 = 'https://i.imgur.com/l0gSwJk.png'; //핑크하트
+    const ICON_PUNG_P4 = 'https://i.imgur.com/D0ldyfG.png'; //주황하트
+    const ICON_PUNG_P5 = 'https://i.imgur.com/12lhyTv.png'; //노랑하트
+ // const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //빨강
  // const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //파랑
  // const ICON_PUNG_P7 = 'https://i.imgur.com/CQ0nhqJ.png'; //주황(플렉스아이콘)
 
+ // 'https://i.imgur.com/DLqjxNt.png'; //하늘하트
 
     const PAGE_ICON_MAP = {
         'page1': ICON_PUNG_P1,
         'page2': ICON_PUNG_P2,
-        'page3': ICON_PUNG_P3
+        'page3': ICON_PUNG_P3,
+        'page4': ICON_PUNG_P4,
+        'page5': ICON_PUNG_P5
     };
 
     let FIXED_PAGE_KEYS = [];
@@ -584,8 +703,8 @@
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwIlSqj1MZpNGYSmjA22chxOgt_nO4Z0ySNdkV6cXtVBebx3mKtukjd_qpbg9O9IR1Y/exec';
-    // GAS Ver 0.2 사용, 고정페이지 상하단 선택
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxsGOir2VLPMKeGDnCkwUd5eHmAWsBKBRzup2Not1pi7evrgiXbFNWp8FXdv_sO4f7DHA/exec';
+    // GAS Ver 0.2 사용
 
     async function loadSheetData() {
 
@@ -658,6 +777,41 @@
         .replaceAll('"', '&quot;');
     }
 
+    function normalizeLineBreaks(value) {
+      return String(value ?? '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n');
+    }
+
+    function splitLines(value) {
+      return normalizeLineBreaks(value).split('\n');
+    }
+
+    function makeTspans(
+      value,
+      {
+        x = 0,
+        firstY = 24,
+        lineHeight = 28
+      } = {}
+    ) {
+
+      return splitLines(value)
+        .map((line, index) => {
+
+          const safeLine = esc(line);
+
+          const y = firstY + index * lineHeight;
+
+          return `
+            <tspan
+              x="${x}"
+              y="${y}">${safeLine || ' '}</tspan>
+          `;
+        })
+        .join('');
+    }
+
     function numWidth(len) {
       if (len >= 4) return 92;
       if (len === 3) return 76;
@@ -677,7 +831,7 @@
         red: '#ff6b6b',
         white: '#ffffff',
         navy: '#5E4C9D',
-        sky_blue: '#73FBFD'
+        skyblue: '#73FBFD'
       };
 
       return COLOR_MAP[variant] || COLOR_MAP.blue;
@@ -685,7 +839,18 @@
 
     /* 단가 */
     function makeNumberSVG(num, variant = 'blue') {
-      const width = numWidth(num.length);
+      const measured =
+        measureMultilineTextWidth(
+          num,
+          24,
+          NUMBER_FONT,
+          700
+        );
+
+      const width = Math.max(
+        58,
+        measured + 20
+      );
       const t = esc(num);
 
       const fillColor = getFillColor(variant);
@@ -693,11 +858,11 @@
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           <g transform="scale(1.0 1)">
-          <text x="10" y="21"
+          <text x="10" y="15"
             text-anchor="start"
-            font-family="${FONT}"
-            font-size="28"
-            font-weight="300"
+            font-family="${NUMBER_FONT}"
+            font-size="24"
+            font-weight="400"
             stroke="#000000"
             stroke-width="${STROKE}"
             stroke-linejoin="round"
@@ -710,9 +875,14 @@
     /* 텍스트 */
     const textWidthCache = {};
 
-    function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 300) {
+    function measureTextWidth(
+      text,
+      fontSize = 28,
+      fontFamily = LABEL_FONT,
+      fontWeight = 300
+    ) {
 
-      const key = `${text}_${fontSize}_${fontWeight}`;
+      const key = `${text}_${fontSize}_${fontFamily}_${fontWeight}`;
 
       if (textWidthCache[key]) {
         return textWidthCache[key];
@@ -733,9 +903,66 @@
       return width;
     }
 
+      /* =========================
+        여러 줄 텍스트 너비 측정
+
+        구글시트 셀에 줄바꿈이 있으면
+        각 줄의 너비를 따로 측정한 후
+        가장 긴 줄의 너비를 반환
+      ========================= */
+
+      function measureMultilineTextWidth(
+        value,
+        fontSize = 28,
+        fontFamily = LABEL_FONT,
+        fontWeight = 300
+      ) {
+
+        /*
+          Windows 줄바꿈 \r\n,
+          단독 \r을 모두 \n으로 통일
+        */
+        const normalizedValue = String(value ?? '')
+          .replace(/\r\n/g, '\n')
+          .replace(/\r/g, '\n');
+
+        /*
+          줄바꿈을 기준으로 각 줄 분리
+        */
+        const lines = normalizedValue.split('\n');
+
+        /*
+          값이 없으면 너비 0 반환
+        */
+        if (!lines.length) {
+          return 0;
+        }
+
+        /*
+          각 줄의 너비를 측정하고
+          가장 큰 너비를 반환
+        */
+        return Math.max(
+          ...lines.map(line =>
+            measureTextWidth(
+              line || ' ',
+              fontSize,
+              fontFamily,
+              fontWeight
+            )
+          )
+        );
+      }
+
     function makeLabelSVG(label, effect = '') {
       const t = esc(label);
-      const measured = measureTextWidth(label, 28, FONT, 300);
+      const measured =
+      measureMultilineTextWidth(
+        label,
+        28,
+        LABEL_FONT,
+        300
+      );
       const w = Math.max(40, measured + 10);
 
       return `
@@ -748,11 +975,11 @@
           preserveAspectRatio="xMinYMid meet">
 
           <g transform="scale(1.0 1)">
-            <text x="15" y="23"
+            <text x="-10" y="20"
               text-anchor="start"
-              font-family="${FONT}"
+              font-family="${LABEL_FONT}"
               font-size="28"
-              font-weight="300"
+              font-weight="400"
               stroke="#000000"
               stroke-width="${STROKE}"
               stroke-linejoin="round"
@@ -764,28 +991,94 @@
     }
 
     /* 각주 */
+    /* =========================
+      각주 SVG
+      구글시트 셀 내부 줄바꿈 지원
+    ========================= */
+
     function makeFootnoteSVG(footnote) {
-      const t = esc(footnote);
-      const measured = measureTextWidth(footnote, 20, FONT, 300);
-      const w = Math.max(40, measured + 10);
+
+      const normalizedFootnote =
+        normalizeLineBreaks(footnote);
+
+      const lines =
+        splitLines(normalizedFootnote);
+
+      const lineCount =
+        Math.max(1, lines.length);
+
+      const fontSize = 20;
+      const fontWeight = 400;
+
+      /*
+        각주 줄 사이의 간격
+        값을 키우면 줄 간격이 넓어짐
+      */
+      const lineHeight = 25;
+
+      /*
+        가장 긴 줄을 기준으로 SVG 너비 계산
+      */
+      const measured =
+        measureMultilineTextWidth(
+          normalizedFootnote,
+          fontSize,
+          FOOTNOTE_FONT,
+          fontWeight
+        );
+
+      /*
+        x=110 위치에서 글자가 시작하므로
+        왼쪽 공간을 포함하여 너비 계산
+      */
+      const width =
+        Math.max(150, measured + 125);
+
+      /*
+        1줄은 30px,
+        줄이 늘어날 때마다 lineHeight만큼 높이 추가
+      */
+      const height =
+        30 + (lineCount - 1) * lineHeight;
+
+      const ariaText =
+        esc(normalizedFootnote);
 
       return `
-        <svg class="footnote-svg" viewBox="0 0 ${w} 30"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-label="${t}" role="img"
-            preserveAspectRatio="xMinYMid meet">
+        <svg
+          class="footnote-svg"
+          viewBox="0 0 ${width} ${height}"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="${ariaText}"
+          role="img"
+          preserveAspectRatio="xMinYMin meet"
+          style="height:${height}px">
+
           <g transform="scale(0.9 1)">
-            <text x="120" y="8"
+
+            <text
               text-anchor="start"
-              font-family="${FONT}"
-              font-size="22"
-              font-weight="300"
+              font-family="${FOOTNOTE_FONT}"
+              font-size="${fontSize}"
+              font-weight="${fontWeight}"
               stroke="#000000"
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
               filter="url(#globalShadow)"
-              fill="#ffffff">${t}</text>
+              fill="#ffffff">
+
+              ${makeTspans(
+                normalizedFootnote,
+                {
+                  x: 30,
+                  firstY: 19,
+                  lineHeight: lineHeight
+                }
+              )}
+
+            </text>
+
           </g>
         </svg>`;
     }
@@ -959,6 +1252,60 @@
       return '';
     }
 
+    function normalizeEffectClass(effect = '') {
+      const normalizedEffect = String(effect || '')
+        .trim()
+        .toLowerCase()
+        .replaceAll('_', '-');
+
+      return normalizedEffect === 'e-colorshift'
+        ? 'e-colorshift'
+        : '';
+    }
+
+    function makePageTitleIcon(type) {
+      const normalizedType = String(type || '')
+        .trim()
+        .toLowerCase();
+
+      const iconMap = {
+        new: {
+          label: 'NEW',
+          svg: makeNewIconSVG
+        },
+        best: {
+          label: 'BEST',
+          svg: makeBestIconSVG
+        },
+        rullet: {
+          label: 'RULLET',
+          svg: makeRulletIconSVG
+        },
+        warning: {
+          label: 'WARNING',
+          svg: makeWarningIconSVG
+        },
+        adult19: {
+          label: '19금',
+          svg: makeAdult19IconSVG
+        }
+      };
+
+      const icon = iconMap[normalizedType];
+
+      if (!icon) {
+        return '';
+      }
+
+      return `
+        <span
+          class="page-title-icon"
+          aria-label="${icon.label}">
+          ${icon.svg()}
+        </span>
+      `;
+    }
+
 
     /* 테이블 */
     function makeTable(rows, pageClass = '') {
@@ -967,14 +1314,44 @@
         const safeLabel = String(label ?? '').trim();
         const safeFootnote = String(footnote ?? '').trim();
 
+        /*
+          각주 존재 여부에 따라 행 클래스 분리
+
+          각주 있음:
+          main-row has-footnote
+
+          각주 없음:
+          main-row no-footnote
+        */
+        const mainRowClass = safeFootnote
+          ? 'main-row has-footnote'
+          : 'main-row no-footnote';
+
         const mainRow = `
-          <tr>
+          <tr class="${mainRowClass}">
             <td class="num">
-              ${safeNum ? `<div class="num-wrap">${makeNumberIcon(pageClass)}${makeNumberSVG(safeNum, rowColor)}</div>` : ''}
+              ${
+                safeNum
+                  ? `
+                    <div class="num-wrap">
+                      ${makeNumberIcon(pageClass)}
+                      ${makeNumberSVG(safeNum, rowColor)}
+                    </div>
+                  `
+                  : ''
+              }
             </td>
+
             <td class="label">
               <div class="label-wrap">
-                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel, effect) : ''}</div>
+                <div class="label-text">
+                  ${
+                    safeLabel
+                      ? makeLabelSVG(safeLabel, effect)
+                      : ''
+                  }
+                </div>
+
                 ${makeLabelIcon(iconType)}
               </div>
             </td>
@@ -1003,10 +1380,32 @@
         </table>`;
     }
 
-    function makePage(title, titleClass, rows, pageClass) {
+    function makePage(
+      title,
+      titleClass,
+      rows,
+      pageClass,
+      titleVisible = true,
+      categoryEffect = '',
+      categoryIcon = ''
+    ) {
+
+      const safeTitle = esc(title);
+      const categoryEffectClass =
+        normalizeEffectClass(categoryEffect);
+
+      const titleHTML = titleVisible
+        ? `
+          <div class="page-title ${titleClass} ${categoryEffectClass}">
+            <span class="page-title-text">${safeTitle}</span>
+            ${makePageTitleIcon(categoryIcon)}
+          </div>
+        `
+        : '';
+
       return `
         <div class="page ${pageClass}" data-page="${pageClass}">
-          <div class="page-title ${titleClass}">${title}</div>
+          ${titleHTML}
           ${makeTable(rows, pageClass)}
         </div>`;
     }
@@ -1027,7 +1426,10 @@
               pageObj.title,
               `title-${titleColor}`,
               pageObj.rows,
-              pageKey
+              pageKey,
+              pageObj.titleVisible !== false,
+              pageObj.categoryEffect || '',
+              pageObj.categoryIcon || ''
             )}
             <div class="page-gap" aria-hidden="true"></div>
           `;
