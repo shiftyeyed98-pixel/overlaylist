@@ -709,7 +709,6 @@
             stroke-width="${STROKE}"
             stroke-linejoin="round"
             paint-order="stroke fill"
-            filter="url(#globalShadow)"
             fill="${fillColor}">${t}</text>
           </g>
         </svg>`;
@@ -764,7 +763,6 @@
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
-              filter="url(#globalShadow)"
               fill="#ffffff">${t}</text>
           </g>
         </svg>`;
@@ -791,7 +789,6 @@
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
-              filter="url(#globalShadow)"
               fill="#ffffff">${t}</text>
           </g>
         </svg>`;
@@ -1182,7 +1179,7 @@
       /* 웹폰트 로딩 완료 대기 */
       await document.fonts.ready;
 
-      sequenceA.innerHTML = makeSequenceHTML();
+
       sequenceB.innerHTML = makeSequenceHTML();
 
       extractFixedPage();
