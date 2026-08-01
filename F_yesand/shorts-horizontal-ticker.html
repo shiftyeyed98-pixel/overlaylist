@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=400, height=970, initial-scale=1.0" />
-  <title> 플렉스 청아 :::: (너비400, 높이1080) </title>
+  <meta name="viewport" content="width=1080, height=200, initial-scale=1.0" />
+  <title>플렉스 백시연 - 유튜브 숏츠 가로 티커</title>
   <style>
 
     @font-face {
@@ -35,20 +35,36 @@
     font-weight: 600;
     font-display: swap;
     }
+
+    @font-face {
+        font-family: 'Netmarble';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.1/netmarbleB.woff') format('woff');
+        font-weight: 700;
+        font-display: swap;
+    }
     
     :root {
-      --w: 400px;
-      --h: 1080px;
+      --w: 1080px;
+      --h: 200px;
       --row-gap: 4px;
       --icon-col: 34px;
-      --num-col: 90px;
+      --num-col: 70px;
       --num-icon-size: 22px;
       --svg-h: 30px;
-      --page-gap: 10px;
+      --page-gap: 48px;
       --loop-seconds: 60s;
-      --sequence-height: 1000px;
+      --sequence-width: 1000px;
       --outline: 5;
-      --scale: 1.0;
+      --scale: 1;
+
+      /* ===== 가로 티커 항목 크기 ===== */
+      --ticker-card-w: 390px;
+      --ticker-card-h: 78px;
+      --ticker-image-col: 38px;
+      --ticker-num-col: 98px;
+      --ticker-label-col: 210px;
+      --ticker-icon-col: 44px;
+      --ticker-footnote-w: 366px;
 
       /* ===== 고정 타이틀 영역 ===== */
       --fixed-title-h: 36px;
@@ -162,33 +178,15 @@
       border-spacing: 0 0;
     }
 
-    /* =========================
-      시그명칭과 각주 간격 제어
-    ========================= */
-
-    /* 일반 시그 행의 기본 하단 간격 */
-    tbody tr.main-row td {
+    tbody tr:not(.footnote-row) td {
       padding-bottom: var(--row-gap);
     }
 
-    /*
-      각주가 있는 시그 행은
-      시그명칭 아래 기본 간격 제거
-    */
-    tbody tr.main-row.has-footnote td {
-      padding-bottom: 0;
-    }
-
-    /*
-      각주 행 자체는 위쪽 여백 없이 배치하고,
-      아래쪽에는 다음 시그명칭과의 간격 적용
-    */
-    tbody tr.footnote-row td {
+    .footnote-row td {
       padding-top: 0;
       padding-bottom: 2px;
-      height: auto;
-      vertical-align: top;
     }
+
 
     col.num-col { width: var(--num-col); }
     col.icon-col { width: var(--icon-col); }
@@ -219,7 +217,7 @@
       height: var(--num-icon-size);
       flex: 0 0 var(--num-icon-size);
       position: relative;
-      top: -6px;
+      top: -4px;
       object-fit: contain;
       display: block;
       margin: 0;
@@ -245,10 +243,8 @@
 
     td.footnote {
       padding: 0 0 0 6px;
-      white-space: normal;
+      white-space: nowrap;
       line-height: 1;
-      height: auto;
-      vertical-align: top;
     }
 
     .page-title {
@@ -278,39 +274,6 @@
          2px  2px 0 #000;
          
       transform: translateY(-1px);
-    }
-
-    .page-title-text {
-      display: inline-block;
-      min-width: 0;
-    }
-
-    /*
-      DATA C열 카테고리효과
-      기존 강조 값 e_colorshift / e-colorshift와 동일하게 처리
-    */
-    .page-title.e-colorshift .page-title-text {
-      animation: titleColorShift 1.6s linear infinite;
-    }
-
-    /*
-      DATA D열 카테고리아이콘
-      페이지 타이틀 오른쪽에 표시
-    */
-    .page-title-icon {
-      width: 28px;
-      height: 28px;
-      flex: 0 0 28px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: 8px;
-    }
-
-    .page-title-icon svg {
-      width: 100%;
-      height: 100%;
-      display: block;
     }
 
     .title-gray {
@@ -366,33 +329,13 @@
       width: auto;
     }
     
-    /* 숫자와 시그명칭은 기본 높이를 고정 */
     .num-svg,
-    .label-svg {
-      display: block;
-      width: auto;
-      height: var(--svg-h);
-      min-height: var(--svg-h);
-      overflow: visible;
-      flex: 0 0 auto;
-    }
-
-    /* 각주는 줄 수에 따라 높이를 자동 확장 */
+    .label-svg,
     .footnote-svg {
       display: block;
       width: auto;
-      height: auto;
+      height: var(--svg-h);
       overflow: visible;
-      flex: 0 0 auto;
-      /*
-        각주를 자신의 시그명칭 쪽으로 당김.
-        레이아웃 공간은 유지되므로
-        다음 시그명칭과는 더 분리됨.
-      */
-      position: relative;
-      top: -14px;
-      left: 0px;
-      margin-bottom: -8px; /* 추가: 각주 아래 공간 축소 */
     }
 
     .label-icon {
@@ -468,13 +411,6 @@
       100% { fill: #ff6; }
     }
 
-    @keyframes titleColorShift {
-      0%   { color: #ff6; }
-      33%  { color: #6ff; }
-      66%  { color: #f6f; }
-      100% { color: #ff6; }
-    }
-
     @keyframes riseLoop {
       from {
         transform: translate3d(0, 0, 0);
@@ -505,11 +441,11 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom) + 0px);
-      width: calc(85% - (var(--fixed-page-side-gap) * 1));  /* 고정 페이지 유리효과 가로 폭사이즈 */
+      width: calc(90% - (var(--fixed-page-side-gap) * 1));  /* 고정 페이지 유리효과 가로 폭사이즈 */
 
       z-index: 40;
 
-      padding: 2px 2px 2px 2px;
+      padding: 4px 4px 4px 4px;
 
       border-radius: 14px;
 
@@ -552,6 +488,213 @@
       transform-origin: top left;
     }
 
+    /* =====================================================
+       유튜브 숏츠용 가로 무한 티커
+       [카테고리] [이미지|단가|텍스트|아이콘]
+                    [각주 전체 1행]
+    ===================================================== */
+
+    .fixed-title-wrap,
+    .fixed-top-page,
+    .fixed-bottom-page {
+      display: none !important;
+    }
+
+    .viewport {
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: calc(100% - var(--fixed-bottom-h) - var(--fixed-bottom-bottom));
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: max-content;
+      height: auto;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      transform: translateY(-50%);
+      will-change: transform;
+      animation: slideLoop var(--loop-seconds) linear infinite;
+      animation-play-state: paused;
+    }
+
+    .track.is-ready {
+      animation-play-state: running;
+    }
+
+    .sequence {
+      width: max-content;
+      height: auto;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 0;
+    }
+
+    .page {
+      width: max-content;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .page-title {
+      width: 190px;
+      height: 54px;
+      flex: 0 0 190px;
+      margin: 0 22px 0 0;
+      padding: 0 12px;
+      font-size: 30px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .page-gap {
+      width: var(--page-gap);
+      height: 1px;
+      flex: 0 0 var(--page-gap);
+    }
+
+    .ticker-items {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 26px;
+    }
+
+    .ticker-card {
+      width: var(--ticker-card-w);
+      height: var(--ticker-card-h);
+      flex: 0 0 var(--ticker-card-w);
+      overflow: hidden;
+    }
+
+    .ticker-card table {
+      width: var(--ticker-card-w);
+      height: var(--ticker-card-h);
+      table-layout: fixed;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    .ticker-card col.image-col {
+      width: var(--ticker-image-col);
+    }
+
+    .ticker-card col.num-col {
+      width: var(--ticker-num-col);
+    }
+
+    .ticker-card col.text-col {
+      width: var(--ticker-label-col);
+    }
+
+    .ticker-card col.icon-col {
+      width: var(--ticker-icon-col);
+    }
+
+    .ticker-card td {
+      box-sizing: border-box;
+      height: 38px;
+      padding: 0 3px;
+      overflow: hidden;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .ticker-card td.image-cell {
+      padding-left: 2px;
+      padding-right: 2px;
+      text-align: center;
+    }
+
+    .ticker-card .num-left-icon {
+      width: var(--num-icon-size);
+      height: var(--num-icon-size);
+      margin: 0 auto;
+      padding: 0;
+      position: static;
+    }
+
+    .ticker-card td.num {
+      text-align: left;
+    }
+
+    .ticker-card .num-wrap,
+    .ticker-card .label-wrap {
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .ticker-card .label-text {
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .ticker-card td.icon-cell {
+      width: var(--ticker-icon-col);
+      padding: 0;
+      text-align: center;
+    }
+
+    .ticker-card .label-icon {
+      margin: 0 auto;
+      position: static;
+    }
+
+    .ticker-card .num-svg,
+    .ticker-card .label-svg,
+    .ticker-card .footnote-svg {
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .ticker-card .footnote-row td {
+      width: var(--ticker-card-w);
+      height: 34px;
+      padding: 0 5px;
+      overflow: hidden;
+    }
+
+    .ticker-card .footnote-wrap {
+      width: var(--ticker-footnote-w);
+      max-width: var(--ticker-footnote-w);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .fixed-bottom-label {
+      left: auto;
+      right: 8px;
+      width: 210px;
+    }
+
+    @keyframes slideLoop {
+      from {
+        transform: translate3d(0, -50%, 0);
+      }
+      to {
+        transform: translate3d(
+          calc(-1 * var(--sequence-width)),
+          -50%,
+          0
+        );
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -576,7 +719,7 @@
     <div class="content-scale">
 
       <div class="fixed-title-wrap">
-        <div class="page-title title-pink"> 플렉스티비 청아🐰 </div>
+        <div class="page-title title-pink"> B.시그 </div>
       </div>
 
       <div class="viewport">
@@ -590,7 +733,7 @@
       <div id="fixedBottomPage" class="fixed-bottom-page"></div>
 
       <div class="fixed-bottom-label">
-        Designed by 시프티™⭐
+        Designed by 시프티™⭐️
       </div>
 
     </div>
@@ -679,23 +822,15 @@
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
-    const ICON_PUNG_P1 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P2 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트    
-    const ICON_PUNG_P3 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P4 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
-    const ICON_PUNG_P5 = 'https://i.imgur.com/12lhyTv.png'; //노랑하트
- // const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //빨강
- // const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //파랑
- // const ICON_PUNG_P7 = 'https://i.imgur.com/CQ0nhqJ.png'; //주황(플렉스아이콘)
+    const ICON_PUNG_P1 = 'https://i.imgur.com/l0gSwJk.png'; //하늘하트
+    const ICON_PUNG_P2 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
 
  // 'https://i.imgur.com/DLqjxNt.png'; //하늘하트
 
     const PAGE_ICON_MAP = {
         'page1': ICON_PUNG_P1,
-        'page2': ICON_PUNG_P2,
-        'page3': ICON_PUNG_P3,
-        'page4': ICON_PUNG_P4,
-        'page5': ICON_PUNG_P5
+        'page2': ICON_PUNG_P2
+
     };
 
     let FIXED_PAGE_KEYS = [];
@@ -703,7 +838,7 @@
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxsGOir2VLPMKeGDnCkwUd5eHmAWsBKBRzup2Not1pi7evrgiXbFNWp8FXdv_sO4f7DHA/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwHffUV3TOSbRCnVFi77sTX6D8F9z8a4978g2ZPn-3I_4fr78Yhvh_WnddYC_uz33b2MQ/exec';
     // GAS Ver 0.2 사용
 
     async function loadSheetData() {
@@ -716,11 +851,27 @@
         스크롤 속도 적용
       ========================= */
 
-      const scrollSeconds = Number(data.scrollSeconds || 60);
+      /*
+        횡스크롤 전용 속도
+        GAS의 horizontalScrollSeconds(P1)를 사용한다.
+
+        구버전 GAS와 연결될 때는 기존 scrollSeconds(N1)를
+        임시 호환값으로 사용하고, 두 값 모두 없으면 60초를 적용한다.
+      */
+      const horizontalScrollSeconds = Number(
+        data.horizontalScrollSeconds ??
+        data.scrollSeconds ??
+        60
+      );
 
       document.documentElement.style.setProperty(
         '--loop-seconds',
-        `${scrollSeconds}s`
+        `${
+          Number.isFinite(horizontalScrollSeconds) &&
+          horizontalScrollSeconds > 0
+            ? horizontalScrollSeconds
+            : 60
+        }s`
       );
 
       /* =========================
@@ -777,41 +928,6 @@
         .replaceAll('"', '&quot;');
     }
 
-    function normalizeLineBreaks(value) {
-      return String(value ?? '')
-        .replace(/\r\n/g, '\n')
-        .replace(/\r/g, '\n');
-    }
-
-    function splitLines(value) {
-      return normalizeLineBreaks(value).split('\n');
-    }
-
-    function makeTspans(
-      value,
-      {
-        x = 0,
-        firstY = 24,
-        lineHeight = 28
-      } = {}
-    ) {
-
-      return splitLines(value)
-        .map((line, index) => {
-
-          const safeLine = esc(line);
-
-          const y = firstY + index * lineHeight;
-
-          return `
-            <tspan
-              x="${x}"
-              y="${y}">${safeLine || ' '}</tspan>
-          `;
-        })
-        .join('');
-    }
-
     function numWidth(len) {
       if (len >= 4) return 92;
       if (len === 3) return 76;
@@ -839,18 +955,7 @@
 
     /* 단가 */
     function makeNumberSVG(num, variant = 'blue') {
-      const measured =
-        measureMultilineTextWidth(
-          num,
-          24,
-          NUMBER_FONT,
-          700
-        );
-
-      const width = Math.max(
-        58,
-        measured + 20
-      );
+      const width = numWidth(num.length);
       const t = esc(num);
 
       const fillColor = getFillColor(variant);
@@ -858,11 +963,11 @@
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           <g transform="scale(1.0 1)">
-          <text x="10" y="15"
+          <text x="10" y="20"
             text-anchor="start"
             font-family="${NUMBER_FONT}"
             font-size="24"
-            font-weight="400"
+            font-weight="700"
             stroke="#000000"
             stroke-width="${STROKE}"
             stroke-linejoin="round"
@@ -875,12 +980,7 @@
     /* 텍스트 */
     const textWidthCache = {};
 
-    function measureTextWidth(
-      text,
-      fontSize = 28,
-      fontFamily = LABEL_FONT,
-      fontWeight = 300
-    ) {
+    function measureTextWidth(text, fontSize = 28, fontFamily = LABEL_FONT, fontWeight = 300) {
 
       const key = `${text}_${fontSize}_${fontFamily}_${fontWeight}`;
 
@@ -903,66 +1003,9 @@
       return width;
     }
 
-      /* =========================
-        여러 줄 텍스트 너비 측정
-
-        구글시트 셀에 줄바꿈이 있으면
-        각 줄의 너비를 따로 측정한 후
-        가장 긴 줄의 너비를 반환
-      ========================= */
-
-      function measureMultilineTextWidth(
-        value,
-        fontSize = 28,
-        fontFamily = LABEL_FONT,
-        fontWeight = 300
-      ) {
-
-        /*
-          Windows 줄바꿈 \r\n,
-          단독 \r을 모두 \n으로 통일
-        */
-        const normalizedValue = String(value ?? '')
-          .replace(/\r\n/g, '\n')
-          .replace(/\r/g, '\n');
-
-        /*
-          줄바꿈을 기준으로 각 줄 분리
-        */
-        const lines = normalizedValue.split('\n');
-
-        /*
-          값이 없으면 너비 0 반환
-        */
-        if (!lines.length) {
-          return 0;
-        }
-
-        /*
-          각 줄의 너비를 측정하고
-          가장 큰 너비를 반환
-        */
-        return Math.max(
-          ...lines.map(line =>
-            measureTextWidth(
-              line || ' ',
-              fontSize,
-              fontFamily,
-              fontWeight
-            )
-          )
-        );
-      }
-
     function makeLabelSVG(label, effect = '') {
       const t = esc(label);
-      const measured =
-      measureMultilineTextWidth(
-        label,
-        28,
-        LABEL_FONT,
-        300
-      );
+      const measured = measureTextWidth(label, 28, LABEL_FONT, 300);
       const w = Math.max(40, measured + 10);
 
       return `
@@ -975,11 +1018,11 @@
           preserveAspectRatio="xMinYMid meet">
 
           <g transform="scale(1.0 1)">
-            <text x="-10" y="20"
+            <text x="15" y="25"
               text-anchor="start"
               font-family="${LABEL_FONT}"
               font-size="28"
-              font-weight="400"
+              font-weight="300"
               stroke="#000000"
               stroke-width="${STROKE}"
               stroke-linejoin="round"
@@ -991,94 +1034,28 @@
     }
 
     /* 각주 */
-    /* =========================
-      각주 SVG
-      구글시트 셀 내부 줄바꿈 지원
-    ========================= */
-
     function makeFootnoteSVG(footnote) {
-
-      const normalizedFootnote =
-        normalizeLineBreaks(footnote);
-
-      const lines =
-        splitLines(normalizedFootnote);
-
-      const lineCount =
-        Math.max(1, lines.length);
-
-      const fontSize = 20;
-      const fontWeight = 400;
-
-      /*
-        각주 줄 사이의 간격
-        값을 키우면 줄 간격이 넓어짐
-      */
-      const lineHeight = 25;
-
-      /*
-        가장 긴 줄을 기준으로 SVG 너비 계산
-      */
-      const measured =
-        measureMultilineTextWidth(
-          normalizedFootnote,
-          fontSize,
-          FOOTNOTE_FONT,
-          fontWeight
-        );
-
-      /*
-        x=110 위치에서 글자가 시작하므로
-        왼쪽 공간을 포함하여 너비 계산
-      */
-      const width =
-        Math.max(150, measured + 125);
-
-      /*
-        1줄은 30px,
-        줄이 늘어날 때마다 lineHeight만큼 높이 추가
-      */
-      const height =
-        30 + (lineCount - 1) * lineHeight;
-
-      const ariaText =
-        esc(normalizedFootnote);
+      const t = esc(footnote);
+      const measured = measureTextWidth(footnote, 20, FOOTNOTE_FONT, 400);
+      const w = Math.max(40, measured + 10);
 
       return `
-        <svg
-          class="footnote-svg"
-          viewBox="0 0 ${width} ${height}"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-label="${ariaText}"
-          role="img"
-          preserveAspectRatio="xMinYMin meet"
-          style="height:${height}px">
-
+        <svg class="footnote-svg" viewBox="0 0 ${w} 30"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
           <g transform="scale(0.9 1)">
-
-            <text
+            <text x="110" y="8"
               text-anchor="start"
               font-family="${FOOTNOTE_FONT}"
-              font-size="${fontSize}"
-              font-weight="${fontWeight}"
+              font-size="22"
+              font-weight="400"
               stroke="#000000"
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
               filter="url(#globalShadow)"
-              fill="#ffffff">
-
-              ${makeTspans(
-                normalizedFootnote,
-                {
-                  x: 30,
-                  firstY: 19,
-                  lineHeight: lineHeight
-                }
-              )}
-
-            </text>
-
+              fill="#ffffff">${t}</text>
           </g>
         </svg>`;
     }
@@ -1252,132 +1229,113 @@
       return '';
     }
 
-    function normalizeEffectClass(effect = '') {
-      const normalizedEffect = String(effect || '')
-        .trim()
-        .toLowerCase()
-        .replaceAll('_', '-');
 
-      return normalizedEffect === 'e-colorshift'
-        ? 'e-colorshift'
-        : '';
-    }
+    /*
+      지정된 픽셀 폭을 넘는 문자열을 말줄임표(…)로 축약한다.
+      SVG 생성 전에 축약하여 실제 화면에도 말줄임표가 보이게 한다.
+    */
+    function ellipsizeText(text, maxWidth, font) {
+      const value = String(text ?? '').trim();
 
-    function makePageTitleIcon(type) {
-      const normalizedType = String(type || '')
-        .trim()
-        .toLowerCase();
+      if (!value) return '';
 
-      const iconMap = {
-        new: {
-          label: 'NEW',
-          svg: makeNewIconSVG
-        },
-        best: {
-          label: 'BEST',
-          svg: makeBestIconSVG
-        },
-        rullet: {
-          label: 'RULLET',
-          svg: makeRulletIconSVG
-        },
-        warning: {
-          label: 'WARNING',
-          svg: makeWarningIconSVG
-        },
-        adult19: {
-          label: '19금',
-          svg: makeAdult19IconSVG
-        }
-      };
+      const canvas =
+        ellipsizeText.canvas ||
+        (ellipsizeText.canvas = document.createElement('canvas'));
 
-      const icon = iconMap[normalizedType];
+      const ctx = canvas.getContext('2d');
+      ctx.font = font;
 
-      if (!icon) {
-        return '';
+      if (ctx.measureText(value).width <= maxWidth) {
+        return value;
       }
 
-      return `
-        <span
-          class="page-title-icon"
-          aria-label="${icon.label}">
-          ${icon.svg()}
-        </span>
-      `;
+      const ellipsis = '…';
+      let low = 0;
+      let high = Array.from(value).length;
+      let best = ellipsis;
+      const chars = Array.from(value);
+
+      while (low <= high) {
+        const middle = Math.floor((low + high) / 2);
+        const candidate = chars.slice(0, middle).join('') + ellipsis;
+
+        if (ctx.measureText(candidate).width <= maxWidth) {
+          best = candidate;
+          low = middle + 1;
+        } else {
+          high = middle - 1;
+        }
+      }
+
+      return best;
     }
 
-
-    /* 테이블 */
+    /* 가로 티커용 4열 테이블 */
     function makeTable(rows, pageClass = '') {
-      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '', effect = '', rowColor = 'blue']) => {
+      const cardsHTML = rows.map(([num, label, iconType = '', footnote = '', effect = '', rowColor = 'blue']) => {
         const safeNum = String(num ?? '').trim();
         const safeLabel = String(label ?? '').trim();
         const safeFootnote = String(footnote ?? '').trim();
+        const clippedNum = ellipsizeText(
+          safeNum,
+          88,
+          `28px ${NUMBER_FONT}`
+        );
+        const clippedLabel = ellipsizeText(
+          safeLabel,
+          198,
+          `28px ${LABEL_FONT}`
+        );
+        const clippedFootnote = ellipsizeText(
+          safeFootnote,
+          354,
+          `22px ${FOOTNOTE_FONT}`
+        );
 
-        /*
-          각주 존재 여부에 따라 행 클래스 분리
-
-          각주 있음:
-          main-row has-footnote
-
-          각주 없음:
-          main-row no-footnote
-        */
-        const mainRowClass = safeFootnote
-          ? 'main-row has-footnote'
-          : 'main-row no-footnote';
-
-        const mainRow = `
-          <tr class="${mainRowClass}">
-            <td class="num">
-              ${
-                safeNum
-                  ? `
-                    <div class="num-wrap">
-                      ${makeNumberIcon(pageClass)}
-                      ${makeNumberSVG(safeNum, rowColor)}
+        return `
+          <div class="ticker-card">
+            <table aria-label="리액션 항목">
+              <colgroup>
+                <col class="image-col" />
+                <col class="num-col" />
+                <col class="text-col" />
+                <col class="icon-col" />
+              </colgroup>
+              <tbody>
+                <tr class="main-row">
+                  <td class="image-cell">
+                    ${safeNum ? makeNumberIcon(pageClass) : ''}
+                  </td>
+                  <td class="num" title="${esc(safeNum)}">
+                    ${clippedNum
+                      ? `<div class="num-wrap">${makeNumberSVG(clippedNum, rowColor)}</div>`
+                      : ''}
+                  </td>
+                  <td class="label" title="${esc(safeLabel)}">
+                    <div class="label-wrap">
+                      <div class="label-text">
+                        ${clippedLabel ? makeLabelSVG(clippedLabel, effect) : ''}
+                      </div>
                     </div>
-                  `
-                  : ''
-              }
-            </td>
-
-            <td class="label">
-              <div class="label-wrap">
-                <div class="label-text">
-                  ${
-                    safeLabel
-                      ? makeLabelSVG(safeLabel, effect)
-                      : ''
-                  }
-                </div>
-
-                ${makeLabelIcon(iconType)}
-              </div>
-            </td>
-          </tr>`;
-
-        const footnoteRow = safeFootnote
-          ? `
-          <tr class="footnote-row">
-            <td class="footnote" colspan="3">${makeFootnoteSVG(safeFootnote)}</td>
-          </tr>`
-          : '';
-
-        return mainRow + footnoteRow;
+                  </td>
+                  <td class="icon-cell">
+                    ${makeLabelIcon(iconType)}
+                  </td>
+                </tr>
+                <tr class="footnote-row">
+                  <td class="footnote" colspan="4" title="${esc(safeFootnote)}">
+                    <div class="footnote-wrap">
+                      ${clippedFootnote ? makeFootnoteSVG(clippedFootnote) : ''}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>`;
       }).join('');
 
-      return `
-        <table aria-label="리액션 리스트">
-          <colgroup>
-            <col class="num-col" />
-            <col />
-            <col class="icon-col" />
-          </colgroup>
-          <tbody>
-            ${bodyHTML}
-          </tbody>
-        </table>`;
+      return `<div class="ticker-items">${cardsHTML}</div>`;
     }
 
     function makePage(
@@ -1385,22 +1343,11 @@
       titleClass,
       rows,
       pageClass,
-      titleVisible = true,
-      categoryEffect = '',
-      categoryIcon = ''
+      titleVisible = true
     ) {
 
-      const safeTitle = esc(title);
-      const categoryEffectClass =
-        normalizeEffectClass(categoryEffect);
-
       const titleHTML = titleVisible
-        ? `
-          <div class="page-title ${titleClass} ${categoryEffectClass}">
-            <span class="page-title-text">${safeTitle}</span>
-            ${makePageTitleIcon(categoryIcon)}
-          </div>
-        `
+        ? `<div class="page-title ${titleClass}">${title}</div>`
         : '';
 
       return `
@@ -1427,9 +1374,7 @@
               `title-${titleColor}`,
               pageObj.rows,
               pageKey,
-              pageObj.titleVisible !== false,
-              pageObj.categoryEffect || '',
-              pageObj.categoryIcon || ''
+              pageObj.titleVisible !== false
             )}
             <div class="page-gap" aria-hidden="true"></div>
           `;
@@ -1580,30 +1525,15 @@
       sequenceA.innerHTML = makeSequenceHTML();
       sequenceB.innerHTML = makeSequenceHTML();
 
-      extractFixedPage();
-
-      /* 추가 */
       removeLeadingGap(sequenceA);
       removeLeadingGap(sequenceB);
-
-      const fixedTopPage = document.getElementById('fixedTopPage');
-      const fixedBottomPage = document.getElementById('fixedBottomPage');
-
-      fixedTopPage.style.display =
-        fixedTopPage.innerHTML.trim() ? 'block' : 'none';
-
-      fixedBottomPage.style.display =
-        fixedBottomPage.innerHTML.trim() ? 'block' : 'none';
-
-      applyWaveToFixedTitle();
-
-      adjustViewportHeight();
 
       /* 렌더 완료 후 한번 더 보정 */
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          adjustViewportHeight();
-          updateLoopHeight();
+          ensureSequenceWidth();
+          updateLoopWidth();
+          document.getElementById('track').classList.add('is-ready');
         });
       });
     }
@@ -1622,24 +1552,40 @@
       document.getElementById('fixedBottomPage').style.display = 'none';
     }
 
-    function updateLoopHeight() {
+    function ensureSequenceWidth() {
+      const viewport = document.querySelector('.viewport');
+      const baseHTML = makeSequenceHTML();
+      let repeatCount = 0;
 
+      while (
+        sequenceA.getBoundingClientRect().width <
+          viewport.getBoundingClientRect().width * 1.1 &&
+        repeatCount < 20
+      ) {
+        sequenceA.insertAdjacentHTML('beforeend', baseHTML);
+        repeatCount += 1;
+      }
+
+      sequenceB.innerHTML = sequenceA.innerHTML;
+    }
+
+    function updateLoopWidth() {
       const scale = getScale();
 
-      const h =
-        sequenceA.getBoundingClientRect().height / scale;
+      const width =
+        sequenceA.getBoundingClientRect().width / scale;
 
       document.documentElement.style.setProperty(
-        '--sequence-height',
-        `${Math.ceil(h)}px`
+        '--sequence-width',
+        `${Math.ceil(width)}px`
       );
     }
 
       window.addEventListener('load', () => {
-        updateLoopHeight();
+        updateLoopWidth();
 
-        setTimeout(updateLoopHeight, 300);
-        setTimeout(updateLoopHeight, 1000);
+        setTimeout(updateLoopWidth, 300);
+        setTimeout(updateLoopWidth, 1000);
       });
 
   </script>
