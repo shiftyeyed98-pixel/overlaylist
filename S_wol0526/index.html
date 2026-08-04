@@ -378,35 +378,6 @@
       box-sizing: border-box;
     }
 
-    .fixed-page-image {
-      position: absolute;
-
-      /* 하단 고정 목록 오른쪽에 배치 */
-      left: calc(45% + 4px);
-
-      /* 고정 목록 테이블의 하단과 정렬 */
-      bottom: calc(
-        var(--fixed-bottom-h)
-        + var(--fixed-bottom-bottom)
-        + 14px
-      );
-
-      width: auto;
-      height: 0;
-
-      /* 오른쪽 화면 영역을 넘지 않게 제한 */
-      max-width: none;
-
-      object-fit: contain;
-      object-position: center bottom;
-
-      display: none;
-      pointer-events: none;
-      user-select: none;
-
-      z-index: 70;
-    }
-
     .fixed-bottom-page .page + .page {
       margin-top: 8px;
     }
@@ -464,13 +435,6 @@
       </div>
     </div>
     <div id="fixedPage" class="fixed-bottom-page"></div>
-    <img
-      id="fixedPageImage"
-      class="fixed-page-image"
-      src="./여월.png"
-      alt=""
-      aria-hidden="true"
-    >
     <div class="fixed-bottom-label">Designed by 쉬프티</div>
   </div>
 
@@ -1038,38 +1002,6 @@
       document.documentElement.style.setProperty('--fixed-page-h', `${h}px`);
     }
 
-    function adjustFixedPageImage() {
-
-      const fixedContainer = document.getElementById('fixedPage');
-      const image = document.getElementById('fixedPageImage');
-
-      if (!FIXED_PAGE_KEYS.length) {
-        image.style.display = 'none';
-        image.style.height = '0px';
-        return;
-      }
-
-      /*
-        고정 페이지의 제목 영역은 제외하고
-        간단방셀·기본방셀·정성방셀이 들어 있는
-        실제 테이블 높이만 측정
-      */
-      const table = fixedContainer.querySelector('.page table');
-
-      if (!table) {
-        image.style.display = 'none';
-        return;
-      }
-
-      const tableHeight = Math.ceil(
-        table.getBoundingClientRect().height
-      );
-
-      image.style.height = `${tableHeight}px`;
-      image.style.display = 'block';
-    }
-
-
     const sequenceA = document.getElementById('sequenceA');
     const sequenceB = document.getElementById('sequenceB');
     
@@ -1097,13 +1029,10 @@
 
       adjustViewportHeight();
 
-      adjustFixedPageImage();
-
       /* 렌더 완료 후 한번 더 보정 */
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           adjustViewportHeight();
-          adjustFixedPageImage();
           updateLoopHeight();
         });
       });
