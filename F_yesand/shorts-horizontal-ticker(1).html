@@ -966,7 +966,7 @@
 
     /* 단가 */
     function getNumberSVGWidth(num) {
-      const measured = measureTextWidth(num, 28, NUMBER_FONT, 300);
+      const measured = measureTextWidth(num, 24, NUMBER_FONT, 300);
       return Math.max(40, measured + 20);
     }
 
@@ -982,7 +982,7 @@
           <text x="10" y="24"
             text-anchor="start"
             font-family="${NUMBER_FONT}"
-            font-size="28"
+            font-size="24"
             font-weight="300"
             stroke="#000000"
             stroke-width="${STROKE}"
