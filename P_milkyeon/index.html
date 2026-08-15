@@ -240,11 +240,22 @@
 
     .page-title {
       width: 240px;
-      height: 36px;
+
+      /* 한 줄은 기존 36px, 여러 줄이면 자동 확장 */
+      min-height: 36px;
+      height: auto;
+      padding: 3px 8px;
 
       display: flex;
-      align-items: center;       /* 세로 중앙 */
-      justify-content: center;   /* 가로 중앙 */
+      align-items: center;
+      justify-content: center;
+
+      /* GAS에서 받은 줄바꿈 문자 표시 */
+      white-space: pre-line;
+      overflow-wrap: break-word;
+      word-break: keep-all;
+
+      line-height: 1.05;
 
       margin: 0 0 6px 0;
       text-align: center;
@@ -260,10 +271,10 @@
 
       text-shadow:
         -2px -2px 0 #000,
-         2px -2px 0 #000,
+        2px -2px 0 #000,
         -2px  2px 0 #000,
-         2px  2px 0 #000;
-         
+        2px  2px 0 #000;
+
       transform: translateY(-1px);
     }
 
@@ -1279,8 +1290,12 @@
       titleVisible = true
     ) {
 
+      const safeTitle = String(title ?? '')
+        .replace(/\r\n?/g, '\n')   // 실제 줄바꿈 형식 통일
+        .replace(/\\n/g, '\n');    // 문자 형태의 \n도 실제 줄바꿈으로 변환
+
       const titleHTML = titleVisible
-        ? `<div class="page-title ${titleClass}">${title}</div>`
+        ? `<div class="page-title ${titleClass}">${esc(safeTitle)}</div>`
         : '';
 
       return `
@@ -1402,10 +1417,22 @@
 
           const text = titleEl.textContent.trim();
 
-          titleEl.innerHTML = Array.from(text).map((c, i) =>
-            `<span class="waveChar"
-              style="animation-delay:${i * 0.08}s">${c}</span>`
-          ).join('');
+          let charIndex = 0;
+
+          titleEl.innerHTML = text
+            .split(/\r?\n/)
+            .map(line =>
+              Array.from(line).map(c => {
+                const html = `
+                  <span class="waveChar"
+                    style="animation-delay:${charIndex * 0.08}s">${esc(c)}</span>
+                `;
+
+                charIndex++;
+                return html;
+              }).join('')
+            )
+            .join('<br>');
 
         });
 
