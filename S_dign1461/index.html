@@ -561,7 +561,22 @@
 
     let PAGE_DATA = {};
 
-    const FONT = 'YeogiOttaeJalnan, GMarketSans, Arial, sans-serif';
+    const PRIMARY_FONT = 'YeogiOttaeJalnan, GMarketSans, Arial, sans-serif';
+    const FALLBACK_FONT = 'GMarketSans, Arial, sans-serif';
+    /*
+      YeogiOttaeJalnan에서 공백으로 표시되는 글자가 포함되면
+      GMarketSans를 강제로 사용
+    */
+    function getFontFamily(text) {
+      const unsupportedCharacters = /[푱쎠뷁뾱]/u;
+
+      return unsupportedCharacters.test(String(text))
+        ? FALLBACK_FONT
+        : PRIMARY_FONT;
+    }
+
+    const FONT = PRIMARY_FONT;
+
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
@@ -714,7 +729,7 @@
 
     function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 300) {
 
-      const key = `${text}_${fontSize}_${fontWeight}`;
+      const key = `${text}_${fontSize}_${fontFamily}_${fontWeight}`;
 
       if (textWidthCache[key]) {
         return textWidthCache[key];
@@ -737,7 +752,8 @@
 
     function makeLabelSVG(label, effect = '') {
       const t = esc(label);
-      const measured = measureTextWidth(label, 28, FONT, 300);
+      const fontFamily = getFontFamily(label);
+      const measured = measureTextWidth(label, 28, fontFamily, 300);
       const w = Math.max(40, measured + 10);
 
       return `
@@ -752,7 +768,7 @@
           <g transform="scale(1.0 1)">
             <text x="15" y="23"
               text-anchor="start"
-              font-family="${FONT}"
+              font-family="${fontFamily}"
               font-size="28"
               font-weight="300"
               stroke="#000000"
@@ -768,7 +784,8 @@
     /* 각주 */
     function makeFootnoteSVG(footnote) {
       const t = esc(footnote);
-      const measured = measureTextWidth(footnote, 20, FONT, 300);
+      const fontFamily = getFontFamily(footnote);
+      const measured = measureTextWidth(footnote, 20, fontFamily, 300);
       const w = Math.max(40, measured + 10);
 
       return `
@@ -779,7 +796,7 @@
           <g transform="scale(0.9 1)">
             <text x="120" y="8"
               text-anchor="start"
-              font-family="${FONT}"
+              font-family="${fontFamily}"
               font-size="22"
               font-weight="300"
               stroke="#000000"
