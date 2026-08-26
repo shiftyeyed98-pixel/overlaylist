@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=400, height=970, initial-scale=1.0" />
+  <meta name="viewport" content="width=400, height=1080, initial-scale=1.0" />
   <title> 예리 :::: (너비400, 높이1080) </title>
   <style>
 
@@ -562,7 +562,7 @@
     <div class="content-scale">
 
       <div class="fixed-title-wrap">
-        <div class="page-title title-pink"> 부드러운 우유연 </div>
+        <div class="page-title title-pink"> 예리한 시그 </div>
       </div>
 
       <div class="viewport">
@@ -666,7 +666,9 @@
         : PRIMARY_FONT;
     }
 
-    const FONT = PRIMARY_FONT;
+    const NUMBER_FONT = PRIMARY_FONT;
+    const LABEL_FONT = PRIMARY_FONT;
+    const FOOTNOTE_FONT = PRIMARY_FONT;
 
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
@@ -852,7 +854,7 @@
           <g transform="scale(1.0 1)">
           <text x="10" y="20"
             text-anchor="start"
-            font-family="${NUMBER_FONT}"
+            font-family="${numberFont}"
             font-size="24"
             font-weight="700"
             stroke="#000000"
