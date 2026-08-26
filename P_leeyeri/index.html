@@ -154,7 +154,10 @@
 
     /* 일반 시그 행의 기본 하단 간격 */
     tbody tr.main-row td {
+      padding-top: 0;
       padding-bottom: var(--row-gap);
+      height: var(--svg-h);
+      vertical-align: top;
     }
 
     /*
@@ -190,14 +193,19 @@
       text-align: left;
     }
 
-    .num-wrap {
-      display: inline-flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 0;
-      width: max-content;
-      height: var(--svg-h);
-    }
+  .num-wrap,
+  .label-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    width: max-content;
+    height: var(--svg-h);
+
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+  }
 
     .num-left-icon {
       padding-left: 2px;
@@ -205,7 +213,7 @@
       height: var(--num-icon-size);
       flex: 0 0 var(--num-icon-size);
       position: relative;
-      top: -4px;
+      top: -8px;
       object-fit: contain;
       display: block;
       margin: 0;
@@ -348,10 +356,15 @@
 
 
     .label-wrap {
-      display: inline-flex;
+      display: flex;
       align-items: center;
+      justify-content: flex-start;
       gap: 0;
-      width: auto;
+      width: max-content;
+      height: var(--svg-h);
+      margin: 0;
+      padding: 0;
+      line-height: 0;
     }
     
     /* 숫자와 시그명칭은 기본 높이를 고정 */
@@ -361,6 +374,9 @@
       width: auto;
       height: var(--svg-h);
       min-height: var(--svg-h);
+
+      margin: 0;
+      padding: 0;
       overflow: visible;
       flex: 0 0 auto;
     }
@@ -390,7 +406,7 @@
       justify-content: center;
       margin-left: 12px; /* 텍스트와 아이콘의 간격 */
       position: relative;
-      top: -2px;  /* 아이콘을 위로 2px 올림 */
+      top: -8px;  /* 아이콘을 위로 8px 올림 */
     }
 
     .label-icon svg {
@@ -474,7 +490,7 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + 4px);
-      width: calc(85% - (var(--fixed-page-side-gap) * 1));
+      width: calc(64% - (var(--fixed-page-side-gap) * 1));
 
       z-index: 40;
 
@@ -491,7 +507,7 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom) + 0px);
-      width: calc(85% - (var(--fixed-page-side-gap) * 1));  /* 고정 페이지 유리효과 가로 폭사이즈 */
+      width: calc(64% - (var(--fixed-page-side-gap) * 1));  /* 고정 페이지 유리효과 가로 폭사이즈 */
 
       z-index: 40;
 
@@ -785,8 +801,8 @@
       value,
       {
         x = 0,
-        firstY = 24,
-        lineHeight = 28
+        firstY = 28,
+        lineHeight = 32
       } = {}
     ) {
 
@@ -836,9 +852,9 @@
       const measured =
         measureMultilineTextWidth(
           num,
-          24,
+          28,
           NUMBER_FONT,
-          700
+          300
         );
 
       const width = Math.max(
@@ -851,12 +867,12 @@
 
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
-          <g transform="scale(1.0 1)">
+          <g transform="scale(0.9 1)">
           <text x="10" y="20"
             text-anchor="start"
-            font-family="${numberFont}"
-            font-size="24"
-            font-weight="700"
+            font-family="${NUMBER_FONT}"
+            font-size="28"
+            font-weight="300"
             stroke="#000000"
             stroke-width="${STROKE}"
             stroke-linejoin="round"
@@ -968,7 +984,7 @@
           role="img"
           preserveAspectRatio="xMinYMid meet">
 
-          <g transform="scale(1.0 1)">
+          <g transform="scale(0.9 1)">
             <text x="15" y="20"
               text-anchor="start"
               font-family="${LABEL_FONT}"
