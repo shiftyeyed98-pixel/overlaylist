@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=400, height=970, initial-scale=1.0" />
-  <title> #단하나 :::: (너비400, 높이1080) </title>
+  <title> 숲 단하나* :::: (너비400, 높이1080) </title>
   <style>
 
     @font-face {
-        font-family: 'YeogiOttaeJalnan';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+        font-family: 'OneStoreMobilePop';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff') format('woff');
         font-weight: normal;
         font-display: swap;
     }
@@ -21,28 +21,6 @@
         font-display: swap;
     }
 
-    @font-face {
-        font-family: 'NanumSquareRound';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/NanumSquareRoundR.woff') format('woff');
-        font-weight: 400;
-        font-style: normal;
-        font-display: swap;
-    }
-
-    @font-face {
-    font-family: 'Pretendard';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2') format('woff2');
-    font-weight: 600;
-    font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Netmarble';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.1/netmarbleB.woff') format('woff');
-        font-weight: 700;
-        font-display: swap;
-    }
-    
     :root {
       --w: 400px;
       --h: 1080px;
@@ -85,7 +63,7 @@
     }
 
     body {
-      font-family: 'YeogiOttaeJalnan', 'GMarketSans', Arial, sans-serif;
+      font-family: 'OneStoreMobilePop', 'GMarketSans', Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       background: transparent !important;
@@ -169,33 +147,15 @@
       border-spacing: 0 0;
     }
 
-    /* =========================
-      시그명칭과 각주 간격 제어
-    ========================= */
-
-    /* 일반 시그 행의 기본 하단 간격 */
-    tbody tr.main-row td {
+    tbody tr:not(.footnote-row) td {
       padding-bottom: var(--row-gap);
     }
 
-    /*
-      각주가 있는 시그 행은
-      시그명칭 아래 기본 간격 제거
-    */
-    tbody tr.main-row.has-footnote td {
-      padding-bottom: 0;
-    }
-
-    /*
-      각주 행 자체는 위쪽 여백 없이 배치하고,
-      아래쪽에는 다음 시그명칭과의 간격 적용
-    */
-    tbody tr.footnote-row td {
+    .footnote-row td {
       padding-top: 0;
       padding-bottom: 2px;
-      height: auto;
-      vertical-align: top;
     }
+
 
     col.num-col { width: var(--num-col); }
     col.icon-col { width: var(--icon-col); }
@@ -226,7 +186,7 @@
       height: var(--num-icon-size);
       flex: 0 0 var(--num-icon-size);
       position: relative;
-      top: -8px;
+      top: -4px;
       object-fit: contain;
       display: block;
       margin: 0;
@@ -254,10 +214,8 @@
 
     td.footnote {
       padding: 0 0 0 6px;
-      white-space: normal;
+      white-space: nowrap;
       line-height: 1;
-      height: auto;
-      vertical-align: top;
     }
 
     .page-title {
@@ -271,7 +229,7 @@
       margin: 0 0 6px 0;
       text-align: center;
 
-      font-family: 'YeogiOttaeJalnan', 'GMarketSans', Arial, sans-serif;
+      font-family: 'OneStoreMobilePop', 'GMarketSans', Arial, sans-serif;
       font-size: 28px;
       font-weight: 500;
       color: #ffffff;
@@ -287,39 +245,6 @@
          2px  2px 0 #000;
          
       transform: translateY(-1px);
-    }
-
-    .page-title-text {
-      display: inline-block;
-      min-width: 0;
-    }
-
-    /*
-      DATA C열 카테고리효과
-      기존 강조 값 e_colorshift / e-colorshift와 동일하게 처리
-    */
-    .page-title.e-colorshift .page-title-text {
-      animation: titleColorShift 1.6s linear infinite;
-    }
-
-    /*
-      DATA D열 카테고리아이콘
-      페이지 타이틀 오른쪽에 표시
-    */
-    .page-title-icon {
-      width: 28px;
-      height: 28px;
-      flex: 0 0 28px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: 8px;
-    }
-
-    .page-title-icon svg {
-      width: 100%;
-      height: 100%;
-      display: block;
     }
 
     .title-gray {
@@ -363,7 +288,7 @@
     }
 
     .title-skyblue {
-      background: #6dbbcf;
+      background: #8acf6d;
       border-color: #016fff;
     }
 
@@ -375,31 +300,13 @@
       width: auto;
     }
     
-    /* 숫자와 시그명칭은 기본 높이를 고정 */
     .num-svg,
-    .label-svg {
-      display: block;
-      width: auto;
-      height: var(--svg-h);
-      min-height: var(--svg-h);
-      overflow: visible;
-      flex: 0 0 auto;
-    }
-
-    /* 각주는 줄 수에 따라 높이를 자동 확장 */
+    .label-svg,
     .footnote-svg {
       display: block;
       width: auto;
-      height: auto;
+      height: var(--svg-h);
       overflow: visible;
-      flex: 0 0 auto;
-      /*
-        각주를 자신의 시그명칭 쪽으로 당김.
-        레이아웃 공간은 유지되므로
-        다음 시그명칭과는 더 분리됨.
-      */
-      position: relative;
-      top: -8px;
     }
 
     .label-icon {
@@ -409,9 +316,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin-left: 4px; /* 텍스트와 아이콘의 간격 */
+      margin-left: 12px; /* 텍스트와 아이콘의 간격 */
       position: relative;
-      top: -6px;  /* -8px = 아이콘을 위로 8px 올림 */
+      top: -2px;  /* 아이콘을 위로 2px 올림 */
     }
 
     .label-icon svg {
@@ -436,7 +343,7 @@
       align-items: center;
       justify-content: center;
 
-      font-family: 'YeogiOttaeJalnan', 'GMarketSans', Arial, sans-serif;
+      font-family: 'OneStoreMobilePop', 'GMarketSans', Arial, sans-serif;
       font-size: 10px;
       font-weight: 100;
       color: #ffffff;
@@ -473,13 +380,6 @@
       33%  { fill: #6ff; }
       66%  { fill: #f6f; }
       100% { fill: #ff6; }
-    }
-
-    @keyframes titleColorShift {
-      0%   { color: #ff6; }
-      33%  { color: #6ff; }
-      66%  { color: #f6f; }
-      100% { color: #ff6; }
     }
 
     @keyframes riseLoop {
@@ -583,7 +483,7 @@
     <div class="content-scale">
 
       <div class="fixed-title-wrap">
-        <div class="page-title title-pink"> #단하나뿐인시그 </div>
+        <div class="page-title title-pink"> 단하나뿐인시그 </div>
       </div>
 
       <div class="viewport">
@@ -667,34 +567,12 @@
 
     let PAGE_DATA = {};
 
-    /* =========================
-       컬럼별 폰트 설정
-       - 숫자/단가
-       - 일반 텍스트
-       - 각주
-    ========================= */
-
-    const PRIMARY_FONT = 'YeogiOttaeJalnan, GMarketSans, Arial, sans-serif';
-    const FALLBACK_FONT = 'GMarketSans, Arial, sans-serif';
-    /*
-      YeogiOttaeJalnan에서 공백으로 표시되는 글자가 포함되면
-      GMarketSans를 강제로 사용
-    */
-    function getFontFamily(text) {
-      const unsupportedCharacters = /[푱쎠뷁뾱]/u;
-
-      return unsupportedCharacters.test(String(text))
-        ? FALLBACK_FONT
-        : PRIMARY_FONT;
-    }
-
-    const FONT = PRIMARY_FONT;
-      
+    const FONT = 'OneStoreMobilePop, GMarketSans, Arial, sans-serif';
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
     const ICON_PUNG_P1 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P2 = 'https://i.imgur.com/l0gSwJk.png'; //핑크하트
+    const ICON_PUNG_P2 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
     const ICON_PUNG_P3 = 'https://i.imgur.com/D0ldyfG.png'; //주황하트
     const ICON_PUNG_P4 = 'https://i.imgur.com/12lhyTv.png'; //노랑하트
     const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
@@ -717,7 +595,7 @@
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwh9YkzSPA0X6oYatQif4LO2tpFT6AU0n8sFtR5voXSMJuuFPhc5gaw-dUGaV8ZaKQcgQ/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwmGqcZSAGzxVTI3XtP5wTUWp9Uo8NcFR8ts1uA_nazVdEUWvZst4GkwNO5EZStYMPPUw/exec';
     // GAS Ver 0.2 사용
 
     async function loadSheetData() {
@@ -730,7 +608,7 @@
         스크롤 속도 적용
       ========================= */
 
-      const scrollSeconds = Number(data.scrollSeconds || 10);
+      const scrollSeconds = Number(data.scrollSeconds || 60);
 
       document.documentElement.style.setProperty(
         '--loop-seconds',
@@ -774,10 +652,10 @@
       ========================= */
 
       PAGE_DATA = Object.fromEntries(
-        Object.entries(data.pages || {}).filter(([_, pageObj]) =>
+        Object.entries(data.pages).filter(([_, pageObj]) =>
           pageObj.rows &&
           pageObj.rows.length > 0 &&
-          pageObj.enabled !== false 
+          pageObj.enabled !== false
         )
       );
 
@@ -789,41 +667,6 @@
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;');
-    }
-
-    function normalizeLineBreaks(value) {
-      return String(value ?? '')
-        .replace(/\r\n/g, '\n')
-        .replace(/\r/g, '\n');
-    }
-
-    function splitLines(value) {
-      return normalizeLineBreaks(value).split('\n');
-    }
-
-    function makeTspans(
-      value,
-      {
-        x = 0,
-        firstY = 24,
-        lineHeight = 28
-      } = {}
-    ) {
-
-      return splitLines(value)
-        .map((line, index) => {
-
-          const safeLine = esc(line);
-
-          const y = firstY + index * lineHeight;
-
-          return `
-            <tspan
-              x="${x}"
-              y="${y}">${safeLine || ' '}</tspan>
-          `;
-        })
-        .join('');
     }
 
     function numWidth(len) {
@@ -853,32 +696,19 @@
 
     /* 단가 */
     function makeNumberSVG(num, variant = 'blue') {
-      const numberFont = getFontFamily(num);
-
-      const measured =
-        measureMultilineTextWidth(
-          num,
-          28,
-          numberFont,
-          700
-        );
-
-      const width = Math.max(
-        58,
-        measured + 20
-      );
+      const width = numWidth(num.length);
       const t = esc(num);
 
       const fillColor = getFillColor(variant);
 
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
-          <g transform="scale(0.9 1)">
-          <text x="10" y="19"
+          <g transform="scale(1.0 1)">
+          <text x="10" y="21"
             text-anchor="start"
-            font-family="${numberFont}"
+            font-family="${FONT}"
             font-size="28"
-            font-weight="700"
+            font-weight="300"
             stroke="#000000"
             stroke-width="${STROKE}"
             stroke-linejoin="round"
@@ -891,14 +721,9 @@
     /* 텍스트 */
     const textWidthCache = {};
 
-    function measureTextWidth(
-      text,
-      fontSize = 28,
-      fontFamily = PRIMARY_FONT,
-      fontWeight = 300
-    ) {
+    function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 300) {
 
-      const key = `${text}_${fontSize}_${fontFamily}_${fontWeight}`;
+      const key = `${text}_${fontSize}_${fontWeight}`;
 
       if (textWidthCache[key]) {
         return textWidthCache[key];
@@ -919,67 +744,9 @@
       return width;
     }
 
-      /* =========================
-        여러 줄 텍스트 너비 측정
-
-        구글시트 셀에 줄바꿈이 있으면
-        각 줄의 너비를 따로 측정한 후
-        가장 긴 줄의 너비를 반환
-      ========================= */
-
-      function measureMultilineTextWidth(
-        value,
-        fontSize = 28,
-        fontFamily = PRIMARY_FONT,
-        fontWeight = 300
-      ) {
-
-        /*
-          Windows 줄바꿈 \r\n,
-          단독 \r을 모두 \n으로 통일
-        */
-        const normalizedValue = String(value ?? '')
-          .replace(/\r\n/g, '\n')
-          .replace(/\r/g, '\n');
-
-        /*
-          줄바꿈을 기준으로 각 줄 분리
-        */
-        const lines = normalizedValue.split('\n');
-
-        /*
-          값이 없으면 너비 0 반환
-        */
-        if (!lines.length) {
-          return 0;
-        }
-
-        /*
-          각 줄의 너비를 측정하고
-          가장 큰 너비를 반환
-        */
-        return Math.max(
-          ...lines.map(line =>
-            measureTextWidth(
-              line || ' ',
-              fontSize,
-              fontFamily,
-              fontWeight
-            )
-          )
-        );
-      }
-
     function makeLabelSVG(label, effect = '') {
-      const labelFont = getFontFamily(label);
       const t = esc(label);
-      const measured =
-      measureMultilineTextWidth(
-        label,
-        28,
-        labelFont,
-        300
-      );
+      const measured = measureTextWidth(label, 28, FONT, 300);
       const w = Math.max(40, measured + 10);
 
       return `
@@ -991,10 +758,10 @@
           role="img"
           preserveAspectRatio="xMinYMid meet">
 
-          <g transform="scale(0.9 1)">
-            <text x="15" y="21"
+          <g transform="scale(1.0 1)">
+            <text x="15" y="23"
               text-anchor="start"
-              font-family="${labelFont}"
+              font-family="${FONT}"
               font-size="28"
               font-weight="300"
               stroke="#000000"
@@ -1008,94 +775,28 @@
     }
 
     /* 각주 */
-    /* =========================
-      각주 SVG
-      구글시트 셀 내부 줄바꿈 지원
-    ========================= */
-
     function makeFootnoteSVG(footnote) {
-      const footnoteFont = getFontFamily(footnote);
-      const normalizedFootnote =
-        normalizeLineBreaks(footnote);
-
-      const lines =
-        splitLines(normalizedFootnote);
-
-      const lineCount =
-        Math.max(1, lines.length);
-
-      const fontSize = 22;
-      const fontWeight = 400;
-
-      /*
-        각주 줄 사이의 간격
-        값을 키우면 줄 간격이 넓어짐
-      */
-      const lineHeight = 25;
-
-      /*
-        가장 긴 줄을 기준으로 SVG 너비 계산
-      */
-      const measured =
-        measureMultilineTextWidth(
-          normalizedFootnote,
-          fontSize,
-          footnoteFont,
-          fontWeight
-        );
-
-      /*
-        x=110 위치에서 글자가 시작하므로
-        왼쪽 공간을 포함하여 너비 계산
-      */
-      const width =
-        Math.max(150, measured + 125);
-
-      /*
-        1줄은 30px,
-        줄이 늘어날 때마다 lineHeight만큼 높이 추가
-      */
-      const height =
-        30 + (lineCount - 1) * lineHeight;
-
-      const ariaText =
-        esc(normalizedFootnote);
+      const t = esc(footnote);
+      const measured = measureTextWidth(footnote, 20, FONT, 300);
+      const w = Math.max(40, measured + 10);
 
       return `
-        <svg
-          class="footnote-svg"
-          viewBox="0 0 ${width} ${height}"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-label="${ariaText}"
-          role="img"
-          preserveAspectRatio="xMinYMin meet"
-          style="height:${height}px">
-
+        <svg class="footnote-svg" viewBox="0 0 ${w} 30"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="${t}" role="img"
+            preserveAspectRatio="xMinYMid meet">
           <g transform="scale(0.9 1)">
-
-            <text
+            <text x="110" y="8"
               text-anchor="start"
-              font-family="${footnoteFont}"
-              font-size="${fontSize}"
-              font-weight="${fontWeight}"
+              font-family="${FONT}"
+              font-size="22"
+              font-weight="300"
               stroke="#000000"
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
               filter="url(#globalShadow)"
-              fill="#ffffff">
-
-              ${makeTspans(
-                normalizedFootnote,
-                {
-                  x: 110,
-                  firstY: 19,
-                  lineHeight: lineHeight
-                }
-              )}
-
-            </text>
-
+              fill="#ffffff">${t}</text>
           </g>
         </svg>`;
     }
@@ -1269,60 +970,6 @@
       return '';
     }
 
-    function normalizeEffectClass(effect = '') {
-      const normalizedEffect = String(effect || '')
-        .trim()
-        .toLowerCase()
-        .replaceAll('_', '-');
-
-      return normalizedEffect === 'e-colorshift'
-        ? 'e-colorshift'
-        : '';
-    }
-
-    function makePageTitleIcon(type) {
-      const normalizedType = String(type || '')
-        .trim()
-        .toLowerCase();
-
-      const iconMap = {
-        new: {
-          label: 'NEW',
-          svg: makeNewIconSVG
-        },
-        best: {
-          label: 'BEST',
-          svg: makeBestIconSVG
-        },
-        rullet: {
-          label: 'RULLET',
-          svg: makeRulletIconSVG
-        },
-        warning: {
-          label: 'WARNING',
-          svg: makeWarningIconSVG
-        },
-        adult19: {
-          label: '19금',
-          svg: makeAdult19IconSVG
-        }
-      };
-
-      const icon = iconMap[normalizedType];
-
-      if (!icon) {
-        return '';
-      }
-
-      return `
-        <span
-          class="page-title-icon"
-          aria-label="${icon.label}">
-          ${icon.svg()}
-        </span>
-      `;
-    }
-
 
     /* 테이블 */
     function makeTable(rows, pageClass = '') {
@@ -1331,44 +978,14 @@
         const safeLabel = String(label ?? '').trim();
         const safeFootnote = String(footnote ?? '').trim();
 
-        /*
-          각주 존재 여부에 따라 행 클래스 분리
-
-          각주 있음:
-          main-row has-footnote
-
-          각주 없음:
-          main-row no-footnote
-        */
-        const mainRowClass = safeFootnote
-          ? 'main-row has-footnote'
-          : 'main-row no-footnote';
-
         const mainRow = `
-          <tr class="${mainRowClass}">
+          <tr>
             <td class="num">
-              ${
-                safeNum
-                  ? `
-                    <div class="num-wrap">
-                      ${makeNumberIcon(pageClass)}
-                      ${makeNumberSVG(safeNum, rowColor)}
-                    </div>
-                  `
-                  : ''
-              }
+              ${safeNum ? `<div class="num-wrap">${makeNumberIcon(pageClass)}${makeNumberSVG(safeNum, rowColor)}</div>` : ''}
             </td>
-
             <td class="label">
               <div class="label-wrap">
-                <div class="label-text">
-                  ${
-                    safeLabel
-                      ? makeLabelSVG(safeLabel, effect)
-                      : ''
-                  }
-                </div>
-
+                <div class="label-text">${safeLabel ? makeLabelSVG(safeLabel, effect) : ''}</div>
                 ${makeLabelIcon(iconType)}
               </div>
             </td>
@@ -1397,32 +1014,10 @@
         </table>`;
     }
 
-    function makePage(
-      title,
-      titleClass,
-      rows,
-      pageClass,
-      titleVisible = true,
-      categoryEffect = '',
-      categoryIcon = ''
-    ) {
-
-      const safeTitle = esc(title);
-      const categoryEffectClass =
-        normalizeEffectClass(categoryEffect);
-
-      const titleHTML = titleVisible
-        ? `
-          <div class="page-title ${titleClass} ${categoryEffectClass}">
-            <span class="page-title-text">${safeTitle}</span>
-            ${makePageTitleIcon(categoryIcon)}
-          </div>
-        `
-        : '';
-
+    function makePage(title, titleClass, rows, pageClass) {
       return `
         <div class="page ${pageClass}" data-page="${pageClass}">
-          ${titleHTML}
+          <div class="page-title ${titleClass}">${title}</div>
           ${makeTable(rows, pageClass)}
         </div>`;
     }
@@ -1443,10 +1038,7 @@
               pageObj.title,
               `title-${titleColor}`,
               pageObj.rows,
-              pageKey,
-              pageObj.titleVisible !== false,
-              pageObj.categoryEffect || '',
-              pageObj.categoryIcon || ''
+              pageKey
             )}
             <div class="page-gap" aria-hidden="true"></div>
           `;
