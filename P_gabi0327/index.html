@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=400, height=1080, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;800;900&display=swap"
+    rel="stylesheet"
+  >
   <title> 단비 :::: (너비400, 높이1080) </title>
   <style>
 
@@ -60,7 +67,7 @@
     }
 
     body {
-      font-family: 'IMCrisujin', 'GMarketSans', Arial, sans-serif;
+      font-family: 'IMCrisujin', 'GMarketSans', 'M PLUS Rounded 1c', sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       background: transparent !important;
@@ -220,7 +227,7 @@
       margin: 0 0 6px 0;
       text-align: center;
 
-      font-family: 'IMCrisujin', 'GMarketSans', Arial, sans-serif;
+      font-family: 'IMCrisujin', 'GMarketSans', 'M PLUS Rounded 1c', Arial, sans-serif;
       font-size: 28px;
       font-weight: 500;
       color: #ffffff;
@@ -278,6 +285,11 @@
       border-color: #4DAF2A;
     }
 
+    .title-skyblue {
+      background: #73FBFD;
+      border-color: #20c9cc;
+    }
+
     .label-wrap {
       display: inline-flex;
       align-items: center;
@@ -328,7 +340,7 @@
       align-items: center;
       justify-content: center;
 
-      font-family: 'GMarketSans', Arial, sans-serif;
+      font-family: 'GMarketSans', 'M PLUS Rounded 1c', Arial, sans-serif;
       font-size: 10px;
       font-weight: 100;
       color: #ffffff;
@@ -532,17 +544,35 @@
 
     let PAGE_DATA = {};
 
-    const FONT = 'IMCrisujin, GMarketSans, Arial, sans-serif';
+    /* 한글 기본 폰트 */
+    const FONT =
+      "'IMCrisujin', 'M PLUS Rounded 1c', 'Noto Sans JP', sans-serif";
+
+    /* 일본어 가나·한자 전용 폰트 */
+    const JAPANESE_FONT =
+      "'M PLUS Rounded 1c', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif";
+
+    /* 문자열에 일본어 가나 또는 한자가 있는지 확인 */
+    function getTextFont(text) {
+      const hasJapanese =
+        /[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/u.test(
+          String(text || '')
+        );
+
+      return hasJapanese ? JAPANESE_FONT : FONT;
+    }
+
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
+
     const ICON_PUNG_P1 = 'https://i.imgur.com/qGz1W0y.png'; //프로필 (회색)
     const ICON_PUNG_P2 = 'https://i.imgur.com/D0ldyfG.png'; //시그/캠리 (주황)
     const ICON_PUNG_P3 = 'https://i.imgur.com/12lhyTv.png'; //라이브/의첸 (노랑)
     const ICON_PUNG_P4 = 'https://i.imgur.com/3i8eoNA.png'; //운동/벌칙(보라)
     const ICON_PUNG_P5 = 'https://i.imgur.com/2PvVhKn.png'; //미션 (빨강)
     const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //!명령어 (파랑)
-//  const ICON_PUNG_P7 = 'https://i.imgur.com/iMnnprr.png'; //유튜브 (검정)
+    const ICON_PUNG_P7 = 'https://i.imgur.com/DLqjxNt.png'; //J pop (하늘)
 
 
     const PAGE_ICON_MAP = {
@@ -551,8 +581,8 @@
         'page3': ICON_PUNG_P3,
         'page4': ICON_PUNG_P4,
         'page5': ICON_PUNG_P5,
-        'page6': ICON_PUNG_P6
-//        'page7': ICON_PUNG_P7
+        'page6': ICON_PUNG_P6,
+        'page7': ICON_PUNG_P7
     };
 
     let FIXED_PAGE_KEYS = [];
@@ -645,7 +675,7 @@
         red: '#ff6b6b',
         white: '#ffffff',
         navy: '#5E4C9D',
-        sky_blue: '#73FBFD'
+        skyblue: '#73FBFD'
       };
 
       return COLOR_MAP[variant] || COLOR_MAP.blue;
@@ -676,11 +706,11 @@
         </svg>`;
     }
     /* 텍스트 */
-    const textWidthCache = {};
+    let textWidthCache = {};
 
     function measureTextWidth(text, fontSize = 28, fontFamily = FONT, fontWeight = 300) {
 
-      const key = `${text}_${fontSize}_${fontWeight}`;
+      const key = `${text}_${fontSize}_${fontWeight}_${fontFamily}`;
 
       if (textWidthCache[key]) {
         return textWidthCache[key];
@@ -703,7 +733,8 @@
 
     function makeLabelSVG(label, effect = '') {
       const t = esc(label);
-      const measured = measureTextWidth(label, 28, FONT, 300);
+      const fontFamily = getTextFont(label);
+      const measured = measureTextWidth(label, 28, fontFamily, 300);
       const w = Math.max(40, measured + 10);
 
       return `
@@ -718,7 +749,7 @@
           <g transform="scale(1.0 1)">
             <text x="15" y="23"
               text-anchor="start"
-              font-family="${FONT}"
+              font-family="${fontFamily}"
               font-size="28"
               font-weight="300"
               stroke="#000000"
@@ -734,7 +765,8 @@
     /* 각주 */
     function makeFootnoteSVG(footnote) {
       const t = esc(footnote);
-      const measured = measureTextWidth(footnote, 20, FONT, 300);
+      const fontFamily = getTextFont(footnote);
+      const measured = measureTextWidth(footnote, 22, fontFamily, 300);
       const w = Math.max(40, measured + 10);
 
       return `
@@ -745,7 +777,7 @@
           <g transform="scale(0.9 1)">
             <text x="120" y="8"
               text-anchor="start"
-              font-family="${FONT}"
+              font-family="${fontFamily}"
               font-size="22"
               font-weight="300"
               stroke="#000000"
@@ -1106,13 +1138,29 @@
     
     async function init() {
 
-      await loadSheetData();
+    await loadSheetData();
 
-      /* 웹폰트 로딩 완료 대기 */
-      await document.fonts.ready;
+    /* 동적으로 생성될 실제 일본어 데이터 */
+    const pageText = JSON.stringify(PAGE_DATA);
 
-      sequenceA.innerHTML = makeSequenceHTML();
-      sequenceB.innerHTML = makeSequenceHTML();
+    /* 일본어 글리프가 포함된 폰트 서브셋 로딩 */
+    await Promise.all([
+      document.fonts.load(
+        "300 28px 'M PLUS Rounded 1c'",
+        pageText
+      ),
+      document.fonts.load(
+        "300 28px 'Noto Sans JP'",
+        pageText
+      )
+    ]);
+
+    await document.fonts.ready;
+
+    textWidthCache = {};
+
+    sequenceA.innerHTML = makeSequenceHTML();
+    sequenceB.innerHTML = makeSequenceHTML();
 
       extractFixedPage();
 
