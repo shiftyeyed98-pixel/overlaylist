@@ -227,7 +227,7 @@
       margin: 0 0 6px 0;
       text-align: center;
 
-      font-family: 'IMCrisujin', 'GMarketSans', 'M PLUS Rounded 1c', Arial, sans-serif;
+      font-family: 'IMCrisujin', 'GMarketSans', 'M PLUS Rounded 1c', 'Noto Sans JP', Arial, sans-serif;
       font-size: 28px;
       font-weight: 500;
       color: #ffffff;
@@ -340,7 +340,7 @@
       align-items: center;
       justify-content: center;
 
-      font-family: 'GMarketSans', 'M PLUS Rounded 1c', Arial, sans-serif;
+      font-family: 'GMarketSans', 'M PLUS Rounded 1c', 'Noto Sans JP', Arial, sans-serif;
       font-size: 10px;
       font-weight: 100;
       color: #ffffff;
@@ -550,16 +550,21 @@
 
     /* 일본어 가나·한자 전용 폰트 */
     const JAPANESE_FONT =
-      "'M PLUS Rounded 1c', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif";
+      "'M PLUS Rounded 1c', 'Noto Sans JP', 'IMCrisujin', 'Yu Gothic', 'Meiryo', sans-serif";
 
     /* 문자열에 일본어 가나 또는 한자가 있는지 확인 */
-    function getTextFont(text) {
-      const hasJapanese =
-        /[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/u.test(
-          String(text || '')
-        );
+    function hasJapaneseText(text) {
+      return /[\u3000-\u303F\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/u.test(
+        String(text || '')
+      );
+    }
 
-      return hasJapanese ? JAPANESE_FONT : FONT;
+    function getTextFont(text) {
+      return hasJapaneseText(text) ? JAPANESE_FONT : FONT;
+    }
+
+    function getTextWeight(text) {
+      return hasJapaneseText(text) ? 500 : 300;
     }
 
     const STROKE = getComputedStyle(document.documentElement)
@@ -734,7 +739,8 @@
     function makeLabelSVG(label, effect = '') {
       const t = esc(label);
       const fontFamily = getTextFont(label);
-      const measured = measureTextWidth(label, 28, fontFamily, 300);
+      const fontWeight = getTextWeight(label);
+      const measured = measureTextWidth(label, 28, fontFamily, fontWeight);
       const w = Math.max(40, measured + 10);
 
       return `
@@ -751,7 +757,7 @@
               text-anchor="start"
               font-family="${fontFamily}"
               font-size="28"
-              font-weight="300"
+              font-weight="${fontWeight}"
               stroke="#000000"
               stroke-width="${STROKE}"
               stroke-linejoin="round"
@@ -766,7 +772,8 @@
     function makeFootnoteSVG(footnote) {
       const t = esc(footnote);
       const fontFamily = getTextFont(footnote);
-      const measured = measureTextWidth(footnote, 22, fontFamily, 300);
+      const fontWeight = getTextWeight(footnote);
+      const measured = measureTextWidth(footnote, 22, fontFamily, fontWeight);
       const w = Math.max(40, measured + 10);
 
       return `
@@ -779,7 +786,7 @@
               text-anchor="start"
               font-family="${fontFamily}"
               font-size="22"
-              font-weight="300"
+              font-weight="${fontWeight}"
               stroke="#000000"
               stroke-width="${STROKE}"
               stroke-linejoin="round"
