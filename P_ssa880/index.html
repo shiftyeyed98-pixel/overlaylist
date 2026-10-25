@@ -840,9 +840,9 @@
       const measured =
         measureMultilineTextWidth(
           num,
-          24,
+          28,
           NUMBER_FONT,
-          700
+          300
         );
 
       const width = Math.max(
@@ -856,11 +856,11 @@
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           <g transform="scale(1.0 1)">
-          <text x="10" y="20"
+          <text x="10" y="22"
             text-anchor="start"
             font-family="${NUMBER_FONT}"
-            font-size="24"
-            font-weight="700"
+            font-size="28"
+            font-weight="300"
             stroke="#000000"
             stroke-width="${STROKE}"
             stroke-linejoin="round"
