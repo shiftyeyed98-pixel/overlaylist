@@ -30,7 +30,7 @@
 
     /* OBS 브라우저 소스: 1080 × 100, 배경 투명 */
     :root {
-      --w:1080px; --h:100px; --scale:1.2;
+      --w:1080px; --h:100px; --scale:1.0;
       --outline:5; --svg-h:30px; --num-icon-size:22px;
       --ticker-card-h:80px; --main-row-h:38px;
       --ticker-image-col:28px; --ticker-icon-col:30px;
@@ -269,6 +269,21 @@
       } finally {
         clearTimeout(timeout);
       }
+
+    /* =========================
+      크기 배율 적용: CODE T1
+    ========================= */
+
+    const horizontalScale = Number(data.horizontalScale);
+
+    document.documentElement.style.setProperty(
+      '--scale',
+      String(
+        Number.isFinite(horizontalScale) && horizontalScale > 0
+          ? horizontalScale
+          : 1.0
+      )
+    );
 
       /* =========================
         스크롤 속도 적용
