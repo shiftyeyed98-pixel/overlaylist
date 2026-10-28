@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=400, height=970, initial-scale=1.0" />
+  <meta name="viewport" content="width=400, height=1080, initial-scale=1.0" />
   <title> 빠루 :::: (너비400, 높이1080) </title>
   <style>
 
@@ -17,7 +17,7 @@
     @font-face {
         font-family: 'Netmarble';
         src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.1/netmarbleB.woff') format('woff');
-        font-weight: 700;
+        font-weight: 400;
         font-display: swap;
     }
     
@@ -283,7 +283,7 @@
 
       font-family: 'GeekbleMalrangiche', 'Netmarble', Arial, sans-serif;
       font-size: 28px;
-      font-weight: 500;
+      font-weight: 400;
       color: #ffffff;
 
       border: 2px solid currentColor;
@@ -862,9 +862,9 @@
       const measured =
         measureMultilineTextWidth(
           num,
-          24,
+          28,
           NUMBER_FONT,
-          500
+          400
         );
 
       const width = Math.max(
@@ -881,8 +881,8 @@
           <text x="10" y="20"
             text-anchor="start"
             font-family="${NUMBER_FONT}"
-            font-size="24"
-            font-weight="500"
+            font-size="28"
+            font-weight="400"
             stroke="#000000"
             stroke-width="${STROKE}"
             stroke-linejoin="round"
@@ -897,9 +897,9 @@
 
     function measureTextWidth(
       text,
-      fontSize = 24,
+      fontSize = 32,
       fontFamily = LABEL_FONT,
-      fontWeight = 500
+      fontWeight = 400
     ) {
 
       const key = JSON.stringify([text, fontSize, fontFamily, fontWeight]);
@@ -921,9 +921,9 @@
 
       function measureMultilineTextWidth(
         value,
-        fontSize = 24,
+        fontSize = 32,
         fontFamily = LABEL_FONT,
-        fontWeight = 500
+        fontWeight = 400
       ) {
 
         /*
@@ -967,9 +967,9 @@
       const measured =
       measureMultilineTextWidth(
         label,
-        24,
+        30,
         LABEL_FONT,
-        500
+        400
       );
       const w = Math.max(40, measured + 10);
 
@@ -986,8 +986,8 @@
             <text x="15" y="20"
               text-anchor="start"
               font-family="${LABEL_FONT}"
-              font-size="24"
-              font-weight="500"
+              font-size="30"
+              font-weight="400"
               stroke="#000000"
               stroke-width="${STROKE}"
               stroke-linejoin="round"
@@ -1015,7 +1015,7 @@
         Math.max(1, lines.length);
 
       const fontSize = 24;
-      const fontWeight = 500;
+      const fontWeight = 300;
 
       /*
         각주 줄 사이의 간격
