@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=1080, height=200, initial-scale=1.0" />
+  <meta name="viewport" content="width=1080, height=100, initial-scale=1.0" />
   <title>더유니크 백시연 - 유튜브 숏츠 가로 티커</title>
   <style>
-
     @font-face {
         font-family: 'Juache';
         src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff') format('woff');
@@ -43,237 +42,40 @@
         font-display: swap;
     }
     
+
+    /* OBS 브라우저 소스: 1080 × 100, 배경 투명 */
     :root {
-      --w: 1080px;
-      --h: 200px;
-      --row-gap: 4px;
-      --icon-col: 28px;
-      --num-col: 80px;
-      --num-icon-size: 22px;
-      --svg-h: 30px;
-      --page-gap: 48px;
-      --loop-seconds: 60s;
-      --sequence-width: 1000px;
-      --outline: 5;
-      --scale: 1.0;
-
-      /* ===== 가로 티커 항목 크기 ===== */
-      --ticker-card-h: 80px;
-      --ticker-image-col: 28px;
-      --ticker-icon-col: 30px;
-
-      /* ===== 고정 타이틀 영역 ===== */
-      --fixed-title-h: 36px;
-      --fixed-title-mb: 2px;
-  
-      /* ===== 고정 페이지 영역 ===== */
-      --fixed-page-side-gap: 0px; /* ← 원하는 값 */
-      --fixed-page-h: 0px;
-
-      /* ===== 하단 고정바 제작자 영역 ===== */
-      --fixed-bottom-h: 20px;
-      --fixed-bottom-bottom: 4px;
-      --fixed-bottom-mt: 0px;
-
-      --fixed-top-page-h: 0px;
-      --fixed-bottom-page-h: 0px;
+      --w:1080px; --h:100px; --scale:1.2;
+      --outline:5; --svg-h:30px; --num-icon-size:22px;
+      --ticker-card-h:80px; --main-row-h:38px;
+      --ticker-image-col:28px; --ticker-icon-col:30px;
+      --title-padding-x:20px; --title-gap:22px;
+      --item-gap:26px; --page-gap:48px;
+      --loop-seconds:60s; --sequence-width:1000px;
     }
-
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: var(--w);
-      height: var(--h);
-      overflow: hidden;
-      background: transparent !important;
-    }
-
-    body {
-      font-family: 'Juache', 'GMarketSans', Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
-      background: transparent !important;
-    }
-
-    .overlay {
-      position: relative;
-      width: var(--w);
-      height: var(--h);
-      box-sizing: border-box;
-      padding: 0;
-      overflow: hidden;
-      background: transparent !important;
-    }
-
-    .fixed-title-wrap {
-      position: absolute;
-      left: 4px;
-      top: 4px;
-      width: calc(100% - 8px);
-      height: var(--fixed-title-h);
-      z-index: 10;
-      pointer-events: none;
-      background: transparent;
-    }
-    
-    .viewport {
-      position: absolute;
-      left: 4px;
-      top: calc(
-        var(--fixed-title-h)
-        + var(--fixed-title-mb)
-        + var(--fixed-top-page-h)
-      );
-      width: calc(100% - 8px);
-      height: calc(
-        100%
-        - var(--fixed-title-h)
-        - var(--fixed-title-mb)
-        - var(--fixed-bottom-h)
-        - var(--fixed-bottom-bottom)
-        - var(--fixed-top-page-h)
-        - var(--fixed-bottom-page-h)
-      );
-      overflow: hidden;
-      z-index: 1;
-    }
-
-    .track {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      will-change: transform;
-      animation: riseLoop var(--loop-seconds) linear infinite;
-    }
-
-    .sequence {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .page {
-      width: 100%;
-    }
-
-    .page-gap {
-      width: 100%;
-      height: var(--page-gap);
-      flex: 0 0 var(--page-gap);
-    }
-
-    table {
-      width: 100%;
-      table-layout: fixed;
-      border-collapse: separate;
-      border-spacing: 0 0;
-    }
-
-    tbody tr:not(.footnote-row) td {
-      padding-bottom: var(--row-gap);
-    }
-
-    .footnote-row td {
-      padding-top: 0;
-      padding-bottom: 2px;
-    }
-
-
-    col.num-col { width: var(--num-col); }
-    col.icon-col { width: var(--icon-col); }
-
-    td {
-      padding-left: 2px;
-      vertical-align: middle;
-      white-space: nowrap;
-      line-height: 1;
-    }
-
-    td.num {
-      text-align: left;
-    }
-
-    .num-wrap {
-      display: inline-flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 0;
-      width: max-content;
-      height: var(--svg-h);
-    }
-
-    .num-left-icon {
-      padding-left: 2px;
-      width: var(--num-icon-size);
-      height: var(--num-icon-size);
-      flex: 0 0 var(--num-icon-size);
-      position: relative;
-      top: -4px;
-      object-fit: contain;
-      display: block;
-      margin: 0;
-
-        /* 검정 외곽선 */
-      filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.9));
-/* 이부분 수정금지 브라우저 렌더링시 프레임 드랍현상 발생      
-        drop-shadow(0 0 1px #000)
-        drop-shadow(1px 0 0 #000)
-        drop-shadow(-1px 0 0 #000)
-        drop-shadow(0 1px 0 #000)
-        drop-shadow(0 -1px 0 #000);
-*/
-    }
-
-    td.label {
-      padding-left: 4px;
-    }
-
-    td.icon-cell {
-      width: 30px;
-      text-align: left;
-      vertical-align: middle;
-    }
-
-    td.footnote {
-      padding: 0 0 0 6px;
-      white-space: nowrap;
-      line-height: 1;
-    }
-
-    .page-title {
-      width: 240px;
-      height: 36px;
-
-      display: none;
-      align-items: center;       /* 세로 중앙 */
-      justify-content: center;   /* 가로 중앙 */
-
-      margin: 0 0 6px 0;
-      text-align: center;
-
-      font-family: 'Juache', 'GMarketSans', Arial, sans-serif;
-      font-size: 28px;
-      font-weight: 500;
-      color: #ffffff;
-
-      border: 2px solid currentColor;
-      border-radius: 10px;
-      box-sizing: border-box;
-
-      text-shadow:
-        -2px -2px 0 #000,
-         2px -2px 0 #000,
-        -2px  2px 0 #000,
-         2px  2px 0 #000;
-         
-      transform: translateY(-1px);
-    }
-
+    html,body { margin:0; padding:0; width:var(--w); height:var(--h);
+      overflow:hidden; background:transparent; }
+    body { font-family:'Juache','GMarketSans',Arial,sans-serif;
+      -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision; }
+    .overlay { position:relative; width:100%; height:100%; overflow:hidden; }
+    .content-scale { position:relative; width:calc(100% / var(--scale));
+      height:calc(100% / var(--scale)); transform:scale(var(--scale)); transform-origin:top left; }
+    .viewport { position:absolute; inset:0; overflow:hidden; }
+    .track { position:absolute; left:0; top:50%; width:max-content;
+      display:flex; align-items:flex-start; will-change:transform;
+      animation:slideLoop var(--loop-seconds) linear infinite paused; }
+    .track.is-ready { animation-play-state:running; }
+    .track.is-paused { animation-play-state:paused; }
+    .sequence { display:flex; width:max-content; flex:0 0 auto; align-items:flex-start; }
+    .page { position:relative; display:flex; width:max-content; flex:0 0 auto;
+      align-items:flex-start; }
+    .page-title { display:flex; position:relative; z-index:2; flex:0 0 auto;
+      width:max-content; height:var(--main-row-h); padding:0 var(--title-padding-x);
+      margin:0 var(--title-gap) 0 0; box-sizing:border-box;
+      align-items:center; justify-content:center; white-space:nowrap;
+      font-size:22px; font-weight:500; color:white; background:#4A90E2;
+      border:2px solid #1F5EA6; border-radius:10px;
+      text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000; }
     .title-gray {
       background: #bfbfbf;
       border-color: #262525;
@@ -320,444 +122,52 @@
     }
 
 
-    .label-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: 0;
-      width: auto;
-    }
-    
-    .num-svg,
-    .label-svg,
-    .footnote-svg {
-      display: block;
-      width: auto;
-      height: var(--svg-h);
-      overflow: visible;
-    }
 
-    .label-icon {
-      width: 28px;
-      height: 28px;
-      flex: 0 0 28px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: -10px; /* 텍스트와 아이콘의 간격 */
-      position: relative;
-      top: 0px;  /* 아이콘을 위로 2px 올림 */
-    }
-
-    .label-icon svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .label-text {
-      flex: 0 0 auto;
-      min-width: auto;
-    }
-
-    .fixed-bottom-label {
-      position: absolute;
-      left: 4px;
-      bottom: var(--fixed-bottom-bottom);
-      width: 245px;
-      height: var(--fixed-bottom-h);
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      font-family: 'Juache', 'GMarketSans', Arial, sans-serif;
-      font-size: 10px;
-      font-weight: 100;
-      color: #ffffff;
-
-      background: rgba(0, 0, 0, 0.55);
-      border: 1px solid #ffffff;
-      border-radius: 10px;
-
-      box-sizing: border-box;
-      z-index: 50;
-
-      text-shadow:
-        -2px -2px 0 #000,
-        2px -2px 0 #000,
-        -2px  2px 0 #000,
-        2px  2px 0 #000;
-    }
-
-/*    .page2 .label-svg text {
-      font-size: 22px !important;
-    }
-
-    .page2 .num-svg text {
-      font-size: 22px !important;
-    }
-*/
-
-    .e-colorshift text {
-      animation: colorShift 1.6s linear infinite;
-    }
-
-    @keyframes colorShift {
-      0%   { fill: #ff6; }
-      33%  { fill: #6ff; }
-      66%  { fill: #f6f; }
-      100% { fill: #ff6; }
-    }
-
-    @keyframes riseLoop {
-      from {
-        transform: translate3d(0, 0, 0);
-      }
-      to {
-        transform: translate3d(0, calc(-1 * var(--sequence-height)), 0);
-      }
-    }
-
-    .fixed-top-page {
-      position: absolute;
-      left: var(--fixed-page-side-gap);
-      top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + 4px);
-      width: calc(85% - (var(--fixed-page-side-gap) * 1));
-
-      z-index: 40;
-
-      padding: 4px;
-
-      border-radius: 14px;
-
-      background: rgba(60, 60, 60, 0.35);
-      border: 1px solid rgba(255,255,255,0.4);
-      box-sizing: border-box;
-    }
-
-    .fixed-bottom-page {
-      position: absolute;
-      left: var(--fixed-page-side-gap);
-      bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom) + 0px);
-      width: calc(90% - (var(--fixed-page-side-gap) * 1));  /* 고정 페이지 유리효과 가로 폭사이즈 */
-
-      z-index: 40;
-
-      padding: 4px 4px 4px 4px;
-
-      border-radius: 14px;
-
-      background: rgba(60, 60, 60, 0.35); /* 안정적인 값 */
-      border: 1px solid rgba(255,255,255,0.4);
-      box-sizing: border-box;
-    }
-
-    .fixed-top-page .page + .page,
-    .fixed-bottom-page .page + .page {
-      margin-top: 1px;
-    }
-
-    /* 지원되는 환경에서만 blur 적용 (스케일업할 경우 blur 2px 값 조정)*/
-    @supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
-      .fixed-top-page,
-      .fixed-bottom-page {
-        background: rgba(120, 120, 120, 0.18);
-        backdrop-filter: blur(2px);
-        -webkit-backdrop-filter: blur(2px);
-      }
-    }
-
-    .waveChar {
-      display: inline-block;
-      animation: wave 1s ease-in-out infinite;
-    }
-
-    @keyframes wave {
-      50% {
-        transform: translateY(-6px);
-      }
-    }
-
-    .content-scale {
-      width: calc(100% / var(--scale));
-      height: calc(100% / var(--scale));
-
-      transform: scale(var(--scale));
-      transform-origin: top left;
-    }
-
-    /* =====================================================
-       유튜브 숏츠용 가로 무한 티커
-       [카테고리] [이미지|단가|텍스트|아이콘]
-                    [각주 전체 1행]
-    ===================================================== */
-
-    .fixed-title-wrap,
-    .fixed-top-page,
-    .fixed-bottom-page {
-      display: none !important;
-    }
-
-    .viewport {
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: calc(100% - var(--fixed-bottom-h) - var(--fixed-bottom-bottom));
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .track {
-      position: absolute;
-      left: 0;
-      top: 50%;
-      width: max-content;
-      height: auto;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      transform: translateY(-50%);
-      will-change: transform;
-      animation: slideLoop var(--loop-seconds) linear infinite;
-      animation-play-state: paused;
-    }
-
-    .track.is-ready {
-      animation-play-state: running;
-    }
-
-    .sequence {
-      width: max-content;
-      height: auto;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      flex: 0 0 auto;
-      gap: 0;
-    }
-
-    .page {
-      width: max-content;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      flex: 0 0 auto;
-    }
-
-    .page-title {
-      width: 190px;
-      height: 54px;
-      flex: 0 0 190px;
-      margin: 0 22px 0 0;
-      padding: 0 12px;
-      font-size: 22px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    .page-gap {
-      width: var(--page-gap);
-      height: 1px;
-      flex: 0 0 var(--page-gap);
-    }
-
-    .ticker-items {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      flex: 0 0 auto;
-      gap: 26px;
-    }
-
-    .ticker-card {
-      width: var(--card-w);
-      height: var(--ticker-card-h);
-      flex: 0 0 var(--card-w);
-      overflow: hidden;
-    }
-
-    .ticker-card table {
-      width: var(--card-w);
-      height: var(--ticker-card-h);
-      table-layout: fixed;
-      border-collapse: collapse;
-      border-spacing: 0;
-    }
-
-    .ticker-card col.image-col {
-      width: var(--ticker-image-col);
-    }
-
-    .ticker-card col.num-col {
-      width: var(--card-num-col);
-    }
-
-    .ticker-card col.text-col {
-      width: var(--card-label-col);
-    }
-
-    .ticker-card col.icon-col {
-      width: var(--ticker-icon-col);
-    }
-
-    .ticker-card td {
-      box-sizing: border-box;
-      height: 38px;
-      overflow: hidden;
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-
-    .ticker-card td.image-cell {
-      padding-left: 2px;
-      padding-right: 2px;
-      text-align: center;
-    }
-
-    .ticker-card .num-left-icon {
-      width: var(--num-icon-size);
-      height: var(--num-icon-size);
-      margin: 0 auto;
-      padding: 0;
-      position: static;
-    }
-
-    .ticker-card td.num {
-      text-align: left;
-    }
-
-    .ticker-card td.num {
-      padding-right: 0;
-    }
-
-    .ticker-card td.label {
-      padding-left: 0;
-    }
-
-    .ticker-card .num-wrap,
-    .ticker-card .label-wrap {
-      width: max-content;
-      max-width: none;
-      overflow: visible;
-    }
-
-    .ticker-card .label-text {
-      width: max-content;
-      min-width: max-content;
-      overflow: visible;
-    }
-
-    .ticker-card td.icon-cell {
-      width: var(--ticker-icon-col);
-      padding: 0;
-      text-align: center;
-    }
-
-    .ticker-card .label-icon {
-      margin: 0 auto;
-      position: static;
-    }
-
-    .ticker-card .num-svg,
-    .ticker-card .label-svg {
-      max-width: none;
-      overflow: visible;
-    }
-
-    .ticker-card .footnote-row td {
-      height: 34px;
-      overflow: hidden;
-    }
-
-    .ticker-card .footnote-row td.footnote-spacer {
-      width: var(--ticker-image-col);
-      padding: 0;
-    }
-
-    .ticker-card .footnote-row td.footnote {
-      width: var(--card-footnote-w);
-      padding: 0 3px;
-    }
-
-    .ticker-card .footnote-wrap {
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-
-    .ticker-card .footnote-svg {
-      max-width: 100%;
-      overflow: hidden;
-    }
-
-    .fixed-bottom-label {
-      left: auto;
-      right: 8px;
-      width: 210px;
-    }
-
+    .page-gap { width:var(--page-gap); flex:0 0 var(--page-gap); height:1px; }
+    .ticker-items { position:relative; z-index:1; display:flex; flex:0 0 auto;
+      align-items:flex-start; gap:var(--item-gap); }
+    .ticker-card { width:var(--card-w); height:var(--ticker-card-h);
+      flex:0 0 var(--card-w); overflow:hidden; }
+    .ticker-card table { width:var(--card-w); table-layout:fixed;
+      border-collapse:separate; border-spacing:0; }
+    col.image-col { width:var(--ticker-image-col); }
+    col.num-col { width:var(--card-num-col); }
+    col.text-col { width:var(--card-label-col); }
+    col.icon-col { width:var(--ticker-icon-col); }
+    .ticker-card td { padding:0; box-sizing:border-box; vertical-align:middle;
+      white-space:nowrap; line-height:1; overflow:hidden; }
+    .main-row td { height:var(--main-row-h); }
+    .ticker-card td.image-cell { padding:0 2px; text-align:center; }
+    .ticker-card td.num { padding:0 3px; }
+    .ticker-card td.label { padding:0 3px; }
+    .num-wrap,.label-wrap { display:inline-flex; align-items:center; width:max-content; height:var(--svg-h); }
+    .label-text { flex:0 0 auto; width:max-content; }
+    .num-left-icon { display:block; width:var(--num-icon-size); height:var(--num-icon-size);
+      object-fit:contain; margin:auto; filter:drop-shadow(0 2px 2px rgba(0,0,0,.9)); }
+    .num-svg,.label-svg,.footnote-svg { display:block; height:var(--svg-h); overflow:visible; }
+    .ticker-card td.icon-cell { text-align:center; }
+    .label-icon { display:flex; align-items:center; justify-content:center;
+      width:28px; height:28px; margin:auto; }
+    .label-icon svg { display:block; width:100%; height:100%; }
+    .footnote-row td { height:34px; }
+    .ticker-card td.footnote { padding:0 3px; }
+    .footnote-wrap { width:100%; overflow:hidden; white-space:nowrap; }
+    .footnote-svg { max-width:100%; overflow:hidden; }
+    .e-colorshift text { animation:colorShift 1.6s linear infinite; }
+    @keyframes colorShift { 0%,100%{fill:#ff6} 33%{fill:#6ff} 66%{fill:#f6f} }
     @keyframes slideLoop {
-      from {
-        transform: translate3d(0, -50%, 0);
-      }
-      to {
-        transform: translate3d(
-          calc(-1 * var(--sequence-width)),
-          -50%,
-          0
-        );
-      }
+      from { transform:translate3d(0,-50%,0); }
+      to { transform:translate3d(calc(-1 * var(--sequence-width)),-50%,0); }
     }
-
   </style>
 </head>
 <body>
-  <svg width="0" height="0" style="position:absolute">
-    <defs>
-      <filter id="globalShadow"
-              x="-30%"
-              y="-30%"
-              width="160%"
-              height="160%">
-        <feDropShadow
-          dx="0"
-          dy="0"
-          stdDeviation="0.0"
-          flood-color="#ffffff"
-          flood-opacity="0"/>
-      </filter>
-    </defs>
-  </svg>
-  <div class="overlay">
-
-    <div class="content-scale">
-
-      <div class="fixed-title-wrap">
-        <div class="page-title title-pink"> B.시그 </div>
-      </div>
-
-      <div class="viewport">
-        <div class="track" id="track">
-          <div class="sequence" id="sequenceA"></div>
-          <div class="sequence" id="sequenceB" aria-hidden="true"></div>
-        </div>
-      </div>
-
-      <div id="fixedTopPage" class="fixed-top-page"></div>
-      <div id="fixedBottomPage" class="fixed-bottom-page"></div>
-
-    <!--  <div class="fixed-bottom-label">
-        Designed by 시프티™⭐️
-      </div>
-    -->
-
-    </div>
-
-  </div>
-
+  <div class="overlay"><div class="content-scale">
+    <div class="viewport"><div class="track" id="track">
+      <div class="sequence" id="sequenceA"></div>
+      <div class="sequence" id="sequenceB" aria-hidden="true"></div>
+    </div></div>
+  </div></div>
   <script>
       /* =========================
         우클릭 / 개발자도구 차단
@@ -840,19 +250,19 @@
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
-    const ICON_PUNG_P1 = 'https://i.imgur.com/l0gSwJk.png'; //하늘하트
+    const ICON_PUNG_P1 = 'https://i.imgur.com/l0gSwJk.png'; //핑크하트
     const ICON_PUNG_P2 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
+    const ICON_PUNG_P3 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
 
  // 'https://i.imgur.com/DLqjxNt.png'; //하늘하트
 
     const PAGE_ICON_MAP = {
         'page1': ICON_PUNG_P1,
-        'page2': ICON_PUNG_P2
+        'page2': ICON_PUNG_P2,
+        'page3': ICON_PUNG_P3
 
     };
 
-    let FIXED_PAGE_KEYS = [];
-    let FIXED_PAGE_POSITION_MAP = {};
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
@@ -861,9 +271,19 @@
 
     async function loadSheetData() {
 
-      const res = await fetch(GAS_URL);
-
-      const data = await res.json();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      let data;
+      try {
+        const res = await fetch(GAS_URL, { signal: controller.signal });
+        if (!res.ok) throw new Error(`GAS HTTP ${res.status}`);
+        data = await res.json();
+        if (!data || typeof data.pages !== 'object' || !data.pages) {
+          throw new Error('GAS 페이지 데이터가 없습니다.');
+        }
+      } finally {
+        clearTimeout(timeout);
+      }
 
       /* =========================
         스크롤 속도 적용
@@ -893,28 +313,6 @@
       );
 
       /* =========================
-        고정 페이지 처리
-      ========================= */
-
-      if (Array.isArray(data.fixedPages)) {
-        FIXED_PAGE_KEYS = data.fixedPages;
-      } else {
-        FIXED_PAGE_KEYS = [];
-      }
-
-      /* =========================
-        고정 페이지 상단/하단
-      ========================= */
-      if (
-        data.fixedPagePositions &&
-        typeof data.fixedPagePositions === 'object'
-      ) {
-        FIXED_PAGE_POSITION_MAP = data.fixedPagePositions;
-      } else {
-        FIXED_PAGE_POSITION_MAP = {};
-      }
-
-      /* =========================
         PAGE_ICON_MAP 좌측 이미지 ON/OFF
       ========================= */
 
@@ -930,7 +328,7 @@
 
       PAGE_DATA = Object.fromEntries(
         Object.entries(data.pages).filter(([_, pageObj]) =>
-          pageObj.rows &&
+          pageObj && Array.isArray(pageObj.rows) &&
           pageObj.rows.length > 0 &&
           pageObj.enabled !== false
         )
@@ -967,7 +365,7 @@
 
     /* 단가 */
     function getNumberSVGWidth(num) {
-      const measured = measureTextWidth(num, 24, NUMBER_FONT, 300);
+      const measured = measureTextWidth(num, 28, NUMBER_FONT, 300);
       return Math.max(40, measured + 20);
     }
 
@@ -978,7 +376,7 @@
       const fillColor = getFillColor(variant);
 
       return `
-        <svg class="num-svg" viewBox="0 0 ${width} 30" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
+        <svg class="num-svg" width="${width}" height="30" viewBox="0 0 ${width} 30" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
           <g transform="scale(1.0 1)">
           <text x="4" y="25"
             text-anchor="start"
@@ -989,13 +387,13 @@
             stroke-width="${STROKE}"
             stroke-linejoin="round"
             paint-order="stroke fill"
-            filter="url(#globalShadow)"
+            
             fill="${fillColor}">${t}</text>
           </g>
         </svg>`;
     }
     /* 텍스트 */
-    const textWidthCache = {};
+    const textWidthCache = Object.create(null);
 
     function measureTextWidth(text, fontSize = 28, fontFamily = LABEL_FONT, fontWeight = 300) {
 
@@ -1028,14 +426,14 @@
       return `
         <svg
           class="label-svg ${effect === 'e_colorshift' || effect === 'e-colorshift' ? 'e-colorshift' : ''}"
-          viewBox="0 0 ${w} 30"
+          width="${w}" height="30" viewBox="0 0 ${w} 30"
           xmlns="http://www.w3.org/2000/svg"
           aria-label="${t}"
           role="img"
           preserveAspectRatio="xMinYMid meet">
 
           <g transform="scale(1.0 1)">
-            <text x="0" y="25"
+            <text x="6" y="25"
               text-anchor="start"
               font-family="${LABEL_FONT}"
               font-size="28"
@@ -1044,7 +442,7 @@
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
-              filter="url(#globalShadow)"
+              
               fill="#ffffff">${t}</text>
           </g>
         </svg>`;
@@ -1057,7 +455,7 @@
       const w = Math.max(40, measured + 20);
 
       return `
-        <svg class="footnote-svg" viewBox="0 0 ${w} 30"
+        <svg class="footnote-svg" width="${w}" height="30" viewBox="0 0 ${w} 30"
             xmlns="http://www.w3.org/2000/svg"
             aria-label="${t}" role="img"
             preserveAspectRatio="xMinYMid meet">
@@ -1071,7 +469,7 @@
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
-              filter="url(#globalShadow)"
+              
               fill="#ffffff">${t}</text>
           </g>
         </svg>`;
@@ -1301,14 +699,27 @@
       - 1행: 이미지/아이콘 고정폭, 단가/텍스트 내용 기반 가변폭
       - 2행: 1행이 결정한 폭만 사용하며, 넘치는 각주에만 … 적용
     */
+   // 숫자 단가에 천 단위 쉼표 적용
+    function formatPrice(value) {
+      const text = String(value ?? '').trim();
+      if (!text) return '';
+
+      const normalized = text.replace(/,/g, '');
+
+      // 숫자로만 구성된 단가에 적용
+      // "무료", "협의" 등의 문구는 그대로 유지
+      if (!/^\d+$/.test(normalized)) return text;
+
+      return normalized.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
     function makeTable(rows, pageClass = '') {
-      const cardsHTML = rows.map(([num, label, iconType = '', footnote = '', effect = '', rowColor = 'blue']) => {
-        const safeNum = String(num ?? '').trim();
+      const imageColWidth = getRootPixelValue('--ticker-image-col', 28);
+      const iconColWidth = getRootPixelValue('--ticker-icon-col', 30);
+      const cardsHTML = rows.filter(Array.isArray).map(([num, label, iconType = '', footnote = '', effect = '', rowColor = 'blue']) => {
+        const safeNum = formatPrice(num);
         const safeLabel = String(label ?? '').trim();
         const safeFootnote = String(footnote ?? '').trim();
 
-        const imageColWidth = getRootPixelValue('--ticker-image-col', 28);
-        const iconColWidth = getRootPixelValue('--ticker-icon-col', 44);
         const cellPaddingX = 3;
 
         const numberSVGWidth = safeNum
@@ -1317,7 +728,7 @@
         const labelSVGWidth = safeLabel
           ? Math.max(
               40,
-              measureTextWidth(safeLabel, 28, LABEL_FONT, 300) + 18
+              measureTextWidth(safeLabel, 28, LABEL_FONT, 300) + 20
             )
           : 0;
 
@@ -1335,7 +746,7 @@
         const clippedFootnote = ellipsizeText(
           safeFootnote,
           footnoteTextWidth,
-          `400 22px ${FOOTNOTE_FONT}`
+          `300 22px ${FOOTNOTE_FONT}`
         );
 
         return `
@@ -1398,11 +809,11 @@
     ) {
 
       const titleHTML = titleVisible
-        ? `<div class="page-title ${titleClass}">${title}</div>`
+        ? `<div class="page-title ${titleClass}">${esc(title ?? '')}</div>`
         : '';
 
       return `
-        <div class="page ${pageClass}" data-page="${pageClass}">
+        <div class="page ${esc(pageClass)}" data-page="${esc(pageClass)}">
           ${titleHTML}
           ${makeTable(rows, pageClass)}
         </div>`;
@@ -1417,7 +828,7 @@
             CODE C6:N6 기준
             카테고리 분류 박스 색상
           */
-          const titleColor = pageObj.titleColor || 'blue';
+          const titleColor = /^(gray|pink|red|orange|yellow|purple|blue|green|skyblue)$/.test(pageObj.titleColor) ? pageObj.titleColor : 'blue';
 
           return `
             ${makePage(
@@ -1433,212 +844,90 @@
         .join('');
     }
 
-    function extractFixedPage() {
-
-      if (!FIXED_PAGE_KEYS.length) return;
-
-      const fixedTopContainer = document.getElementById('fixedTopPage');
-      const fixedBottomContainer = document.getElementById('fixedBottomPage');
-
-      let topHTML = '';
-      let bottomHTML = '';
-
-      FIXED_PAGE_KEYS.forEach(pageKey => {
-
-        const target = sequenceA.querySelector(
-          `[data-page="${pageKey}"]`
-        );
-
-        if (!target) return;
-
-        const rawPosition = String(
-          FIXED_PAGE_POSITION_MAP[pageKey] || 'bottom'
-        ).trim();
-
-        const position =
-          rawPosition === '상단' ? 'top' :
-          rawPosition === '하단' ? 'bottom' :
-          rawPosition.toLowerCase();
-
-        if (position === 'top') {
-          topHTML += target.outerHTML;
-        } else {
-          bottomHTML += target.outerHTML;
-        }
-
-        // 스크롤 영역에서 제거
-        [sequenceA, sequenceB].forEach(seq => {
-
-          const el = seq.querySelector(
-            `[data-page="${pageKey}"]`
-          );
-
-          if (!el) return;
-
-          const next = el.nextElementSibling;
-
-          el.remove();
-
-          if (next && next.classList.contains('page-gap')) {
-            next.remove();
-          }
-        });
-
-      });
-
-      fixedTopContainer.innerHTML = topHTML;
-      fixedBottomContainer.innerHTML = bottomHTML;
-    }
-
-    /* 추가 */
-    function removeLeadingGap(seq) {
-
-      const first = seq.firstElementChild;
-
-      if (first && first.classList.contains('page-gap')) {
-        first.remove();
-      }
-    }
-
-
-    function applyWaveToFixedTitle() {
-
-      if (!FIXED_PAGE_KEYS.length) return;
-
-      const containers = [
-        document.getElementById('fixedTopPage'),
-        document.getElementById('fixedBottomPage')
-      ];
-
-      containers.forEach(fixedContainer => {
-
-        if (!fixedContainer) return;
-
-        const titles = fixedContainer.querySelectorAll('.page-title');
-
-        titles.forEach(titleEl => {
-
-          const text = titleEl.textContent.trim();
-
-          titleEl.innerHTML = Array.from(text).map((c, i) =>
-            `<span class="waveChar"
-              style="animation-delay:${i * 0.08}s">${c}</span>`
-          ).join('');
-
-        });
-
-      });
-    }
-
-    function adjustViewportHeight() {
-
-      const scale = getScale();
-
-      const fixedTop = document.getElementById('fixedTopPage');
-      const fixedBottom = document.getElementById('fixedBottomPage');
-
-      let topH = 0;
-      let bottomH = 0;
-
-      if (fixedTop && fixedTop.innerHTML.trim()) {
-        topH = Math.ceil(
-          fixedTop.getBoundingClientRect().height / scale
-        ) + 12;
-      }
-
-      if (fixedBottom && fixedBottom.innerHTML.trim()) {
-        bottomH = Math.ceil(
-          fixedBottom.getBoundingClientRect().height / scale
-        ) + 12;
-      }
-
-      document.documentElement.style.setProperty(
-        '--fixed-top-page-h',
-        `${topH}px`
-      );
-
-      document.documentElement.style.setProperty(
-        '--fixed-bottom-page-h',
-        `${bottomH}px`
-      );
-    }
 
     const sequenceA = document.getElementById('sequenceA');
     const sequenceB = document.getElementById('sequenceB');
-    
-    async function init() {
-
-      await loadSheetData();
-
-      /* 웹폰트 로딩 완료 대기 */
-      await document.fonts.ready;
-
-      sequenceA.innerHTML = makeSequenceHTML();
-      sequenceB.innerHTML = makeSequenceHTML();
-
-      removeLeadingGap(sequenceA);
-      removeLeadingGap(sequenceB);
-
-      /* 렌더 완료 후 한번 더 보정 */
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          ensureSequenceWidth();
-          updateLoopWidth();
-          document.getElementById('track').classList.add('is-ready');
-        });
-      });
-    }
+    const track = document.getElementById('track');
+    const viewport = document.querySelector('.viewport');
+    let baseHTML = '';
+    let titleTargets = [];
+    let frame = 0;
+    let resizeFrame = 0;
+    let viewportLeft = 0;
+    let scale = 1;
 
     function getScale() {
-      return parseFloat(
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--scale')
-      ) || 1;
+      return getRootPixelValue('--scale', 1) || 1;
     }
 
-    init();
-
-    if (!FIXED_PAGE_KEYS.length) {
-      document.getElementById('fixedTopPage').style.display = 'none';
-      document.getElementById('fixedBottomPage').style.display = 'none';
-    }
-
-    function ensureSequenceWidth() {
-      const viewport = document.querySelector('.viewport');
-      const baseHTML = makeSequenceHTML();
-      let repeatCount = 0;
-
-      while (
-        sequenceA.getBoundingClientRect().width <
-          viewport.getBoundingClientRect().width * 1.1 &&
-        repeatCount < 20
-      ) {
-        sequenceA.insertAdjacentHTML('beforeend', baseHTML);
-        repeatCount += 1;
-      }
-
+    // 카테고리 크기는 초기 구성과 화면 크기 변경 시에만 측정한다.
+    function rebuildLayout() {
+      cancelAnimationFrame(frame);
+      track.classList.remove('is-ready');
+      sequenceA.innerHTML = baseHTML;
+      sequenceB.replaceChildren();
+      const baseWidth = sequenceA.getBoundingClientRect().width;
+      const viewportRect = viewport.getBoundingClientRect();
+      if (!(baseWidth > 0)) throw new Error('표시할 티커 내용이 없습니다.');
+      const repeats = Math.max(1, Math.ceil(viewportRect.width / baseWidth));
+      if (repeats > 1) sequenceA.innerHTML = baseHTML.repeat(repeats);
       sequenceB.innerHTML = sequenceA.innerHTML;
-    }
-
-    function updateLoopWidth() {
-      const scale = getScale();
-
-      const width =
-        sequenceA.getBoundingClientRect().width / scale;
-
-      document.documentElement.style.setProperty(
-        '--sequence-width',
-        `${Math.ceil(width)}px`
-      );
-    }
-
-      window.addEventListener('load', () => {
-        updateLoopWidth();
-
-        setTimeout(updateLoopWidth, 300);
-        setTimeout(updateLoopWidth, 1000);
+      scale = getScale();
+      viewportLeft = viewportRect.left;
+      const trackLeft = track.getBoundingClientRect().left;
+      const width = sequenceA.getBoundingClientRect().width / scale;
+      document.documentElement.style.setProperty('--sequence-width', `${width}px`);
+      titleTargets = Array.from(track.querySelectorAll('.page')).flatMap(page => {
+        const title = page.querySelector('.page-title');
+        if (!title) return [];
+        const rect = page.getBoundingClientRect();
+        return [{ title, start:(rect.left - trackLeft) / scale,
+          maxShift:Math.max(0, rect.width / scale - title.offsetWidth), last:-1 }];
       });
+      track.classList.add('is-ready');
+      syncVisibility();
+    }
 
+    function updateTitles() {
+      // 프레임당 트랙 위치 한 번만 읽고, 캐시한 카테고리 위치로 계산한다.
+      const trackX = (track.getBoundingClientRect().left - viewportLeft) / scale;
+      for (const item of titleTargets) {
+        const shift = Math.min(Math.max(0, -trackX - item.start), item.maxShift);
+        if (shift !== item.last) {
+          item.title.style.transform = `translate3d(${shift}px,0,0)`;
+          item.last = shift;
+        }
+      }
+      frame = requestAnimationFrame(updateTitles);
+    }
+
+    function syncVisibility() {
+      cancelAnimationFrame(frame);
+      track.classList.toggle('is-paused', document.hidden);
+      if (!document.hidden && titleTargets.length) updateTitles();
+    }
+
+    async function init() {
+      await loadSheetData();
+      // 첫 텍스트 측정 전에 실제 사용 폰트를 명시적으로 로드한다.
+      await document.fonts.load('300 28px Juache');
+      await document.fonts.ready;
+      baseHTML = makeSequenceHTML();
+      rebuildLayout();
+      const observer = new ResizeObserver(() => {
+        cancelAnimationFrame(resizeFrame);
+        resizeFrame = requestAnimationFrame(() => {
+          try { rebuildLayout(); } catch (error) { console.error(error); }
+        });
+      });
+      observer.observe(viewport);
+      document.addEventListener('visibilitychange', syncVisibility);
+    }
+
+    init().catch(error => {
+      console.error('티커 초기화 실패:', error);
+      track.classList.remove('is-ready');
+    });
   </script>
 </body>
 </html>
