@@ -838,7 +838,7 @@
 
 
     /* 컬러맵 */
-    function getFillColor(variant = 'blue') {
+    function getFillColor(variant = 'gray') {
       const COLOR_MAP = {
         gray: '#bfbfbf',
         pink: '#FAB0C1',
@@ -1077,7 +1077,7 @@
               ${makeTspans(
                 normalizedFootnote,
                 {
-                  x: 90,
+                  x: 100,
                   firstY: 22,
                   lineHeight: lineHeight
                 }
@@ -1421,7 +1421,7 @@
       const pages = new Map();
       for (const [key, page] of Object.entries(PAGE_DATA)) {
         pages.set(key, makePage(
-          page.title, `title-${page.titleColor || 'blue'}`, page.rows, key,
+          page.title, `title-${page.titleColor || 'gray'}`, page.rows, key,
           page.titleVisible !== false, page.categoryEffect || '', page.categoryIcon || ''
         ));
       }
