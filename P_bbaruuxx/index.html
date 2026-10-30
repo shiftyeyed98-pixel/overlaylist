@@ -714,7 +714,7 @@
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwzCDiI8XEZ7rAJAWYqw5Pd8LLxJ8uLVqV_2DyHgz6FJkIXNQDj2VntSaQ9FA226ag/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxhphskKi74latz91E39Np60VUDPYVlurnH4_DmG97u56nys-jr9zK5Xd_1IZ0TprZP/exec';
     // GAS Ver 0.2 사용
 
     async function loadSheetData() {
@@ -858,7 +858,7 @@
     }
 
     /* 단가 */
-    function makeNumberSVG(num, variant = 'blue') {
+    function makeNumberSVG(num, variant = 'blue', strike = false) {
       const measured =
         measureMultilineTextWidth(
           num,
@@ -874,6 +874,9 @@
       const t = esc(num);
 
       const fillColor = getFillColor(variant);
+      const strikeLine = strike
+        ? `<line x1="10" y1="13" x2="${10 + measured}" y2="13" stroke="#ff5252" stroke-width="2.5" stroke-linecap="round" />`
+        : '';
 
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
@@ -888,6 +891,7 @@
             stroke-linejoin="round"
             paint-order="stroke fill"
             fill="${fillColor}">${t}</text>
+            ${strikeLine}
           </g>
         </svg>`;
     }
@@ -962,7 +966,7 @@
         );
       }
 
-    function makeLabelSVG(label, effect = '') {
+    function makeLabelSVG(label, effect = '', strike = false) {
       const t = esc(label);
       const measured =
       measureMultilineTextWidth(
@@ -971,7 +975,10 @@
         LABEL_FONT,
         400
       );
-      const w = Math.max(40, measured + 10);
+      const w = Math.max(40, measured + 25);
+      const strikeLine = strike
+        ? `<line x1="15" y1="13" x2="${15 + measured}" y2="13" stroke="#ff5252" stroke-width="2.5" stroke-linecap="round" />`
+        : '';
 
       return `
         <svg
@@ -993,6 +1000,7 @@
               stroke-linejoin="round"
               paint-order="stroke fill"
                 fill="#ffffff">${t}</text>
+            ${strikeLine}
           </g>
         </svg>`;
     }
@@ -1315,10 +1323,11 @@
 
     /* 테이블 */
     function makeTable(rows, pageClass = '') {
-      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '', effect = '', rowColor = 'blue']) => {
+      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '', effect = '', rowColor = 'blue', strikeValue = false]) => {
         const safeNum = String(num ?? '').trim();
         const safeLabel = String(label ?? '').trim();
         const safeFootnote = String(footnote ?? '').trim();
+        const strike = strikeValue === true || String(strikeValue).trim().toUpperCase() === 'TRUE';
 
         /*
           각주 존재 여부에 따라 행 클래스 분리
@@ -1341,7 +1350,7 @@
                   ? `
                     <div class="num-wrap">
                       ${makeNumberIcon(pageClass)}
-                      ${makeNumberSVG(safeNum, rowColor)}
+                      ${makeNumberSVG(safeNum, rowColor, strike)}
                     </div>
                   `
                   : ''
@@ -1353,7 +1362,7 @@
                 <div class="label-text">
                   ${
                     safeLabel
-                      ? makeLabelSVG(safeLabel, effect)
+                      ? makeLabelSVG(safeLabel, effect, strike)
                       : ''
                   }
                 </div>
