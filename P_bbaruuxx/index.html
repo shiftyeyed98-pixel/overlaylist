@@ -671,6 +671,27 @@
     let PAGE_DATA = {};
     let scrollEnabled = true;
 
+    // CODE!L1: TRUE = 수정모드(기존 화면 유지), FALSE = 운영모드
+    const CONTROL_POLL_MS = 3000;
+    const DATA_POLL_MS = 10000;
+    const CACHE_KEY = 'pparu-overlay-last-good-20261031-v2';
+    let editMode = true; // 기본은 잠금: 상태 미확인 시 수정 데이터를 반영하지 않는다.
+    let lastDataSignature = '';
+    let lastDataCheckAt = 0;
+    let updateInProgress = false;
+    let controlInProgress = false;
+    let stateInitialized = false;
+    let controlGeneration = 0;
+    const API_SCHEMA = 'pparu-l1-v2';
+    function validateStatus(value) {
+      if (!value || value.schema !== API_SCHEMA || typeof value.editMode !== 'boolean') {
+        throw new Error('GAS 응답에 L1 제어 정보가 없습니다. GAS를 최신 버전으로 재배포하고 URL을 확인하세요.');
+      }
+      return value.editMode;
+    }
+
+
+
     /* =========================
        컬럼별 폰트 설정
        - 숫자/단가
@@ -714,16 +735,41 @@
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxhphskKi74latz91E39Np60VUDPYVlurnH4_DmG97u56nys-jr9zK5Xd_1IZ0TprZP/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbx4zS5W3QHJl3GJ8uh4b31bazbVP1ZEeOOdaN60tfel1aqbhagPnmeH-9aRhAyTFQca/exec';
     // GAS Ver 0.2 사용
 
-    async function loadSheetData() {
-
-      const res = await fetch(GAS_URL);
-
-      if (!res.ok) throw new Error(`메뉴 데이터 요청 실패: ${res.status}`);
+    async function fetchJson(mode = 'data') {
+      const url = new URL(GAS_URL);
+      url.searchParams.set('mode', mode);
+      url.searchParams.set('_', String(Date.now()));
+      const res = await fetch(url.toString(), { cache: 'no-store' });
+      if (!res.ok) throw new Error(`GAS ${mode} 요청 실패: ${res.status}`);
       const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      if (!data || data.schema !== API_SCHEMA) {
+        throw new Error('구형 GAS 응답: GAS 웹앱을 새 버전으로 배포해야 합니다.');
+      }
+      return data;
+    }
 
+    // 변경이 없으면 DOM을 재생성하지 않도록 데이터/설정 전체 비교
+    function signatureOf(data) {
+      const { editMode, ...payload } = data;
+      return JSON.stringify(payload);
+    }
+
+    function saveLastGood(data) {
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (_) {}
+    }
+
+    function getLastGood() {
+      try {
+        const saved = localStorage.getItem(CACHE_KEY);
+        return saved ? JSON.parse(saved) : null;
+      } catch (_) { return null; }
+    }
+
+    function applySheetData(data) {
       /* =========================
         스크롤 속도 적용
       ========================= */
@@ -1579,24 +1625,91 @@
       }
     }
 
-    async function init() {
-      await loadSheetData();
-      await document.fonts.ready;
+    function redrawWithNewData(data, force = false) {
+      const signature = signatureOf(data);
+      if (!force && signature === lastDataSignature) return false;
+      applySheetData(data);
       renderPages();
       applyWaveToFixedTitle();
       scheduleLayout();
-      if (scrollEnabled && typeof ResizeObserver === 'function') {
+      lastDataSignature = signature;
+      saveLastGood(data);
+      return true;
+    }
+
+    async function refreshData() {
+      if (editMode || updateInProgress || !stateInitialized) return;
+      const generation = controlGeneration;
+      updateInProgress = true;
+      try {
+        const data = await fetchJson('data');
+        // 요청 중 TRUE 전환이 일어났거나 응답이 잠금 상태면 반영 금지.
+        if (editMode || generation !== controlGeneration || validateStatus(data)) return;
+        const control = await fetchJson('status');
+        const locked = validateStatus(control);
+        if (locked) {
+          editMode = true;
+          controlGeneration++;
+          return;
+        }
+        if (!editMode && generation === controlGeneration) redrawWithNewData(data);
+      } catch (error) {
+        console.warn('메뉴 데이터 갱신 실패, 이전 화면 유지:', error);
+      } finally {
+        lastDataCheckAt = Date.now();
+        updateInProgress = false;
+      }
+    }
+
+    async function pollControl() {
+      if (controlInProgress) return;
+      controlInProgress = true;
+      try {
+        const control = await fetchJson('status');
+        const locked = validateStatus(control);
+        const wasEditing = editMode;
+        if (locked !== editMode) controlGeneration++;
+        editMode = locked;
+        stateInitialized = true;
+        if (!editMode && (wasEditing || Date.now() - lastDataCheckAt >= DATA_POLL_MS)) {
+          await refreshData();
+        }
+      } catch (error) {
+        if (!editMode) controlGeneration++;
+        editMode = true; // 네트워크 오류 또는 구형 GAS는 항상 갱신 차단.
+        console.warn('수정모드 상태 확인 실패, 메뉴 화면 고정:', error);
+      } finally {
+        controlInProgress = false;
+      }
+    }
+
+    async function init() {
+      // 정상 동작 중 마지막으로 반영된 메뉴만 캐시에 기록한다.
+      const cached = getLastGood();
+      await document.fonts.ready;
+      if (cached) redrawWithNewData(cached, true);
+      try {
+        const control = await fetchJson('status');
+        editMode = validateStatus(control);
+        stateInitialized = true;
+        if (!editMode) await refreshData();
+        // TRUE + 캐시 없음: 빈 화면 유지. 잠금된 데이터를 임의로 읽어 표시하지 않는다.
+      } catch (error) {
+        editMode = true;
+        console.warn('초기 제어 상태 확인 실패, 캐시 화면 유지:', error);
+      }
+      scheduleLayout();
+      if (typeof ResizeObserver === 'function') {
         const observer = new ResizeObserver(scheduleLayout);
         [sequenceA, fixedTopPage, fixedBottomPage].forEach(el => observer.observe(el));
       }
-      // 정지 모드는 색상 갱신과 레이아웃 측정을 완전히 분리한다.
-      if (!scrollEnabled) {
-        sequenceA.addEventListener('load', scheduleLayout, true);
-      }
+      sequenceA.addEventListener('load', scheduleLayout, true);
       window.addEventListener('resize', scheduleLayout);
+      setInterval(pollControl, CONTROL_POLL_MS);
     }
 
     init().catch(error => console.error('빠루 메뉴판 초기화 실패:', error));
+
   </script>
 </body>
 </html>
