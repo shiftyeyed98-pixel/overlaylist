@@ -674,6 +674,26 @@
     // CODE!L1: TRUE = 수정모드(기존 화면 유지), FALSE = 운영모드
     const CONTROL_POLL_MS = 3000;
     const DATA_POLL_MS = 10000;
+    const REQUEST_TIMEOUT_MS = 15000;
+    let hasRenderedData = false;
+    let loadNotice = null;
+
+    function showLoadNotice(message) {
+      if (!loadNotice) {
+        loadNotice = document.createElement('div');
+        loadNotice.setAttribute('role', 'status');
+        loadNotice.style.cssText = 'position:fixed;top:90px;left:12px;right:12px;z-index:9999;padding:12px;border-radius:8px;background:rgba(0,0,0,.85);color:#fff;font:14px/1.5 sans-serif;white-space:pre-wrap;overflow-wrap:anywhere';
+        document.body.appendChild(loadNotice);
+      }
+      loadNotice.textContent = message;
+      loadNotice.style.display = message ? 'block' : 'none';
+    }
+
+    function reportLoadError(stage, error) {
+      console.warn(stage, error);
+      // 정상 메뉴가 없을 때만 안내를 표시해 방송 중 기존 화면을 가리지 않는다.
+      if (!hasRenderedData) showLoadNotice(stage + '\n' + String(error.message || error) + '\n자동으로 다시 시도합니다.');
+    }
     const CACHE_KEY = 'pparu-overlay-last-good-20261031-v2';
     let editMode = true; // 기본은 잠금: 상태 미확인 시 수정 데이터를 반영하지 않는다.
     let lastDataSignature = '';
@@ -742,14 +762,37 @@
       const url = new URL(GAS_URL);
       url.searchParams.set('mode', mode);
       url.searchParams.set('_', String(Date.now()));
-      const res = await fetch(url.toString(), { cache: 'no-store' });
-      if (!res.ok) throw new Error(`GAS ${mode} 요청 실패: ${res.status}`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      if (!data || data.schema !== API_SCHEMA) {
-        throw new Error('구형 GAS 응답: GAS 웹앱을 새 버전으로 배포해야 합니다.');
+      const controller = new AbortController();
+      let timeout;
+      try {
+        // 응답 본문까지 제한 시간을 적용한다. 요청이 멈춰도 다음 확인은 재개한다.
+        return await Promise.race([
+          (async () => {
+            const res = await fetch(url.toString(), {
+              cache: 'no-store', signal: controller.signal
+            });
+            if (!res.ok) throw new Error(`GAS ${mode} HTTP ${res.status}`);
+            const data = await res.json();
+            if (!data || typeof data !== 'object') throw new Error('GAS 응답이 비어 있습니다.');
+            if (data.error) throw new Error(String(data.error));
+            validateStatus(data);
+            if (mode === 'data' && (!data.pages || typeof data.pages !== 'object' || Array.isArray(data.pages))) {
+              throw new Error('GAS 메뉴 응답에 pages가 없습니다.');
+            }
+            return data;
+          })(),
+          new Promise((_, reject) => {
+            timeout = setTimeout(() => {
+              reject(new Error(`GAS ${mode} 응답 시간 초과 (15초)`));
+              controller.abort();
+            }, REQUEST_TIMEOUT_MS);
+          })
+        ]);
+      } catch (error) {
+        throw new Error(`[${mode}] ${error.message || error}`);
+      } finally {
+        clearTimeout(timeout);
       }
-      return data;
     }
 
     // 변경이 없으면 DOM을 재생성하지 않도록 데이터/설정 전체 비교
@@ -1627,13 +1670,18 @@
 
     function redrawWithNewData(data, force = false) {
       const signature = signatureOf(data);
-      if (!force && signature === lastDataSignature) return false;
+      if (!force && signature === lastDataSignature) {
+        if (hasRenderedData) showLoadNotice('');
+        return false;
+      }
       applySheetData(data);
       renderPages();
       applyWaveToFixedTitle();
       scheduleLayout();
       lastDataSignature = signature;
       saveLastGood(data);
+      hasRenderedData = sequenceA.childElementCount > 0 || fixedTopPage.childElementCount > 0 || fixedBottomPage.childElementCount > 0;
+      showLoadNotice(hasRenderedData ? '' : '표시할 메뉴가 없습니다. DATA 항목과 사용 설정을 확인하세요.');
       return true;
     }
 
@@ -1654,7 +1702,7 @@
         }
         if (!editMode && generation === controlGeneration) redrawWithNewData(data);
       } catch (error) {
-        console.warn('메뉴 데이터 갱신 실패, 이전 화면 유지:', error);
+        reportLoadError('메뉴 데이터 수신 또는 화면 생성 실패', error);
       } finally {
         lastDataCheckAt = Date.now();
         updateInProgress = false;
@@ -1671,41 +1719,43 @@
         if (locked !== editMode) controlGeneration++;
         editMode = locked;
         stateInitialized = true;
+        if (editMode && !hasRenderedData) showLoadNotice('수정모드입니다. CODE!L1 체크를 해제하면 메뉴를 불러옵니다.');
         if (!editMode && (wasEditing || Date.now() - lastDataCheckAt >= DATA_POLL_MS)) {
           await refreshData();
         }
       } catch (error) {
         if (!editMode) controlGeneration++;
         editMode = true; // 네트워크 오류 또는 구형 GAS는 항상 갱신 차단.
-        console.warn('수정모드 상태 확인 실패, 메뉴 화면 고정:', error);
+        reportLoadError('GAS 상태 확인 실패', error);
       } finally {
         controlInProgress = false;
       }
     }
 
     async function init() {
-      // 정상 동작 중 마지막으로 반영된 메뉴만 캐시에 기록한다.
+      // 폰트/캐시/첫 요청이 실패해도 주기적인 제어 확인은 계속된다.
+      setInterval(pollControl, CONTROL_POLL_MS);
+      showLoadNotice('메뉴 데이터를 불러오는 중입니다.');
       const cached = getLastGood();
-      await document.fonts.ready;
-      if (cached) redrawWithNewData(cached, true);
-      try {
-        const control = await fetchJson('status');
-        editMode = validateStatus(control);
-        stateInitialized = true;
-        if (!editMode) await refreshData();
-        // TRUE + 캐시 없음: 빈 화면 유지. 잠금된 데이터를 임의로 읽어 표시하지 않는다.
-      } catch (error) {
-        editMode = true;
-        console.warn('초기 제어 상태 확인 실패, 캐시 화면 유지:', error);
+      if (cached) {
+        try { redrawWithNewData(cached, true); }
+        catch (error) { reportLoadError('저장된 메뉴 표시 실패', error); }
       }
-      scheduleLayout();
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          textWidthCache.clear();
+          if (hasRenderedData) { renderPages(); applyWaveToFixedTitle(); }
+          scheduleLayout();
+        }).catch(error => console.warn('폰트 확인 실패:', error));
+      }
       if (typeof ResizeObserver === 'function') {
         const observer = new ResizeObserver(scheduleLayout);
         [sequenceA, fixedTopPage, fixedBottomPage].forEach(el => observer.observe(el));
       }
       sequenceA.addEventListener('load', scheduleLayout, true);
       window.addEventListener('resize', scheduleLayout);
-      setInterval(pollControl, CONTROL_POLL_MS);
+      scheduleLayout();
+      await pollControl();
     }
 
     init().catch(error => console.error('빠루 메뉴판 초기화 실패:', error));
