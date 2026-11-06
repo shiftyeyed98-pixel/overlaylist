@@ -3,21 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=400, height=1080, initial-scale=1.0" />
-  <title> 빠루 :::: (너비400, 높이1080) </title>
+  <meta name="viewport" content="width=400, height=970, initial-scale=1.0" />
+  <title> 팬더 이지아 :::: (너비400, 높이1080) </title>
   <style>
 
     @font-face {
-        font-family: 'GeekbleMalrangiche';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302_01@1.0/GeekbleMalang2WOFF2.woff2') format('woff2');
+        font-family: 'YeogiOttaeJalnan';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
         font-weight: normal;
         font-display: swap;
     }
 
     @font-face {
-        font-family: 'Netmarble';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.1/netmarbleB.woff') format('woff');
-        font-weight: 400;
+        font-family: 'CookieRun';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.0/CookieRunOTF-Bold00.woff') format('woff');
+        font-weight: 700;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'GMarketSans';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+        font-weight: 500;
         font-display: swap;
     }
     
@@ -26,7 +33,7 @@
       --h: 1080px;
       --row-gap: 4px;
       --icon-col: 34px;
-      --num-col: 80px;
+      --num-col: 90px;
       --num-icon-size: 22px;
       --svg-h: 30px;
       --page-gap: 10px;
@@ -34,8 +41,6 @@
       --sequence-height: 1000px;
       --outline: 5;
       --scale: 1.0;
-      --fixed-top-width: 85%;
-      --fixed-bottom-width: 85%;
 
       /* ===== 고정 타이틀 영역 ===== */
       --fixed-title-h: 36px;
@@ -65,7 +70,7 @@
     }
 
     body {
-      font-family: 'GeekbleMalrangiche', 'Netmarble', Arial, sans-serif;
+      font-family: 'YeogiOttaeJalnan', 'GMarketSans', Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       background: transparent !important;
@@ -123,36 +128,6 @@
       flex-direction: column;
       will-change: transform;
       animation: riseLoop var(--loop-seconds) linear infinite;
-      animation-play-state: paused; /* 설정을 읽기 전에는 움직이지 않음 */
-    }
-
-    /* 정지 모드에서는 위치 이동을 차단하고 색상 효과는 유지한다. */
-    html[data-scroll-mode="static"] .track {
-      animation: none !important;
-      transition: none !important;
-      position: relative !important;
-      top: 0 !important;
-      left: 0 !important;
-      transform: none !important;
-      will-change: auto;
-    }
-    /* 정지 모드: 모든 애니메이션 차단 후 색상 전용 효과만 허용한다. */
-    html[data-scroll-mode="static"] .sequence,
-    html[data-scroll-mode="static"] .sequence * {
-      animation: none !important;
-      transition: none !important;
-    }
-    html[data-scroll-mode="static"] .waveChar {
-      transform: none !important;
-    }
-    html[data-scroll-mode="static"] .e-colorshift text {
-      animation: colorShift 1.6s linear infinite !important;
-    }
-    html[data-scroll-mode="static"] .page-title.e-colorshift .page-title-text {
-      animation: titleColorShift 1.6s linear infinite !important;
-    }
-    html[data-scroll-mode="static"] #sequenceB {
-      display: none !important;
     }
 
     .sequence {
@@ -281,9 +256,9 @@
       margin: 0 0 6px 0;
       text-align: center;
 
-      font-family: 'GeekbleMalrangiche', 'Netmarble', Arial, sans-serif;
+      font-family: 'YeogiOttaeJalnan', 'GMarketSans', Arial, sans-serif;
       font-size: 28px;
-      font-weight: 400;
+      font-weight: 500;
       color: #ffffff;
 
       border: 2px solid currentColor;
@@ -302,10 +277,6 @@
     .page-title-text {
       display: inline-block;
       min-width: 0;
-      line-height: 1;
-      /* 말랑이체의 아래로 치우친 글자 위치를 보정 */
-      position: relative;
-      top: -3px;
     }
 
     /*
@@ -455,7 +426,7 @@
       align-items: center;
       justify-content: center;
 
-      font-family: 'GeekbleMalrangiche', 'Netmarble', Arial, sans-serif;
+      font-family: 'YeogiOttaeJalnan', 'GMarketSans', Arial, sans-serif;
       font-size: 10px;
       font-weight: 100;
       color: #ffffff;
@@ -514,7 +485,7 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + 4px);
-      width: calc(var(--fixed-top-width) - var(--fixed-page-side-gap));
+      width: calc(75% - (var(--fixed-page-side-gap) * 1));
 
       z-index: 40;
 
@@ -531,7 +502,7 @@
       position: absolute;
       left: var(--fixed-page-side-gap);
       bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom) + 0px);
-      width: calc(var(--fixed-bottom-width) - var(--fixed-page-side-gap));  /* 고정 페이지 유리효과 가로 폭사이즈 */
+      width: calc(75% - (var(--fixed-page-side-gap) * 1));  /* 고정 페이지 유리효과 가로 폭사이즈 */
 
       z-index: 40;
 
@@ -581,12 +552,28 @@
   </style>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <filter id="globalShadow"
+              x="-30%"
+              y="-30%"
+              width="160%"
+              height="160%">
+        <feDropShadow
+          dx="0"
+          dy="0"
+          stdDeviation="0.0"
+          flood-color="#ffffff"
+          flood-opacity="0"/>
+      </filter>
+    </defs>
+  </svg>
   <div class="overlay">
 
     <div class="content-scale">
 
       <div class="fixed-title-wrap">
-        <div class="page-title title-gray"><span class="page-title-text">빠루</span></div>
+        <div class="page-title title-blue"> 이지아ෆ 메뉴 </div>
       </div>
 
       <div class="viewport">
@@ -669,28 +656,6 @@
       });
 
     let PAGE_DATA = {};
-    let scrollEnabled = true;
-
-    // CODE!L1: TRUE = 수정모드(기존 화면 유지), FALSE = 운영모드
-    const CONTROL_POLL_MS = 3000;
-    const DATA_POLL_MS = 10000;
-    const CACHE_KEY = 'pparu-overlay-last-good-20261031-v2';
-    let editMode = true; // 기본은 잠금: 상태 미확인 시 수정 데이터를 반영하지 않는다.
-    let lastDataSignature = '';
-    let lastDataCheckAt = 0;
-    let updateInProgress = false;
-    let controlInProgress = false;
-    let stateInitialized = false;
-    let controlGeneration = 0;
-    const API_SCHEMA = 'pparu-l1-v2';
-    function validateStatus(value) {
-      if (!value || value.schema !== API_SCHEMA || typeof value.editMode !== 'boolean') {
-        throw new Error('GAS 응답에 L1 제어 정보가 없습니다. GAS를 최신 버전으로 재배포하고 URL을 확인하세요.');
-      }
-      return value.editMode;
-    }
-
-
 
     /* =========================
        컬럼별 폰트 설정
@@ -700,21 +665,21 @@
     ========================= */
 
     const NUMBER_FONT =
-      'GeekbleMalrangiche, Arial, sans-serif';
+      'YeogiOttaeJalnan, Arial, sans-serif';
 
     const LABEL_FONT =
-      'GeekbleMalrangiche, Arial, sans-serif';
+      'YeogiOttaeJalnan, Arial, sans-serif';
 
     const FOOTNOTE_FONT =
-      'GeekbleMalrangiche, Arial, sans-serif';
+      'NanumSquareRound, YeogiOttaeJalnan, Arial, sans-serif';
       
     const STROKE = getComputedStyle(document.documentElement)
       .getPropertyValue('--outline')
       .trim() || 5;
-    const ICON_PUNG_P1 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
-    const ICON_PUNG_P2 = 'https://i.imgur.com/l0gSwJk.png'; //핑크하트
-    const ICON_PUNG_P3 = 'https://i.imgur.com/D0ldyfG.png'; //주황하트
-    const ICON_PUNG_P4 = 'https://i.imgur.com/12lhyTv.png'; //노랑하트
+    const ICON_PUNG_P1 = 'https://i.imgur.com/cBt4rIi.png'; //파랑하트
+    const ICON_PUNG_P2 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
+    const ICON_PUNG_P3 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
+    const ICON_PUNG_P4 = 'https://i.imgur.com/qGz1W0y.png'; //회색하트
     const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
  // const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //빨강
  // const ICON_PUNG_P6 = 'https://i.imgur.com/cBt4rIi.png'; //파랑
@@ -726,8 +691,8 @@
         'page1': ICON_PUNG_P1,
         'page2': ICON_PUNG_P2,
         'page3': ICON_PUNG_P3,
-        'page4': ICON_PUNG_P4,
-        'page5': ICON_PUNG_P5
+        'page4': ICON_PUNG_P4
+//       'page5': ICON_PUNG_P5
     };
 
     let FIXED_PAGE_KEYS = [];
@@ -735,63 +700,25 @@
     let PAGE_ICON_ENABLED_MAP = {};
     // 고정 페이지 설정
 
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz1DXGBPoSvQ9ScsCCqdNZrrMkVHP7X4WCauGQuOZ0gkNtCQxJEz19XtfyGSfJr_tPdRw/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyw7SqT2XSrkSs6GMU5RdYcJemsHHnu_rXc5ooNDQr76ngrKrEDwZ-737UpKVpYf-xj/exec';
     // GAS Ver 0.2 사용
 
-    async function fetchJson(mode = 'data') {
-      const url = new URL(GAS_URL);
-      url.searchParams.set('mode', mode);
-      url.searchParams.set('_', String(Date.now()));
-      const res = await fetch(url.toString(), { cache: 'no-store' });
-      if (!res.ok) throw new Error(`GAS ${mode} 요청 실패: ${res.status}`);
+    async function loadSheetData() {
+
+      const res = await fetch(GAS_URL);
+
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      if (!data || data.schema !== API_SCHEMA) {
-        throw new Error('구형 GAS 응답: GAS 웹앱을 새 버전으로 배포해야 합니다.');
-      }
-      return data;
-    }
 
-    // 변경이 없으면 DOM을 재생성하지 않도록 데이터/설정 전체 비교
-    function signatureOf(data) {
-      const { editMode, ...payload } = data;
-      return JSON.stringify(payload);
-    }
-
-    function saveLastGood(data) {
-      try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (_) {}
-    }
-
-    function getLastGood() {
-      try {
-        const saved = localStorage.getItem(CACHE_KEY);
-        return saved ? JSON.parse(saved) : null;
-      } catch (_) { return null; }
-    }
-
-    function applySheetData(data) {
       /* =========================
         스크롤 속도 적용
       ========================= */
 
-      const speedMissing = data.scrollSeconds == null;
-      const requestedSeconds = speedMissing ? 60 : Number(data.scrollSeconds);
-      const scrollSeconds = Number.isFinite(requestedSeconds) && requestedSeconds >= 0
-        ? requestedSeconds : 60;
-      scrollEnabled = scrollSeconds > 0;
-      document.documentElement.setAttribute('data-scroll-mode', scrollEnabled ? 'scroll' : 'static');
-      const style = document.documentElement.style;
-      // 0초 애니메이션 대신 일시정지하여 첫 화면을 유지한다.
-      style.setProperty('--loop-seconds', `${scrollEnabled ? scrollSeconds : 60}s`);
-      const scale = Number(data.scale);
-      style.setProperty('--scale', `${Number.isFinite(scale) && scale > 0 ? scale : 1}`);
-      for (const [name, raw] of [
-        ['--fixed-top-width', data.fixedTopWidthPercent],
-        ['--fixed-bottom-width', data.fixedBottomWidthPercent]
-      ]) {
-        const value = Number(raw);
-        style.setProperty(name, `${Number.isFinite(value) && value > 0 && value <= 100 ? value : 85}%`);
-      }
+      const scrollSeconds = Number(data.scrollSeconds || 60);
+
+      document.documentElement.style.setProperty(
+        '--loop-seconds',
+        `${scrollSeconds}s`
+      );
 
       /* =========================
         고정 페이지 처리
@@ -830,8 +757,8 @@
       ========================= */
 
       PAGE_DATA = Object.fromEntries(
-        Object.entries(data.pages || {}).filter(([_, pageObj]) =>
-          pageObj && Array.isArray(pageObj.rows) &&
+        Object.entries(data.pages).filter(([_, pageObj]) =>
+          pageObj.rows &&
           pageObj.rows.length > 0 &&
           pageObj.enabled !== false
         )
@@ -882,9 +809,14 @@
         .join('');
     }
 
+    function numWidth(len) {
+      if (len >= 4) return 92;
+      if (len === 3) return 76;
+      return 58;
+    }
 
     /* 컬러맵 */
-    function getFillColor(variant = 'gray') {
+    function getFillColor(variant = 'blue') {
       const COLOR_MAP = {
         gray: '#bfbfbf',
         pink: '#FAB0C1',
@@ -904,13 +836,13 @@
     }
 
     /* 단가 */
-    function makeNumberSVG(num, variant = 'blue', strike = false) {
+    function makeNumberSVG(num, variant = 'blue') {
       const measured =
         measureMultilineTextWidth(
           num,
           28,
           NUMBER_FONT,
-          400
+          300
         );
 
       const width = Math.max(
@@ -920,9 +852,6 @@
       const t = esc(num);
 
       const fillColor = getFillColor(variant);
-      const strikeLine = strike
-        ? `<line x1="10" y1="13" x2="${10 + measured}" y2="13" stroke="#ff5252" stroke-width="5" stroke-linecap="round" />`
-        : '';
 
       return `
         <svg class="num-svg" viewBox="0 0 ${width} 34" xmlns="http://www.w3.org/2000/svg" aria-label="${t}" role="img">
@@ -931,32 +860,43 @@
             text-anchor="start"
             font-family="${NUMBER_FONT}"
             font-size="28"
-            font-weight="400"
+            font-weight="300"
             stroke="#000000"
             stroke-width="${STROKE}"
             stroke-linejoin="round"
             paint-order="stroke fill"
+            filter="url(#globalShadow)"
             fill="${fillColor}">${t}</text>
-            ${strikeLine}
           </g>
         </svg>`;
     }
     /* 텍스트 */
-    const textWidthCache = new Map();
-    const measureContext = document.createElement('canvas').getContext('2d');
+    const textWidthCache = {};
 
     function measureTextWidth(
       text,
-      fontSize = 32,
+      fontSize = 28,
       fontFamily = LABEL_FONT,
-      fontWeight = 400
+      fontWeight = 300
     ) {
 
-      const key = JSON.stringify([text, fontSize, fontFamily, fontWeight]);
-      if (textWidthCache.has(key)) return textWidthCache.get(key);
-      measureContext.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-      const width = Math.ceil(measureContext.measureText(text).width);
-      textWidthCache.set(key, width);
+      const key = `${text}_${fontSize}_${fontFamily}_${fontWeight}`;
+
+      if (textWidthCache[key]) {
+        return textWidthCache[key];
+      }
+
+      const canvas =
+        measureTextWidth.canvas ||
+        (measureTextWidth.canvas = document.createElement('canvas'));
+
+      const ctx = canvas.getContext('2d');
+
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+
+      const width = Math.ceil(ctx.measureText(text).width);
+
+      textWidthCache[key] = width;
 
       return width;
     }
@@ -971,9 +911,9 @@
 
       function measureMultilineTextWidth(
         value,
-        fontSize = 32,
+        fontSize = 28,
         fontFamily = LABEL_FONT,
-        fontWeight = 400
+        fontWeight = 300
       ) {
 
         /*
@@ -1012,23 +952,20 @@
         );
       }
 
-    function makeLabelSVG(label, effect = '', strike = false) {
+    function makeLabelSVG(label, effect = '') {
       const t = esc(label);
       const measured =
       measureMultilineTextWidth(
         label,
-        30,
+        28,
         LABEL_FONT,
-        400
+        300
       );
-      const w = Math.max(40, measured + 25);
-      const strikeLine = strike
-        ? `<line x1="15" y1="13" x2="${15 + measured}" y2="13" stroke="#ff5252" stroke-width="5" stroke-linecap="round" />`
-        : '';
+      const w = Math.max(40, measured + 10);
 
       return `
         <svg
-          class="label-svg ${normalizeEffectClass(effect)}"
+          class="label-svg ${effect === 'e_colorshift' || effect === 'e-colorshift' ? 'e-colorshift' : ''}"
           viewBox="0 0 ${w} 34"
           xmlns="http://www.w3.org/2000/svg"
           aria-label="${t}"
@@ -1036,17 +973,17 @@
           preserveAspectRatio="xMinYMid meet">
 
           <g transform="scale(1.0 1)">
-            <text x="15" y="22"
+            <text x="15" y="23"
               text-anchor="start"
               font-family="${LABEL_FONT}"
-              font-size="30"
-              font-weight="400"
+              font-size="28"
+              font-weight="300"
               stroke="#000000"
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
-                fill="#ffffff">${t}</text>
-            ${strikeLine}
+              filter="url(#globalShadow)"
+              fill="#ffffff">${t}</text>
           </g>
         </svg>`;
     }
@@ -1069,7 +1006,7 @@
         Math.max(1, lines.length);
 
       const fontSize = 22;
-      const fontWeight = 300;
+      const fontWeight = 400;
 
       /*
         각주 줄 사이의 간격
@@ -1126,13 +1063,14 @@
               stroke-width="${STROKE}"
               stroke-linejoin="round"
               paint-order="stroke fill"
-                fill="#ffffff">
+              filter="url(#globalShadow)"
+              fill="#ffffff">
 
               ${makeTspans(
                 normalizedFootnote,
                 {
-                  x: 100,
-                  firstY: 22,
+                  x: 110,
+                  firstY: 19,
                   lineHeight: lineHeight
                 }
               )}
@@ -1369,11 +1307,10 @@
 
     /* 테이블 */
     function makeTable(rows, pageClass = '') {
-      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '', effect = '', rowColor = 'blue', strikeValue = false]) => {
+      const bodyHTML = rows.map(([num, label, iconType = '', footnote = '', effect = '', rowColor = 'blue']) => {
         const safeNum = String(num ?? '').trim();
         const safeLabel = String(label ?? '').trim();
         const safeFootnote = String(footnote ?? '').trim();
-        const strike = strikeValue === true || String(strikeValue).trim().toUpperCase() === 'TRUE';
 
         /*
           각주 존재 여부에 따라 행 클래스 분리
@@ -1396,7 +1333,7 @@
                   ? `
                     <div class="num-wrap">
                       ${makeNumberIcon(pageClass)}
-                      ${makeNumberSVG(safeNum, rowColor, strike)}
+                      ${makeNumberSVG(safeNum, rowColor)}
                     </div>
                   `
                   : ''
@@ -1408,7 +1345,7 @@
                 <div class="label-text">
                   ${
                     safeLabel
-                      ? makeLabelSVG(safeLabel, effect, strike)
+                      ? makeLabelSVG(safeLabel, effect)
                       : ''
                   }
                 </div>
@@ -1471,55 +1408,100 @@
         </div>`;
     }
 
-    // 각 페이지를 한 번만 생성하고 고정/스크롤 영역에 직접 배치한다.
-    function renderPages() {
-      const pages = new Map();
-      for (const [key, page] of Object.entries(PAGE_DATA)) {
-        pages.set(key, makePage(
-          page.title, `title-${page.titleColor || 'gray'}`, page.rows, key,
-          page.titleVisible !== false, page.categoryEffect || '', page.categoryIcon || ''
-        ));
-      }
-      // 정지 모드: 고정 페이지도 시트 순서로 합치고 반복 복제를 만들지 않는다.
-      if (!scrollEnabled) {
-        sequenceA.innerHTML = Array.from(pages.values()).join(
-          '<div class="page-gap" aria-hidden="true"></div>'
-        );
-        sequenceB.innerHTML = '';
-        sequenceB.style.display = 'none';
-        fixedTopPage.innerHTML = '';
-        fixedBottomPage.innerHTML = '';
-        fixedTopPage.style.display = 'none';
-        fixedBottomPage.style.display = 'none';
-        track.style.animation = 'none';
-        track.style.transform = 'none';
-        return;
-      }
-      sequenceB.style.display = '';
-      sequenceA.style.transform = '';
-      track.style.animation = '';
-      track.style.transform = '';
-      const fixedKeys = new Set(FIXED_PAGE_KEYS);
-      const scrolling = [];
-      for (const [key, html] of pages) {
-        if (!fixedKeys.has(key)) scrolling.push(html, '<div class="page-gap" aria-hidden="true"></div>');
-      }
-      const top = [];
-      const bottom = [];
-      for (const key of fixedKeys) {
-        if (!pages.has(key)) continue;
-        const position = String(FIXED_PAGE_POSITION_MAP[key] || 'bottom').trim().toLowerCase();
-        (position === '상단' || position === 'top' ? top : bottom).push(pages.get(key));
-      }
-      const html = scrolling.join('');
-      sequenceA.innerHTML = html;
-      sequenceB.innerHTML = html;
-      fixedTopPage.innerHTML = top.join('');
-      fixedBottomPage.innerHTML = bottom.join('');
-      fixedTopPage.style.display = top.length ? 'block' : 'none';
-      fixedBottomPage.style.display = bottom.length ? 'block' : 'none';
-      track.style.animationPlayState = scrollEnabled && scrolling.length ? 'running' : 'paused';
+    function makeSequenceHTML() {
+
+      return Object.entries(PAGE_DATA)
+        .map(([pageKey, pageObj]) => {
+
+          /*
+            CODE C6:N6 기준
+            카테고리 분류 박스 색상
+          */
+          const titleColor = pageObj.titleColor || 'blue';
+
+          return `
+            ${makePage(
+              pageObj.title,
+              `title-${titleColor}`,
+              pageObj.rows,
+              pageKey,
+              pageObj.titleVisible !== false,
+              pageObj.categoryEffect || '',
+              pageObj.categoryIcon || ''
+            )}
+            <div class="page-gap" aria-hidden="true"></div>
+          `;
+        })
+        .join('');
     }
+
+    function extractFixedPage() {
+
+      if (!FIXED_PAGE_KEYS.length) return;
+
+      const fixedTopContainer = document.getElementById('fixedTopPage');
+      const fixedBottomContainer = document.getElementById('fixedBottomPage');
+
+      let topHTML = '';
+      let bottomHTML = '';
+
+      FIXED_PAGE_KEYS.forEach(pageKey => {
+
+        const target = sequenceA.querySelector(
+          `[data-page="${pageKey}"]`
+        );
+
+        if (!target) return;
+
+        const rawPosition = String(
+          FIXED_PAGE_POSITION_MAP[pageKey] || 'bottom'
+        ).trim();
+
+        const position =
+          rawPosition === '상단' ? 'top' :
+          rawPosition === '하단' ? 'bottom' :
+          rawPosition.toLowerCase();
+
+        if (position === 'top') {
+          topHTML += target.outerHTML;
+        } else {
+          bottomHTML += target.outerHTML;
+        }
+
+        // 스크롤 영역에서 제거
+        [sequenceA, sequenceB].forEach(seq => {
+
+          const el = seq.querySelector(
+            `[data-page="${pageKey}"]`
+          );
+
+          if (!el) return;
+
+          const next = el.nextElementSibling;
+
+          el.remove();
+
+          if (next && next.classList.contains('page-gap')) {
+            next.remove();
+          }
+        });
+
+      });
+
+      fixedTopContainer.innerHTML = topHTML;
+      fixedBottomContainer.innerHTML = bottomHTML;
+    }
+
+    /* 추가 */
+    function removeLeadingGap(seq) {
+
+      const first = seq.firstElementChild;
+
+      if (first && first.classList.contains('page-gap')) {
+        first.remove();
+      }
+    }
+
 
     function applyWaveToFixedTitle() {
 
@@ -1534,7 +1516,7 @@
 
         if (!fixedContainer) return;
 
-        const titles = fixedContainer.querySelectorAll('.page-title-text');
+        const titles = fixedContainer.querySelectorAll('.page-title');
 
         titles.forEach(titleEl => {
 
@@ -1542,7 +1524,7 @@
 
           titleEl.innerHTML = Array.from(text).map((c, i) =>
             `<span class="waveChar"
-              style="animation-delay:${i * 0.08}s">${esc(c)}</span>`
+              style="animation-delay:${i * 0.08}s">${c}</span>`
           ).join('');
 
         });
@@ -1572,143 +1554,91 @@
         ) + 12;
       }
 
-      const style = document.documentElement.style;
-      for (const [name, value] of [['--fixed-top-page-h', `${topH}px`], ['--fixed-bottom-page-h', `${bottomH}px`]]) {
-        if (style.getPropertyValue(name) !== value) style.setProperty(name, value);
-      }
+      document.documentElement.style.setProperty(
+        '--fixed-top-page-h',
+        `${topH}px`
+      );
+
+      document.documentElement.style.setProperty(
+        '--fixed-bottom-page-h',
+        `${bottomH}px`
+      );
     }
 
     const sequenceA = document.getElementById('sequenceA');
     const sequenceB = document.getElementById('sequenceB');
-    const fixedTopPage = document.getElementById('fixedTopPage');
-    const fixedBottomPage = document.getElementById('fixedBottomPage');
-    const track = document.getElementById('track');
-    let layoutFrame = 0;
+    
+    async function init() {
 
-    // 한 프레임 안에 들어온 크기 변경은 한 번만 측정한다.
-    function scheduleLayout() {
-      if (layoutFrame) return;
-      layoutFrame = requestAnimationFrame(() => {
-        layoutFrame = 0;
-        adjustViewportHeight();
-        if (scrollEnabled) updateLoopHeight();
-        else fitStaticPage();
+      await loadSheetData();
+
+      /* 웹폰트 로딩 완료 대기 */
+      await document.fonts.ready;
+
+      sequenceA.innerHTML = makeSequenceHTML();
+      sequenceB.innerHTML = makeSequenceHTML();
+
+      extractFixedPage();
+
+      /* 추가 */
+      removeLeadingGap(sequenceA);
+      removeLeadingGap(sequenceB);
+
+      const fixedTopPage = document.getElementById('fixedTopPage');
+      const fixedBottomPage = document.getElementById('fixedBottomPage');
+
+      fixedTopPage.style.display =
+        fixedTopPage.innerHTML.trim() ? 'block' : 'none';
+
+      fixedBottomPage.style.display =
+        fixedBottomPage.innerHTML.trim() ? 'block' : 'none';
+
+      applyWaveToFixedTitle();
+
+      adjustViewportHeight();
+
+      /* 렌더 완료 후 한번 더 보정 */
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          adjustViewportHeight();
+          updateLoopHeight();
+        });
       });
     }
 
     function getScale() {
-      return parseFloat(getComputedStyle(document.documentElement)
-        .getPropertyValue('--scale')) || 1;
+      return parseFloat(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--scale')
+      ) || 1;
     }
 
-    // 설정 배율을 유지하되, 목록이 넘칠 때만 한 화면에 들어가도록 축소한다.
-    // offset/scroll 크기는 transform의 영향을 받지 않아 반복 측정해도 누적 축소되지 않는다.
-    function fitStaticPage() {
-      const viewport = document.querySelector('.viewport');
-      const width = Math.max(sequenceA.offsetWidth, sequenceA.scrollWidth);
-      const height = Math.max(sequenceA.offsetHeight, sequenceA.scrollHeight);
-      const ratio = Math.min(1,
-        width > 0 ? viewport.clientWidth / width : 1,
-        height > 0 ? viewport.clientHeight / height : 1
-      );
-      sequenceA.style.transformOrigin = 'top left';
-      const fitted = `scale(${Math.floor(ratio * 1000000) / 1000000})`;
-      if (sequenceA.style.transform !== fitted) sequenceA.style.transform = fitted;
+    init();
+
+    if (!FIXED_PAGE_KEYS.length) {
+      document.getElementById('fixedTopPage').style.display = 'none';
+      document.getElementById('fixedBottomPage').style.display = 'none';
     }
 
     function updateLoopHeight() {
-      const height = Math.ceil(sequenceA.getBoundingClientRect().height / getScale());
-      const value = `${height}px`;
-      const style = document.documentElement.style;
-      if (style.getPropertyValue('--sequence-height') !== value) {
-        style.setProperty('--sequence-height', value);
-      }
+
+      const scale = getScale();
+
+      const h =
+        sequenceA.getBoundingClientRect().height / scale;
+
+      document.documentElement.style.setProperty(
+        '--sequence-height',
+        `${Math.ceil(h)}px`
+      );
     }
 
-    function redrawWithNewData(data, force = false) {
-      const signature = signatureOf(data);
-      if (!force && signature === lastDataSignature) return false;
-      applySheetData(data);
-      renderPages();
-      applyWaveToFixedTitle();
-      scheduleLayout();
-      lastDataSignature = signature;
-      saveLastGood(data);
-      return true;
-    }
+      window.addEventListener('load', () => {
+        updateLoopHeight();
 
-    async function refreshData() {
-      if (editMode || updateInProgress || !stateInitialized) return;
-      const generation = controlGeneration;
-      updateInProgress = true;
-      try {
-        const data = await fetchJson('data');
-        // 요청 중 TRUE 전환이 일어났거나 응답이 잠금 상태면 반영 금지.
-        if (editMode || generation !== controlGeneration || validateStatus(data)) return;
-        const control = await fetchJson('status');
-        const locked = validateStatus(control);
-        if (locked) {
-          editMode = true;
-          controlGeneration++;
-          return;
-        }
-        if (!editMode && generation === controlGeneration) redrawWithNewData(data);
-      } catch (error) {
-        console.warn('메뉴 데이터 갱신 실패, 이전 화면 유지:', error);
-      } finally {
-        lastDataCheckAt = Date.now();
-        updateInProgress = false;
-      }
-    }
-
-    async function pollControl() {
-      if (controlInProgress) return;
-      controlInProgress = true;
-      try {
-        const control = await fetchJson('status');
-        const locked = validateStatus(control);
-        const wasEditing = editMode;
-        if (locked !== editMode) controlGeneration++;
-        editMode = locked;
-        stateInitialized = true;
-        if (!editMode && (wasEditing || Date.now() - lastDataCheckAt >= DATA_POLL_MS)) {
-          await refreshData();
-        }
-      } catch (error) {
-        if (!editMode) controlGeneration++;
-        editMode = true; // 네트워크 오류 또는 구형 GAS는 항상 갱신 차단.
-        console.warn('수정모드 상태 확인 실패, 메뉴 화면 고정:', error);
-      } finally {
-        controlInProgress = false;
-      }
-    }
-
-    async function init() {
-      // 정상 동작 중 마지막으로 반영된 메뉴만 캐시에 기록한다.
-      const cached = getLastGood();
-      await document.fonts.ready;
-      if (cached) redrawWithNewData(cached, true);
-      try {
-        const control = await fetchJson('status');
-        editMode = validateStatus(control);
-        stateInitialized = true;
-        if (!editMode) await refreshData();
-        // TRUE + 캐시 없음: 빈 화면 유지. 잠금된 데이터를 임의로 읽어 표시하지 않는다.
-      } catch (error) {
-        editMode = true;
-        console.warn('초기 제어 상태 확인 실패, 캐시 화면 유지:', error);
-      }
-      scheduleLayout();
-      if (typeof ResizeObserver === 'function') {
-        const observer = new ResizeObserver(scheduleLayout);
-        [sequenceA, fixedTopPage, fixedBottomPage].forEach(el => observer.observe(el));
-      }
-      sequenceA.addEventListener('load', scheduleLayout, true);
-      window.addEventListener('resize', scheduleLayout);
-      setInterval(pollControl, CONTROL_POLL_MS);
-    }
-
-    init().catch(error => console.error('빠루 메뉴판 초기화 실패:', error));
+        setTimeout(updateLoopHeight, 300);
+        setTimeout(updateLoopHeight, 1000);
+      });
 
   </script>
 </body>
