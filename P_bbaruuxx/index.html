@@ -758,41 +758,51 @@
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbx-g7iLEl6xrathC7Ul2moG2X2Aykumz-ZDBQc9FINrgCoIVM-m99FLSfS0I0Y72Dv3/exec';
     // GAS Ver 0.2 사용
 
-    async function fetchJson(mode = 'data') {
-      const url = new URL(GAS_URL);
-      url.searchParams.set('mode', mode);
-      url.searchParams.set('_', String(Date.now()));
-      const controller = new AbortController();
-      let timeout;
-      try {
-        // 응답 본문까지 제한 시간을 적용한다. 요청이 멈춰도 다음 확인은 재개한다.
-        return await Promise.race([
-          (async () => {
-            const res = await fetch(url.toString(), {
-              cache: 'no-store', signal: controller.signal
-            });
-            if (!res.ok) throw new Error(`GAS ${mode} HTTP ${res.status}`);
-            const data = await res.json();
+    let jsonpSequence = 0;
+    function fetchJson(mode = 'data') {
+      return new Promise((resolve, reject) => {
+        const callback = `pparu_cb_${Date.now()}_${++jsonpSequence}`;
+        const url = new URL(GAS_URL);
+        url.searchParams.set('mode', mode);
+        url.searchParams.set('callback', callback);
+        url.searchParams.set('_', String(Date.now()));
+        const script = document.createElement('script');
+        let settled = false;
+        let timeout;
+        function finish(error, data) {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timeout);
+          script.onload = script.onerror = null;
+          script.remove();
+          // 시간 초과 뒤 늦게 도착한 응답도 화면을 변경하지 않는다.
+          window[callback] = () => {};
+          setTimeout(() => { delete window[callback]; }, 60000);
+          if (error) reject(new Error(`[${mode}] ${error.message || error}`));
+          else resolve(data);
+        }
+        window[callback] = data => {
+          try {
             if (!data || typeof data !== 'object') throw new Error('GAS 응답이 비어 있습니다.');
             if (data.error) throw new Error(String(data.error));
             validateStatus(data);
-            if (mode === 'data' && (!data.pages || typeof data.pages !== 'object' || Array.isArray(data.pages))) {
+            if (mode === 'data' && !data.editMode &&
+                (!data.pages || typeof data.pages !== 'object' || Array.isArray(data.pages))) {
               throw new Error('GAS 메뉴 응답에 pages가 없습니다.');
             }
-            return data;
-          })(),
-          new Promise((_, reject) => {
-            timeout = setTimeout(() => {
-              reject(new Error(`GAS ${mode} 응답 시간 초과 (15초)`));
-              controller.abort();
-            }, REQUEST_TIMEOUT_MS);
-          })
-        ]);
-      } catch (error) {
-        throw new Error(`[${mode}] ${error.message || error}`);
-      } finally {
-        clearTimeout(timeout);
-      }
+            finish(null, data);
+          } catch (error) { finish(error); }
+        };
+        script.async = true;
+        script.src = url.toString();
+        script.onerror = () => finish(new Error('GAS JSONP 연결 실패. 웹앱 배포와 네트워크를 확인하세요.'));
+        script.onload = () => {
+          if (!settled) finish(new Error('JSONP 응답이 없습니다. GAS를 JSONP 지원 버전으로 재배포하세요.'));
+        };
+        timeout = setTimeout(() => finish(new Error('GAS JSONP 응답 시간 초과 (15초)')), REQUEST_TIMEOUT_MS);
+        try { document.head.appendChild(script); }
+        catch (error) { finish(error); }
+      });
     }
 
     // 변경이 없으면 DOM을 재생성하지 않도록 데이터/설정 전체 비교
