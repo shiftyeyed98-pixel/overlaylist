@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=400, height=1080, initial-scale=1.0" />
+  <title>빠루 :::: (너비400, 높이1080)</title>
+
+  <style>
+    @font-face {
+      font-family: 'GeekbleMalrangiche';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302_01@1.0/GeekbleMalang2WOFF2.woff2') format('woff2');
+      font-weight: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Netmarble';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.1/netmarbleB.woff') format('woff');
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    :root {
+      --w: 400px;
+      --h: 1080px;
+      --row-gap: 4px;
+      --icon-col: 34px;
+      --num-col: 80px;
+      --num-icon-size: 22px;
+      --svg-h: 30px;
+      --page-gap: 10px;
+      --loop-seconds: 60s;
+      --sequence-height: 1000px;
+      --outline: 5;
+      --scale: 1.0;
+      --fixed-top-width: 85%;
+      --fixed-bottom-width: 85%;
+
+      /* 고정 타이틀 영역 */
+      --fixed-title-h: 36px;
+      --fixed-title-mb: 2px;
+
+      /* 고정 페이지 영역 */
+      --fixed-page-side-gap: 0px;
+      --fixed-page-h: 0px;
+
+      /* 하단 제작자 영역 */
+      --fixed-bottom-h: 20px;
+      --fixed-bottom-bottom: 4px;
+      --fixed-bottom-mt: 0px;
+
+      --fixed-top-page-h: 0px;
+      --fixed-bottom-page-h: 0px;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: var(--w);
+      height: var(--h);
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    body {
+      font-family: 'GeekbleMalrangiche', 'Netmarble', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      background: transparent !important;
+    }
+
+    .overlay {
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+      box-sizing: border-box;
+      padding: 0;
+      overflow: hidden;
+      background: transparent !important;
+    }
+
+    .fixed-title-wrap {
+      position: absolute;
+      left: 4px;
+      top: 4px;
+      width: calc(100% - 8px);
+      height: var(--fixed-title-h);
+      z-index: 10;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    .viewport {
+      position: absolute;
+      left: 4px;
+      top: calc(
+        var(--fixed-title-h)
+        + var(--fixed-title-mb)
+        + var(--fixed-top-page-h)
+      );
+      width: calc(100% - 8px);
+      height: calc(
+        100%
+        - var(--fixed-title-h)
+        - var(--fixed-title-mb)
+        - var(--fixed-bottom-h)
+        - var(--fixed-bottom-bottom)
+        - var(--fixed-top-page-h)
+        - var(--fixed-bottom-page-h)
+      );
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .track {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+      animation: riseLoop var(--loop-seconds) linear infinite;
+      animation-play-state: paused;
+    }
+
+    /* 정지 모드에서는 위치 이동을 차단 */
+    html[data-scroll-mode="static"] .track {
+      animation: none !important;
+      transition: none !important;
+      position: relative !important;
+      top: 0 !important;
+      left: 0 !important;
+      transform: none !important;
+      will-change: auto;
+    }
+
+    /* 정지 모드에서도 색상 효과는 유지 */
+    html[data-scroll-mode="static"] .sequence,
+    html[data-scroll-mode="static"] .sequence * {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    html[data-scroll-mode="static"] .waveChar {
+      transform: none !important;
+    }
+
+    html[data-scroll-mode="static"] .e-colorshift text {
+      animation: colorShift 1.6s linear infinite !important;
+    }
+
+    html[data-scroll-mode="static"] .page-title.e-colorshift .page-title-text {
+      animation: titleColorShift 1.6s linear infinite !important;
+    }
+
+    html[data-scroll-mode="static"] #sequenceB {
+      display: none !important;
+    }
+
+    .sequence {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    .page-gap {
+      width: 100%;
+      height: var(--page-gap);
+      flex: 0 0 var(--page-gap);
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0 0;
+    }
+
+    /* 시그명칭과 각주 간격 */
+    tbody tr.main-row td {
+      padding-bottom: var(--row-gap);
+    }
+
+    tbody tr.main-row.has-footnote td {
+      padding-bottom: 0;
+    }
+
+    tbody tr.footnote-row td {
+      padding-top: 0;
+      padding-bottom: 2px;
+      height: auto;
+      vertical-align: top;
+    }
+
+    col.num-col {
+      width: var(--num-col);
+    }
+
+    col.icon-col {
+      width: var(--icon-col);
+    }
+
+    td {
+      padding-left: 2px;
+      vertical-align: middle;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    td.num {
+      text-align: left;
+    }
+
+    .num-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0;
+      width: max-content;
+      height: var(--svg-h);
+    }
+
+    .num-left-icon {
+      padding-left: 2px;
+      width: var(--num-icon-size);
+      height: var(--num-icon-size);
+      flex: 0 0 var(--num-icon-size);
+      position: relative;
+      top: -4px;
+      object-fit: contain;
+      display: block;
+      margin: 0;
+
+      /* 프레임 드랍 방지를 위해 단일 필터 유지 */
+      filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.9));
+    }
+
+    td.label {
+      padding-left: 4px;
+    }
+
+    td.icon-cell {
+      width: 34px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    td.footnote {
+      padding: 0 0 0 6px;
+      white-space: normal;
+      line-height: 1;
+      height: auto;
+      vertical-align: top;
+    }
+
+    .page-title {
+      width: 240px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 0 6px 0;
+      text-align: center;
+      font-family: 'GeekbleMalrangiche', 'Netmarble', Arial, sans-serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: #ffffff;
+      border: 2px solid currentColor;
+      border-radius: 10px;
+      box-sizing: border-box;
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+      transform: translateY(-1px);
+    }
+
+    .page-title-text {
+      display: inline-block;
+      min-width: 0;
+      line-height: 1;
+      position: relative;
+      top: -3px;
+    }
+
+    .page-title.e-colorshift .page-title-text {
+      animation: titleColorShift 1.6s linear infinite;
+    }
+
+    .page-title-icon {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+    }
+
+    /* 외부 SVG 파일 표시 */
+    .page-title-icon img,
+    .label-icon img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    .title-gray {
+      background: #bfbfbf;
+      border-color: #262525;
+    }
+
+    .title-pink {
+      background: #FAB0C1;
+      border-color: #D36C86;
+    }
+
+    .title-red {
+      background: #ff3232;
+      border-color: #ed1d1d;
+    }
+
+    .title-orange {
+      background: #EF9573;
+      border-color: #C96541;
+    }
+
+    .title-yellow {
+      background: #FEFA94;
+      border-color: #D4BE36;
+    }
+
+    .title-purple {
+      background: #9656bd;
+      border-color: #7727a8;
+    }
+
+    .title-blue {
+      background: #4A90E2;
+      border-color: #1F5EA6;
+    }
+
+    .title-green {
+      background: #8acf6d;
+      border-color: #4DAF2A;
+    }
+
+    .title-skyblue {
+      background: #6dbbcf;
+      border-color: #016fff;
+    }
+
+    .title-Apricot {
+      background: #f7a167;
+      border-color: #ff8738;
+    }
+
+    .label-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      width: auto;
+    }
+
+    .num-svg,
+    .label-svg {
+      display: block;
+      width: auto;
+      height: var(--svg-h);
+      min-height: var(--svg-h);
+      overflow: visible;
+      flex: 0 0 auto;
+    }
+
+    .footnote-svg {
+      display: block;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      flex: 0 0 auto;
+      position: relative;
+      top: -10px;
+    }
+
+    .label-icon {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 12px;
+      position: relative;
+      top: -2px;
+    }
+
+    .label-text {
+      flex: 0 0 auto;
+      min-width: auto;
+    }
+
+    .fixed-bottom-label {
+      position: absolute;
+      left: 4px;
+      bottom: var(--fixed-bottom-bottom);
+      width: 245px;
+      height: var(--fixed-bottom-h);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'GeekbleMalrangiche', 'Netmarble', Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 100;
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid #ffffff;
+      border-radius: 10px;
+      box-sizing: border-box;
+      z-index: 50;
+      text-shadow:
+        -2px -2px 0 #000,
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+    }
+
+    .e-colorshift text {
+      animation: colorShift 1.6s linear infinite;
+    }
+
+    @keyframes colorShift {
+      0%   { fill: #ff6; }
+      33%  { fill: #6ff; }
+      66%  { fill: #f6f; }
+      100% { fill: #ff6; }
+    }
+
+    @keyframes titleColorShift {
+      0%   { color: #ff6; }
+      33%  { color: #6ff; }
+      66%  { color: #f6f; }
+      100% { color: #ff6; }
+    }
+
+    @keyframes riseLoop {
+      from {
+        transform: translate3d(0, 0, 0);
+      }
+      to {
+        transform: translate3d(
+          0,
+          calc(-1 * var(--sequence-height)),
+          0
+        );
+      }
+    }
+
+    .fixed-top-page {
+      position: absolute;
+      left: var(--fixed-page-side-gap);
+      top: calc(var(--fixed-title-h) + var(--fixed-title-mb) + 4px);
+      width: calc(var(--fixed-top-width) - var(--fixed-page-side-gap));
+      z-index: 40;
+      padding: 4px;
+      border-radius: 14px;
+      background: rgba(60, 60, 60, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-sizing: border-box;
+    }
+
+    .fixed-bottom-page {
+      position: absolute;
+      left: var(--fixed-page-side-gap);
+      bottom: calc(var(--fixed-bottom-h) + var(--fixed-bottom-bottom));
+      width: calc(var(--fixed-bottom-width) - var(--fixed-page-side-gap));
+      z-index: 40;
+      padding: 4px;
+      border-radius: 14px;
+      background: rgba(60, 60, 60, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-sizing: border-box;
+    }
+
+    .fixed-top-page .page + .page,
+    .fixed-bottom-page .page + .page {
+      margin-top: 1px;
+    }
+
+    @supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
+      .fixed-top-page,
+      .fixed-bottom-page {
+        background: rgba(120, 120, 120, 0.18);
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+      }
+    }
+
+    .waveChar {
+      display: inline-block;
+      animation: wave 1s ease-in-out infinite;
+    }
+
+    @keyframes wave {
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    .content-scale {
+      width: calc(100% / var(--scale));
+      height: calc(100% / var(--scale));
+      transform: scale(var(--scale));
+      transform-origin: top left;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay">
+    <div class="content-scale">
+
+      <div class="fixed-title-wrap">
+        <div class="page-title title-gray">
+          <span class="page-title-text">빠루</span>
+        </div>
+      </div>
+
+      <div class="viewport">
+        <div class="track" id="track">
+          <div class="sequence" id="sequenceA"></div>
+          <div
+            class="sequence"
+            id="sequenceB"
+            aria-hidden="true"
+          ></div>
+        </div>
+      </div>
+
+      <div id="fixedTopPage" class="fixed-top-page"></div>
+      <div id="fixedBottomPage" class="fixed-bottom-page"></div>
+
+      <div class="fixed-bottom-label">
+        Designed by 시프티™⭐
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* 우클릭 / 선택 / 드래그 / 단축키 차단 */
+    document.addEventListener('contextmenu', e => {
+      e.preventDefault();
+    });
+
+    document.addEventListener('selectstart', e => {
+      e.preventDefault();
+    });
+
+    document.addEventListener('dragstart', e => {
+      e.preventDefault();
+    });
+
+    document.addEventListener('keydown', e => {
+      const key = e.key.toLowerCase();
+
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].includes(key)) ||
+        (e.ctrlKey && ['u', 's'].includes(key))
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    let PAGE_DATA = {};
+    let scrollEnabled = true;
+
+    /* CODE!L1: TRUE = 수정모드, FALSE = 운영모드 */
+    const CONTROL_POLL_MS = 3000;
+    const DATA_POLL_MS = 10000;
+    const REQUEST_TIMEOUT_MS = 15000;
+
+    let hasRenderedData = false;
+    let loadNotice = null;
+
+    function showLoadNotice(message) {
+      if (!loadNotice) {
+        loadNotice = document.createElement('div');
+        loadNotice.setAttribute('role', 'status');
+        loadNotice.style.cssText =
+          'position:fixed;top:90px;left:12px;right:12px;' +
+          'z-index:9999;padding:12px;border-radius:8px;' +
+          'background:rgba(0,0,0,.85);color:#fff;' +
+          'font:14px/1.5 sans-serif;white-space:pre-wrap;' +
+          'overflow-wrap:anywhere';
+
+        document.body.appendChild(loadNotice);
+      }
+
+      loadNotice.textContent = message;
+      loadNotice.style.display = message ? 'block' : 'none';
+    }
+
+    function reportLoadError(stage, error) {
+      console.warn(stage, error);
+
+      if (!hasRenderedData) {
+        showLoadNotice(
+          stage + '\n' +
+          String(error.message || error) + '\n' +
+          '자동으로 다시 시도합니다.'
+        );
+      }
+    }
+
+    const CACHE_KEY = 'pparu-overlay-last-good-20261031-v2';
+    const API_SCHEMA = 'pparu-l1-v2';
+
+    let editMode = true;
+    let lastDataSignature = '';
+    let lastDataCheckAt = 0;
+    let updateInProgress = false;
+    let controlInProgress = false;
+    let stateInitialized = false;
+    let controlGeneration = 0;
+
+    function validateStatus(value) {
+      if (
+        !value ||
+        value.schema !== API_SCHEMA ||
+        typeof value.editMode !== 'boolean'
+      ) {
+        throw new Error(
+          'GAS 응답에 L1 제어 정보가 없습니다. ' +
+          'GAS를 최신 버전으로 재배포하고 URL을 확인하세요.'
+        );
+      }
+
+      return value.editMode;
+    }
+
+    /* 컬럼별 폰트 */
+    const NUMBER_FONT = 'GeekbleMalrangiche, Arial, sans-serif';
+    const LABEL_FONT = 'GeekbleMalrangiche, Arial, sans-serif';
+    const FOOTNOTE_FONT = 'GeekbleMalrangiche, Arial, sans-serif';
+
+    const STROKE = getComputedStyle(document.documentElement)
+      .getPropertyValue('--outline')
+      .trim() || 5;
+
+    /* 숫자 왼쪽 하트 이미지 */
+    const ICON_PUNG_P1 = 'https://i.imgur.com/2PvVhKn.png'; //빨강하트
+    const ICON_PUNG_P2 = 'https://i.imgur.com/l0gSwJk.png'; //핑크하트
+    const ICON_PUNG_P3 = 'https://i.imgur.com/D0ldyfG.png'; //주황하트
+    const ICON_PUNG_P4 = 'https://i.imgur.com/12lhyTv.png'; //노랑하트
+    const ICON_PUNG_P5 = 'https://i.imgur.com/3i8eoNA.png'; //보라하트
+    const ICON_PUNG_P6 = 'https://i.imgur.com/qGz1W0y.png'; //회색하트
+    const ICON_PUNG_P7 = 'https://i.imgur.com/cBt4rIi.png'; //파랑하트
+    const ICON_PUNG_P8 = 'https://i.imgur.com/DLqjxNt.png'; //하늘하트
+    const ICON_PUNG_P9 = 'https://i.imgur.com/eplGoPG.png'; //초록하트
+
+    const PAGE_ICON_MAP = {
+      page1: ICON_PUNG_P1,
+      page2: ICON_PUNG_P2,
+      page3: ICON_PUNG_P3,
+      page4: ICON_PUNG_P4,
+      page5: ICON_PUNG_P5
+    };
+
+    let FIXED_PAGE_KEYS = [];
+    let FIXED_PAGE_POSITION_MAP = {};
+    let PAGE_ICON_ENABLED_MAP = {};
+
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbx-g7iLEl6xrathC7Ul2moG2X2Aykumz-ZDBQc9FINrgCoIVM-m99FLSfS0I0Y72Dv3/exec';
+
+    /* 외부 SVG 아이콘: 같은 사이트의 경로 사용 */
+    const ICON_BASE_URL = '/overlaylist/icons/';
+
+    const ICON_LABELS = new Map([
+      ['new', 'NEW'],
+      ['best', 'BEST'],
+      ['warning', 'WARNING'],
+      ['rullet', 'RULLET'],
+      ['adult19', '19금']
+    ]);
+
+    function makeExternalIcon(type, className) {
+      const key = String(type || '').trim().toLowerCase();
+      const label = ICON_LABELS.get(key);
+
+      if (!label) return '';
+
+      return `
+        <span
+          class="${className}"
+          role="img"
+          aria-label="${label}">
+          <img
+            src="${ICON_BASE_URL}${key}.svg"
+            alt=""
+            aria-hidden="true"
+            decoding="async"
+            draggable="false">
+        </span>
+      `;
+    }
+
+    function makeLabelIcon(type) {
+      return makeExternalIcon(type, 'label-icon');
+    }
+
+    function makePageTitleIcon(type) {
+      return makeExternalIcon(type, 'page-title-icon');
+    }
+
+    /* GAS JSONP 요청 */
+    let jsonpSequence = 0;
+
+    function fetchJson(mode = 'data') {
+      return new Promise((resolve, reject) => {
+        const callback =
+          `pparu_cb_${Date.now()}_${++jsonpSequence}`;
+
+        const url = new URL(GAS_URL);
+        url.searchParams.set('mode', mode);
+        url.searchParams.set('callback', callback);
+        url.searchParams.set('_', String(Date.now()));
+
+        const script = document.createElement('script');
+
+        let settled = false;
+        let timeout;
+
+        function finish(error, data) {
+          if (settled) return;
+          settled = true;
+
+          clearTimeout(timeout);
+          script.onload = script.onerror = null;
+          script.remove();
+
+          /* 늦게 도착한 응답 무시 */
+          window[callback] = () => {};
+
+          setTimeout(() => {
+            delete window[callback];
+          }, 60000);
+
+          if (error) {
+            reject(
+              new Error(`[${mode}] ${error.message || error}`)
+            );
+          } else {
+            resolve(data);
+          }
+        }
+
+        window[callback] = data => {
+          try {
+            if (!data || typeof data !== 'object') {
+              throw new Error('GAS 응답이 비어 있습니다.');
+            }
+
+            if (data.error) {
+              throw new Error(String(data.error));
+            }
+
+            validateStatus(data);
+
+            if (
+              mode === 'data' &&
+              !data.editMode &&
+              (
+                !data.pages ||
+                typeof data.pages !== 'object' ||
+                Array.isArray(data.pages)
+              )
+            ) {
+              throw new Error(
+                'GAS 메뉴 응답에 pages가 없습니다.'
+              );
+            }
+
+            finish(null, data);
+          } catch (error) {
+            finish(error);
+          }
+        };
+
+        script.async = true;
+        script.src = url.toString();
+
+        script.onerror = () => {
+          finish(
+            new Error(
+              'GAS JSONP 연결 실패. 웹앱 배포와 네트워크를 확인하세요.'
+            )
+          );
+        };
+
+        script.onload = () => {
+          if (!settled) {
+            finish(
+              new Error(
+                'JSONP 응답이 없습니다. ' +
+                'GAS를 JSONP 지원 버전으로 재배포하세요.'
+              )
+            );
+          }
+        };
+
+        timeout = setTimeout(() => {
+          finish(
+            new Error('GAS JSONP 응답 시간 초과 (15초)')
+          );
+        }, REQUEST_TIMEOUT_MS);
+
+        try {
+          document.head.appendChild(script);
+        } catch (error) {
+          finish(error);
+        }
+      });
+    }
+
+    /* 데이터가 같으면 DOM 재생성 생략 */
+    function signatureOf(data) {
+      const { editMode, ...payload } = data;
+      return JSON.stringify(payload);
+    }
+
+    function saveLastGood(data) {
+      try {
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify(data)
+        );
+      } catch (_) {}
+    }
+
+    function getLastGood() {
+      try {
+        const saved = localStorage.getItem(CACHE_KEY);
+        return saved ? JSON.parse(saved) : null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function applySheetData(data) {
+      /* 스크롤 설정 */
+      const speedMissing = data.scrollSeconds == null;
+      const requestedSeconds = speedMissing
+        ? 60
+        : Number(data.scrollSeconds);
+
+      const scrollSeconds =
+        Number.isFinite(requestedSeconds) &&
+        requestedSeconds >= 0
+          ? requestedSeconds
+          : 60;
+
+      scrollEnabled = scrollSeconds > 0;
+
+      document.documentElement.setAttribute(
+        'data-scroll-mode',
+        scrollEnabled ? 'scroll' : 'static'
+      );
+
+      const style = document.documentElement.style;
+
+      style.setProperty(
+        '--loop-seconds',
+        `${scrollEnabled ? scrollSeconds : 60}s`
+      );
+
+      /* CODE!T1 배율 */
+      const scale = Number(data.scale);
+
+      style.setProperty(
+        '--scale',
+        `${Number.isFinite(scale) && scale > 0 ? scale : 1}`
+      );
+
+      /* 고정 영역 너비 */
+      for (const [name, raw] of [
+        ['--fixed-top-width', data.fixedTopWidthPercent],
+        ['--fixed-bottom-width', data.fixedBottomWidthPercent]
+      ]) {
+        const value = Number(raw);
+
+        style.setProperty(
+          name,
+          `${
+            Number.isFinite(value) &&
+            value > 0 &&
+            value <= 100
+              ? value
+              : 85
+          }%`
+        );
+      }
+
+      FIXED_PAGE_KEYS = Array.isArray(data.fixedPages)
+        ? data.fixedPages
+        : [];
+
+      FIXED_PAGE_POSITION_MAP =
+        data.fixedPagePositions &&
+        typeof data.fixedPagePositions === 'object'
+          ? data.fixedPagePositions
+          : {};
+
+      PAGE_ICON_ENABLED_MAP =
+        data.pageIconEnabled &&
+        typeof data.pageIconEnabled === 'object'
+          ? data.pageIconEnabled
+          : {};
+
+      PAGE_DATA = Object.fromEntries(
+        Object.entries(data.pages || {}).filter(
+          ([_, pageObj]) =>
+            pageObj &&
+            Array.isArray(pageObj.rows) &&
+            pageObj.rows.length > 0 &&
+            pageObj.enabled !== false
+        )
+      );
+    }
+
+    function esc(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function normalizeLineBreaks(value) {
+      return String(value ?? '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n');
+    }
+
+    function splitLines(value) {
+      return normalizeLineBreaks(value).split('\n');
+    }
+
+    function makeTspans(
+      value,
+      {
+        x = 0,
+        firstY = 24,
+        lineHeight = 28
+      } = {}
+    ) {
+      return splitLines(value)
+        .map((line, index) => {
+          const safeLine = esc(line);
+          const y = firstY + index * lineHeight;
+
+          return `
+            <tspan x="${x}" y="${y}">
+              ${safeLine || ' '}
+            </tspan>
+          `;
+        })
+        .join('');
+    }
+
+    function getFillColor(variant = 'gray') {
+      const COLOR_MAP = {
+        gray: '#bfbfbf',
+        pink: '#FAB0C1',
+        orange: '#EF9573',
+        yellow: '#FEFA94',
+        blue: '#4A90E2',
+        purple: '#DCAEF8',
+        green: '#8acf6d',
+        red: '#ff6b6b',
+        white: '#ffffff',
+        navy: '#5E4C9D',
+        skyblue: '#73FBFD',
+        Apricot: '#f7a167'
+      };
+
+      return COLOR_MAP[variant] || COLOR_MAP.blue;
+    }
+
+    /* 텍스트 너비 측정 */
+    const textWidthCache = new Map();
+
+    const measureContext = document
+      .createElement('canvas')
+      .getContext('2d');
+
+    function measureTextWidth(
+      text,
+      fontSize = 32,
+      fontFamily = LABEL_FONT,
+      fontWeight = 400
+    ) {
+      const key = JSON.stringify([
+        text,
+        fontSize,
+        fontFamily,
+        fontWeight
+      ]);
+
+      if (textWidthCache.has(key)) {
+        return textWidthCache.get(key);
+      }
+
+      measureContext.font =
+        `${fontWeight} ${fontSize}px ${fontFamily}`;
+
+      const width = Math.ceil(
+        measureContext.measureText(text).width
+      );
+
+      textWidthCache.set(key, width);
+
+      return width;
+    }
+
+    function measureMultilineTextWidth(
+      value,
+      fontSize = 32,
+      fontFamily = LABEL_FONT,
+      fontWeight = 400
+    ) {
+      const lines = normalizeLineBreaks(value).split('\n');
+
+      if (!lines.length) return 0;
+
+      return Math.max(
+        ...lines.map(line =>
+          measureTextWidth(
+            line || ' ',
+            fontSize,
+            fontFamily,
+            fontWeight
+          )
+        )
+      );
+    }
+
+    /* 단가 */
+    function makeNumberSVG(
+      num,
+      variant = 'blue',
+      strike = false
+    ) {
+      const measured = measureMultilineTextWidth(
+        num,
+        28,
+        NUMBER_FONT,
+        400
+      );
+
+      const width = Math.max(58, measured + 20);
+      const t = esc(num);
+      const fillColor = getFillColor(variant);
+
+      const strikeLine = strike
+        ? `
+          <line
+            x1="10"
+            y1="13"
+            x2="${10 + measured}"
+            y2="13"
+            stroke="#ff5252"
+            stroke-width="5"
+            stroke-linecap="round" />
+        `
+        : '';
+
+      return `
+        <svg
+          class="num-svg"
+          viewBox="0 0 ${width} 34"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="${t}"
+          role="img">
+          <g transform="scale(1.0 1)">
+            <text
+              x="10"
+              y="22"
+              text-anchor="start"
+              font-family="${NUMBER_FONT}"
+              font-size="28"
+              font-weight="400"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              fill="${fillColor}">${t}</text>
+            ${strikeLine}
+          </g>
+        </svg>
+      `;
+    }
+
+    function normalizeEffectClass(effect = '') {
+      const normalizedEffect = String(effect || '')
+        .trim()
+        .toLowerCase()
+        .replaceAll('_', '-');
+
+      return normalizedEffect === 'e-colorshift'
+        ? 'e-colorshift'
+        : '';
+    }
+
+    /* 시그명칭 */
+    function makeLabelSVG(
+      label,
+      effect = '',
+      strike = false
+    ) {
+      const t = esc(label);
+
+      const measured = measureMultilineTextWidth(
+        label,
+        30,
+        LABEL_FONT,
+        400
+      );
+
+      const width = Math.max(40, measured + 25);
+
+      const strikeLine = strike
+        ? `
+          <line
+            x1="15"
+            y1="13"
+            x2="${15 + measured}"
+            y2="13"
+            stroke="#ff5252"
+            stroke-width="5"
+            stroke-linecap="round" />
+        `
+        : '';
+
+      return `
+        <svg
+          class="label-svg ${normalizeEffectClass(effect)}"
+          viewBox="0 0 ${width} 34"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="${t}"
+          role="img"
+          preserveAspectRatio="xMinYMid meet">
+          <g transform="scale(1.0 1)">
+            <text
+              x="15"
+              y="22"
+              text-anchor="start"
+              font-family="${LABEL_FONT}"
+              font-size="30"
+              font-weight="400"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              fill="#ffffff">${t}</text>
+            ${strikeLine}
+          </g>
+        </svg>
+      `;
+    }
+
+    /* 각주: 셀 내부 줄바꿈 지원 */
+    function makeFootnoteSVG(footnote) {
+      const normalizedFootnote =
+        normalizeLineBreaks(footnote);
+
+      const lines = splitLines(normalizedFootnote);
+      const lineCount = Math.max(1, lines.length);
+
+      const fontSize = 22;
+      const fontWeight = 300;
+      const lineHeight = 25;
+
+      const measured = measureMultilineTextWidth(
+        normalizedFootnote,
+        fontSize,
+        FOOTNOTE_FONT,
+        fontWeight
+      );
+
+      const width = Math.max(150, measured + 125);
+      const height = 30 + (lineCount - 1) * lineHeight;
+      const ariaText = esc(normalizedFootnote);
+
+      return `
+        <svg
+          class="footnote-svg"
+          viewBox="0 0 ${width} ${height}"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="${ariaText}"
+          role="img"
+          preserveAspectRatio="xMinYMin meet"
+          style="height:${height}px">
+          <g transform="scale(0.9 1)">
+            <text
+              text-anchor="start"
+              font-family="${FOOTNOTE_FONT}"
+              font-size="${fontSize}"
+              font-weight="${fontWeight}"
+              stroke="#000000"
+              stroke-width="${STROKE}"
+              stroke-linejoin="round"
+              paint-order="stroke fill"
+              fill="#ffffff">
+              ${makeTspans(normalizedFootnote, {
+                x: 100,
+                firstY: 22,
+                lineHeight
+              })}
+            </text>
+          </g>
+        </svg>
+      `;
+    }
+
+    function makeNumberIcon(pageClass) {
+      const enabled =
+        PAGE_ICON_ENABLED_MAP[pageClass] !== false;
+
+      if (!enabled) return '';
+
+      const src = PAGE_ICON_MAP[pageClass] || '';
+
+      return src
+        ? `<img class="num-left-icon" src="${src}" alt="풍">`
+        : '';
+    }
+
+    /* 테이블 */
+    function makeTable(rows, pageClass = '') {
+      const bodyHTML = rows.map(([
+        num,
+        label,
+        iconType = '',
+        footnote = '',
+        effect = '',
+        rowColor = 'blue',
+        strikeValue = false
+      ]) => {
+        const safeNum = String(num ?? '').trim();
+        const safeLabel = String(label ?? '').trim();
+        const safeFootnote = String(footnote ?? '').trim();
+
+        const strike =
+          strikeValue === true ||
+          String(strikeValue).trim().toUpperCase() === 'TRUE';
+
+        const mainRowClass = safeFootnote
+          ? 'main-row has-footnote'
+          : 'main-row no-footnote';
+
+        const mainRow = `
+          <tr class="${mainRowClass}">
+            <td class="num">
+              ${
+                safeNum
+                  ? `
+                    <div class="num-wrap">
+                      ${makeNumberIcon(pageClass)}
+                      ${makeNumberSVG(safeNum, rowColor, strike)}
+                    </div>
+                  `
+                  : ''
+              }
+            </td>
+
+            <td class="label">
+              <div class="label-wrap">
+                <div class="label-text">
+                  ${
+                    safeLabel
+                      ? makeLabelSVG(safeLabel, effect, strike)
+                      : ''
+                  }
+                </div>
+                ${makeLabelIcon(iconType)}
+              </div>
+            </td>
+          </tr>
+        `;
+
+        const footnoteRow = safeFootnote
+          ? `
+            <tr class="footnote-row">
+              <td class="footnote" colspan="3">
+                ${makeFootnoteSVG(safeFootnote)}
+              </td>
+            </tr>
+          `
+          : '';
+
+        return mainRow + footnoteRow;
+      }).join('');
+
+      return `
+        <table aria-label="리액션 리스트">
+          <colgroup>
+            <col class="num-col" />
+            <col />
+            <col class="icon-col" />
+          </colgroup>
+          <tbody>${bodyHTML}</tbody>
+        </table>
+      `;
+    }
+
+    function makePage(
+      title,
+      titleClass,
+      rows,
+      pageClass,
+      titleVisible = true,
+      categoryEffect = '',
+      categoryIcon = ''
+    ) {
+      const safeTitle = esc(title);
+
+      const categoryEffectClass =
+        normalizeEffectClass(categoryEffect);
+
+      const titleHTML = titleVisible
+        ? `
+          <div class="page-title ${titleClass} ${categoryEffectClass}">
+            <span class="page-title-text">${safeTitle}</span>
+            ${makePageTitleIcon(categoryIcon)}
+          </div>
+        `
+        : '';
+
+      return `
+        <div class="page ${pageClass}" data-page="${pageClass}">
+          ${titleHTML}
+          ${makeTable(rows, pageClass)}
+        </div>
+      `;
+    }
+
+    const sequenceA = document.getElementById('sequenceA');
+    const sequenceB = document.getElementById('sequenceB');
+    const fixedTopPage = document.getElementById('fixedTopPage');
+    const fixedBottomPage = document.getElementById('fixedBottomPage');
+    const track = document.getElementById('track');
+
+    /* 페이지 생성 */
+    function renderPages() {
+      const pages = new Map();
+
+      for (const [key, page] of Object.entries(PAGE_DATA)) {
+        pages.set(
+          key,
+          makePage(
+            page.title,
+            `title-${page.titleColor || 'gray'}`,
+            page.rows,
+            key,
+            page.titleVisible !== false,
+            page.categoryEffect || '',
+            page.categoryIcon || ''
+          )
+        );
+      }
+
+      /* 정지 모드 */
+      if (!scrollEnabled) {
+        sequenceA.innerHTML = Array.from(pages.values()).join(
+          '<div class="page-gap" aria-hidden="true"></div>'
+        );
+
+        sequenceB.innerHTML = '';
+        sequenceB.style.display = 'none';
+
+        fixedTopPage.innerHTML = '';
+        fixedBottomPage.innerHTML = '';
+
+        fixedTopPage.style.display = 'none';
+        fixedBottomPage.style.display = 'none';
+
+        track.style.animation = 'none';
+        track.style.transform = 'none';
+        return;
+      }
+
+      /* 스크롤 모드 */
+      sequenceB.style.display = '';
+      sequenceA.style.transform = '';
+      track.style.animation = '';
+      track.style.transform = '';
+
+      const fixedKeys = new Set(FIXED_PAGE_KEYS);
+      const scrolling = [];
+
+      for (const [key, html] of pages) {
+        if (!fixedKeys.has(key)) {
+          scrolling.push(
+            html,
+            '<div class="page-gap" aria-hidden="true"></div>'
+          );
+        }
+      }
+
+      const top = [];
+      const bottom = [];
+
+      for (const key of fixedKeys) {
+        if (!pages.has(key)) continue;
+
+        const position = String(
+          FIXED_PAGE_POSITION_MAP[key] || 'bottom'
+        ).trim().toLowerCase();
+
+        const target =
+          position === '상단' || position === 'top'
+            ? top
+            : bottom;
+
+        target.push(pages.get(key));
+      }
+
+      const html = scrolling.join('');
+
+      sequenceA.innerHTML = html;
+      sequenceB.innerHTML = html;
+      fixedTopPage.innerHTML = top.join('');
+      fixedBottomPage.innerHTML = bottom.join('');
+
+      fixedTopPage.style.display = top.length ? 'block' : 'none';
+      fixedBottomPage.style.display = bottom.length ? 'block' : 'none';
+
+      track.style.animationPlayState =
+        scrollEnabled && scrolling.length
+          ? 'running'
+          : 'paused';
+    }
+
+    /* 고정 페이지 타이틀 물결 효과 */
+    function applyWaveToFixedTitle() {
+      if (!FIXED_PAGE_KEYS.length) return;
+
+      const containers = [
+        fixedTopPage,
+        fixedBottomPage
+      ];
+
+      containers.forEach(fixedContainer => {
+        if (!fixedContainer) return;
+
+        const titles = fixedContainer.querySelectorAll(
+          '.page-title-text'
+        );
+
+        titles.forEach(titleEl => {
+          const text = titleEl.textContent.trim();
+
+          titleEl.innerHTML = Array.from(text)
+            .map((c, i) => `
+              <span
+                class="waveChar"
+                style="animation-delay:${i * 0.08}s">${esc(c)}</span>
+            `)
+            .join('');
+        });
+      });
+    }
+
+    function getScale() {
+      return parseFloat(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--scale')
+      ) || 1;
+    }
+
+    function adjustViewportHeight() {
+      const scale = getScale();
+
+      let topH = 0;
+      let bottomH = 0;
+
+      if (fixedTopPage && fixedTopPage.innerHTML.trim()) {
+        topH = Math.ceil(
+          fixedTopPage.getBoundingClientRect().height / scale
+        ) + 12;
+      }
+
+      if (fixedBottomPage && fixedBottomPage.innerHTML.trim()) {
+        bottomH = Math.ceil(
+          fixedBottomPage.getBoundingClientRect().height / scale
+        ) + 12;
+      }
+
+      const style = document.documentElement.style;
+
+      for (const [name, value] of [
+        ['--fixed-top-page-h', `${topH}px`],
+        ['--fixed-bottom-page-h', `${bottomH}px`]
+      ]) {
+        if (style.getPropertyValue(name) !== value) {
+          style.setProperty(name, value);
+        }
+      }
+    }
+
+    let layoutFrame = 0;
+
+    function scheduleLayout() {
+      if (layoutFrame) return;
+
+      layoutFrame = requestAnimationFrame(() => {
+        layoutFrame = 0;
+        adjustViewportHeight();
+
+        if (scrollEnabled) {
+          updateLoopHeight();
+        } else {
+          fitStaticPage();
+        }
+      });
+    }
+
+    /* 정지 모드에서 화면을 넘을 때만 축소 */
+    function fitStaticPage() {
+      const viewport = document.querySelector('.viewport');
+
+      const width = Math.max(
+        sequenceA.offsetWidth,
+        sequenceA.scrollWidth
+      );
+
+      const height = Math.max(
+        sequenceA.offsetHeight,
+        sequenceA.scrollHeight
+      );
+
+      const ratio = Math.min(
+        1,
+        width > 0 ? viewport.clientWidth / width : 1,
+        height > 0 ? viewport.clientHeight / height : 1
+      );
+
+      sequenceA.style.transformOrigin = 'top left';
+
+      const fitted =
+        `scale(${Math.floor(ratio * 1000000) / 1000000})`;
+
+      if (sequenceA.style.transform !== fitted) {
+        sequenceA.style.transform = fitted;
+      }
+    }
+
+    function updateLoopHeight() {
+      const height = Math.ceil(
+        sequenceA.getBoundingClientRect().height / getScale()
+      );
+
+      const value = `${height}px`;
+      const style = document.documentElement.style;
+
+      if (style.getPropertyValue('--sequence-height') !== value) {
+        style.setProperty('--sequence-height', value);
+      }
+    }
+
+    function redrawWithNewData(data, force = false) {
+      const signature = signatureOf(data);
+
+      if (!force && signature === lastDataSignature) {
+        if (hasRenderedData) showLoadNotice('');
+        return false;
+      }
+
+      applySheetData(data);
+      renderPages();
+      applyWaveToFixedTitle();
+      scheduleLayout();
+
+      lastDataSignature = signature;
+      saveLastGood(data);
+
+      hasRenderedData =
+        sequenceA.childElementCount > 0 ||
+        fixedTopPage.childElementCount > 0 ||
+        fixedBottomPage.childElementCount > 0;
+
+      showLoadNotice(
+        hasRenderedData
+          ? ''
+          : '표시할 메뉴가 없습니다. DATA 항목과 사용 설정을 확인하세요.'
+      );
+
+      return true;
+    }
+
+    async function refreshData() {
+      if (
+        editMode ||
+        updateInProgress ||
+        !stateInitialized
+      ) {
+        return;
+      }
+
+      const generation = controlGeneration;
+      updateInProgress = true;
+
+      try {
+        const data = await fetchJson('data');
+
+        /* 요청 중 수정모드 전환 시 반영 금지 */
+        if (
+          editMode ||
+          generation !== controlGeneration ||
+          validateStatus(data)
+        ) {
+          return;
+        }
+
+        const control = await fetchJson('status');
+        const locked = validateStatus(control);
+
+        if (locked) {
+          editMode = true;
+          controlGeneration++;
+          return;
+        }
+
+        if (
+          !editMode &&
+          generation === controlGeneration
+        ) {
+          redrawWithNewData(data);
+        }
+      } catch (error) {
+        reportLoadError(
+          '메뉴 데이터 수신 또는 화면 생성 실패',
+          error
+        );
+      } finally {
+        lastDataCheckAt = Date.now();
+        updateInProgress = false;
+      }
+    }
+
+    async function pollControl() {
+      if (controlInProgress) return;
+      controlInProgress = true;
+
+      try {
+        const control = await fetchJson('status');
+        const locked = validateStatus(control);
+        const wasEditing = editMode;
+
+        if (locked !== editMode) {
+          controlGeneration++;
+        }
+
+        editMode = locked;
+        stateInitialized = true;
+
+        if (editMode && !hasRenderedData) {
+          showLoadNotice(
+            '수정모드입니다. CODE!L1 체크를 해제하면 메뉴를 불러옵니다.'
+          );
+        }
+
+        if (
+          !editMode &&
+          (
+            wasEditing ||
+            Date.now() - lastDataCheckAt >= DATA_POLL_MS
+          )
+        ) {
+          await refreshData();
+        }
+      } catch (error) {
+        if (!editMode) controlGeneration++;
+
+        editMode = true;
+
+        reportLoadError(
+          'GAS 상태 확인 실패',
+          error
+        );
+      } finally {
+        controlInProgress = false;
+      }
+    }
+
+    async function init() {
+      setInterval(pollControl, CONTROL_POLL_MS);
+
+      showLoadNotice('메뉴 데이터를 불러오는 중입니다.');
+
+      const cached = getLastGood();
+
+      if (cached) {
+        try {
+          redrawWithNewData(cached, true);
+        } catch (error) {
+          reportLoadError(
+            '저장된 메뉴 표시 실패',
+            error
+          );
+        }
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready
+          .then(() => {
+            textWidthCache.clear();
+
+            if (hasRenderedData) {
+              renderPages();
+              applyWaveToFixedTitle();
+            }
+
+            scheduleLayout();
+          })
+          .catch(error => {
+            console.warn('폰트 확인 실패:', error);
+          });
+      }
+
+      if (typeof ResizeObserver === 'function') {
+        const observer = new ResizeObserver(scheduleLayout);
+
+        [
+          sequenceA,
+          fixedTopPage,
+          fixedBottomPage
+        ].forEach(el => {
+          observer.observe(el);
+        });
+      }
+
+      sequenceA.addEventListener(
+        'load',
+        scheduleLayout,
+        true
+      );
+
+      window.addEventListener('resize', scheduleLayout);
+
+      scheduleLayout();
+      await pollControl();
+    }
+
+    init().catch(error => {
+      console.error(
+        '메뉴판 초기화 실패:',
+        error
+      );
+    });
+  </script>
+</body>
+</html>
